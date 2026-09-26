@@ -2,16 +2,13 @@ package io.github.chrislo27.rhrefresh.soundsystem
 
 import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.toolboks.Toolboks
-import io.github.chrislo27.toolboks.logging.Logger
 import ws.schild.jave.Encoder
 import ws.schild.jave.MultimediaObject
 import ws.schild.jave.encode.ArgType
 import ws.schild.jave.encode.AudioAttributes
 import ws.schild.jave.encode.EncodingAttributes
 import ws.schild.jave.encode.ValueArgument
-import ws.schild.jave.info.MultimediaInfo
 import ws.schild.jave.process.ProcessLocator
-import ws.schild.jave.progress.EncoderProgressListener
 import java.io.File
 import java.util.Locale
 import java.util.Optional
@@ -19,40 +16,41 @@ import kotlin.math.pow
 
 
 /**
- * A simple wrapper around the [SoundStretch](https://www.surina.net/soundtouch/soundstretch.html) executables.
+ * A simple wrapper around the [FFMPEG](https://ffmpeg.org/) executables.
  */
 object Ffmpeg{
 
-    enum class OS(val supported: Boolean, val executableName: String) {
+    enum class ARCH_OS(val supported: Boolean, val executableName: String) {
         UNSUPPORTED(false, ""),
-        WINDOWS(true, "ffmpeg_win.exe"),
-        MACOS(true, "ffmpeg_macOS"),
-        LINUX(true, "ffmpeg_linux");
+        WINDOWS_X64(true, "ffmpeg_win_x64.exe"),
+        MACOS_ARM64(true, "ffmpeg_macOS_arm64"),
+        LINUX_X64(true, "ffmpeg_linux_x64");
 
         companion object {
-            val ALL_VALUES: List<OS> = values().toList()
-            val SUPPORTED: List<OS> = ALL_VALUES - UNSUPPORTED
+            val ALL_VALUES: List<ARCH_OS> = values().toList()
+            val SUPPORTED: List<ARCH_OS> = ALL_VALUES - UNSUPPORTED
         }
     }
 
-    val currentOS: OS = try {
+    val currentARCH_OS: ARCH_OS = try {
         val osName: String = System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT) ?: "???"
+        val archName: String = System.getProperty("os.arch", "???")?.toLowerCase(Locale.ROOT) ?: "???"
         when {
-            "win" in osName -> OS.WINDOWS
-            "mac" in osName -> OS.MACOS
-            osName.startsWith("linux") -> OS.LINUX
-            else -> OS.UNSUPPORTED
+            "win" in osName && archName == "amd64" -> ARCH_OS.WINDOWS_X64
+            "mac" in osName && archName == "aarch64"  -> ARCH_OS.MACOS_ARM64
+            osName.startsWith("linux") && archName == "amd64" -> ARCH_OS.LINUX_X64
+            else -> ARCH_OS.UNSUPPORTED
         }
     } catch (e: Exception) {
         e.printStackTrace()
-        OS.UNSUPPORTED
+        ARCH_OS.UNSUPPORTED
     }
-    val isSupported: Boolean get() = currentOS.supported
+    val isSupported: Boolean get() = currentARCH_OS.supported
 
     // Return the encoder built for the platform, otherwise uhhhhh
     fun createEncoder(): Encoder{
         return if(isSupported){
-            Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentOS.executableName).file().absolutePath })
+            Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
         } else{
             Encoder()
         }
@@ -60,7 +58,7 @@ object Ffmpeg{
 
     fun createMultimediaObject(file: File): MultimediaObject{
         return if(isSupported){
-            MultimediaObject(file, ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentOS.executableName).file().absolutePath })
+            MultimediaObject(file, ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
         }else {
             MultimediaObject(file)
         }
