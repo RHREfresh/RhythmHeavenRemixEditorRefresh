@@ -360,31 +360,59 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 screenHeight = buttonHeight)
         }
 
-        // Enable analytics
-        settings.elements += TrueCheckbox(palette, settings, settings).apply {
-            this.checked = preferences.getBoolean(PreferenceKeys.SETTINGS_ENABLE_ANALYTICS, false)
+        // Reenable welcome screen
+        settings.elements += object: TrueCheckbox<InfoScreen>(palette, settings, settings) {
+            override fun render(screen: InfoScreen, batch: SpriteBatch, shapeRenderer: ShapeRenderer) {
+                super.render(screen, batch, shapeRenderer)
+                this.checked = preferences.getBoolean(PreferenceKeys.SHOW_STARTUP_SCREEN, false)
+            }
+        }.apply {
+            this.checked = preferences.getBoolean(PreferenceKeys.SHOW_STARTUP_SCREEN, false)
 
             this.textLabel.apply {
                 this.fontScaleMultiplier = fontScale * 0.9f
                 this.isLocalizationKey = true
                 this.textWrapping = false
                 this.textAlign = Align.left
-                this.text = "screen.info.enableAnalytics"
+                this.text = "screen.info.enableWelcomeScreen"
             }
 
             this.checkedStateChanged = {
-                preferences.putBoolean(PreferenceKeys.SETTINGS_ENABLE_ANALYTICS, it).flush()
+                preferences.putBoolean(PreferenceKeys.SHOW_STARTUP_SCREEN, it).flush()
                 didChangeSettings = true
             }
-
-            this.tooltipText = "screen.info.enableAnalytics.tooltip"
-            this.tooltipTextIsLocalizationKey = true
 
             this.location.set(screenX = 1f - (padding + buttonWidth),
                 screenY = padding * 3 + buttonHeight * 2,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
+
+        // Enable analytics
+//        settings.elements += TrueCheckbox(palette, settings, settings).apply {
+//            this.checked = preferences.getBoolean(PreferenceKeys.SETTINGS_ENABLE_ANALYTICS, false)
+//
+//            this.textLabel.apply {
+//                this.fontScaleMultiplier = fontScale * 0.9f
+//                this.isLocalizationKey = true
+//                this.textWrapping = false
+//                this.textAlign = Align.left
+//                this.text = "screen.info.enableAnalytics"
+//            }
+//
+//            this.checkedStateChanged = {
+//                preferences.putBoolean(PreferenceKeys.SETTINGS_ENABLE_ANALYTICS, it).flush()
+//                didChangeSettings = true
+//            }
+//
+//            this.tooltipText = "screen.info.enableAnalytics.tooltip"
+//            this.tooltipTextIsLocalizationKey = true
+//
+//            this.location.set(screenX = 1f - (padding + buttonWidth),
+//                screenY = padding * 3 + buttonHeight * 2,
+//                screenWidth = buttonWidth,
+//                screenHeight = buttonHeight)
+//        }
 
         // New track behaviour
         settings.elements += TrueCheckbox(palette, settings, settings).apply {
