@@ -30,6 +30,9 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.security.MessageDigest
+import java.util.Locale
+import java.util.Locale.getDefault
+import kotlin.io.path.Path
 import kotlin.math.roundToLong
 import kotlin.system.exitProcess
 
@@ -44,11 +47,16 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
     private enum class Progress {
         ERROR, DOWNLOADING, EXTRACTING, READY_TO_COMPLETE
     }
-    
+
+    private enum class Extension {
+        JAR, EXE
+    }
+
     private var spinSeconds: Float = 0f
     private val jarFileLocation: File = File(RHREfresh::class.java.protectionDomain.codeSource.location.toURI()) // Will crash if the jar file is not a file
     private val updaterFolder: File = jarFileLocation.resolveSibling(UPDATER_FOLDER)
-    private val containingFolder: File = jarFileLocation.parentFile!!
+    private val containingFolder: File = jarFileLocation.parentFile!!.parentFile!!
+    private val extension:Extension
     private var progress: Progress = Progress.DOWNLOADING
     private val worker: Thread
     
@@ -62,7 +70,11 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
     init {
         require(jarFileLocation.exists())
         require(jarFileLocation.isFile)
-        require(jarFileLocation.name == "RHRE.jar")
+        extension = when(jarFileLocation.extension){
+            "exe"-> Extension.EXE
+            "jar"-> Extension.JAR
+            else -> throw IllegalArgumentException("Running from an unexpected place!")
+        }
         val palette = stage.palette
         
         stage.titleLabel.apply {
@@ -153,13 +165,25 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 6. Copy jar file atomically and exit forcibly (System.exit())
                  */
                 val releaseResponseBody = RHREfreshApplication.httpClient
-                        .prepareGet("https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditor/releases/latest")
+//                        .prepareGet("https://thealtdoc.fr/rhre/latest.json")
+                        .prepareGet("https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest")
                         .addHeader("Accept", "application/vnd.github.v3+json")
                         .execute().get().responseBody
                 val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
                 val assetNode = (releaseMeta["assets"] as ArrayNode).first {
                     val filename = it["name"].asText()
-                    filename.startsWith("RHRE_") && filename.endsWith(".zip")
+                    when(extension){
+                        Extension.EXE->{
+                            when(RHREfresh.CURRENT_ARCH){
+                                RHREfresh.ARCH.AMD64->filename.startsWith("RHREfresh_") && filename.endsWith("win_x64.zip")
+                                RHREfresh.ARCH.AARCH64->filename.startsWith("RHREfresh_") && filename.endsWith("win_arm64.zip")
+                                else->false //Won't ever happen if you start with the EXE
+                            }
+                        }
+                        Extension.JAR->{
+                            filename.startsWith("RHREfresh_") && filename.endsWith("multiplatform_jar.zip")
+                        }
+                    }
                 }
                 val zipUrl = assetNode["browser_download_url"].asText()
                 val filesize = assetNode["size"].asLong(1L).coerceAtLeast(1L)
@@ -248,7 +272,10 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 if (!mainFolder.isDirectory) error("Extracted 'Rhythm Heaven Remix Editor Refresh' was not a directory.  Download manually at https://rhre.dev/releases/latest")
                 // Copy over allowed files
                 val fileList = mainFolder.listFiles()!!.toList()
-                val newJarFile = fileList.firstOrNull { it.isDirectory && it.name == "bin" }?.listFiles()?.firstOrNull { it.name == "RHREfresh.jar" } ?: error("RHREfresh.jar was not found after extraction. Download manually at https://rhre.dev/releases/latest")
+                val newJarFile = when(extension){
+                    Extension.EXE -> fileList.firstOrNull { it.name == "RHREfresh.exe" } ?: error("RHREfresh.exe was not found after extraction. Download manually at https://rhre.dev/releases/latest")
+                        Extension.JAR -> fileList.firstOrNull { it.isDirectory && it.name == "bin" }?.listFiles()?.firstOrNull { it.name == "RHREfresh.jar" } ?: error("RHREfresh.jar was not found after extraction. Download manually at https://rhre.dev/releases/latest")
+                }
                 fileList.filter {
                     (it.isDirectory && it.name in listOf("oss_licenses", "bin")) || (it.isFile && it.extension == "txt")
                 }.forEach { f ->
@@ -262,7 +289,10 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 if (autocompleteCheckbox.checked) {
                     // Continue
                     Gdx.app.postRunnable {
-                        completeJarCopy(newJarFile)
+                        when(extension){
+                            Extension.JAR -> completeJarCopy(newJarFile)
+                            Extension.EXE -> completeExeCopy(newJarFile)
+                        }
                     }
                 } else {
                     Gdx.app.postRunnable {
@@ -271,7 +301,10 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                         label.text = Localization["screen.autoUpdater.progress.readyToComplete"]
                         completeButton.leftClickAction = { _, _ ->
                             completeButton.visible = false
-                            completeJarCopy(newJarFile)
+                            when(extension){
+                                Extension.JAR -> completeJarCopy(newJarFile)
+                                Extension.EXE -> completeExeCopy(newJarFile)
+                            }
                         }
                     }
                 }
@@ -347,10 +380,162 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             cleanupAfterFail()
         }
     }
+
+    private fun completeExeCopy(newJarFile: File) {
+        //First, we download the utility
+        try {
+            /*
+            Stages:
+            1. Fetch metadata from GitHub API about latest release
+            2. Download archive, store in updater folder
+            5. Advance to Complete Update stage for user input
+            6. Copy jar file atomically and exit forcibly (System.exit())
+             */
+            val releaseResponseBody = RHREfreshApplication.httpClient
+                .prepareGet("https://git.thealtdoc.fr/api/v1/repos/thatzeogal/RHREUpdateUtility/releases/latest")
+                .addHeader("Accept", "application/vnd.github.v3+json")
+                .execute().get().responseBody
+            val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
+            val assetNode = (releaseMeta["assets"] as ArrayNode).first {
+                val filename = it["name"].asText()
+                when(RHREfresh.CURRENT_ARCH){
+                    RHREfresh.ARCH.AMD64->filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_x64.zip")
+                    RHREfresh.ARCH.AARCH64->filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_arm64.zip")
+                    else->false //Won't ever happen since it's the exe
+                }
+            }
+            val zipUrl = assetNode["browser_download_url"].asText()
+            val filesize = assetNode["size"].asLong(1L).coerceAtLeast(1L)
+
+            val zipFileLoc = updaterFolder.resolve("RHREUpdateUtility.zip").apply {
+                createNewFile()
+            }
+            val fileStream = FileOutputStream(zipFileLoc)
+            val download = RHREfreshApplication.httpClient.prepareGet(zipUrl)
+                .setReadTimeout(120_000)
+                .setRequestTimeout(2_000_000_000)
+                .execute(object : AsyncCompletionHandlerBase() {
+                    private val speedUpdateRate = 500L
+                    private var timeBetweenProgress: Long = System.currentTimeMillis()
+                    private var lastSpeed = 0L
+                    private var speedAcc = 0L
+                    private var bytesSoFar = 0L
+                    override fun onContentWriteProgress(amount: Long, current: Long, total: Long): AsyncHandler.State {
+                        val time = System.currentTimeMillis() - timeBetweenProgress
+                        speedAcc += amount
+                        if (time >= speedUpdateRate) {
+                            timeBetweenProgress = System.currentTimeMillis()
+                            lastSpeed = (speedAcc / (time / 1000.0)).roundToLong()
+                            speedAcc = 0L
+                        }
+
+                        Gdx.app.postRunnable {
+                            val percent = (current.toDouble() / total).coerceIn(0.0, 1.0)
+                            val barLength = 30
+                            val barPortion = "${"█".repeat((percent * barLength).toInt())}[][GRAY]${"█".repeat(((1.0 - percent) * barLength).toInt())}"
+                            val bar = "[[[WHITE]$barPortion[]]"
+                            label.text = Localization["screen.autoUpdater.progress.downloadingUpdateUtility",
+                                (percent * 100).roundToLong(), bar, bytesSoFar / 1024, total / 1024,
+                                if (current >= total || lastSpeed <= 0L) "---" else (lastSpeed / 1024)]
+                        }
+                        return super.onContentWriteProgress(amount, current, total)
+                    }
+
+                    override fun onBodyPartReceived(content: HttpResponseBodyPart): AsyncHandler.State {
+                        fileStream.channel.write(content.bodyByteBuffer)
+                        val amount = content.length()
+                        val total = filesize // FIXME response bytes won't always match filesize in metadata
+                        val time = System.currentTimeMillis() - timeBetweenProgress
+                        speedAcc += amount
+                        if (time >= speedUpdateRate) {
+                            timeBetweenProgress = System.currentTimeMillis()
+                            lastSpeed = (speedAcc / (time / 1000.0)).roundToLong()
+                            speedAcc = 0L
+                        }
+
+                        bytesSoFar += amount
+
+                        Gdx.app.postRunnable {
+                            val percent = (bytesSoFar.toDouble() / total).coerceIn(0.0, 1.0)
+                            val barLength = 30
+                            val barPortion = "${"█".repeat((percent * barLength).toInt())}[][DARK_GRAY]${"█".repeat(((1.0 - percent) * barLength).toInt())}"
+                            val bar = "[WHITE]$barPortion[]"
+                            label.text = Localization["screen.autoUpdater.progress.downloadingUpdateUtility",
+                                (percent * 100).roundToLong(), bar, bytesSoFar / 1024, total / 1024,
+                                if (bytesSoFar >= total || lastSpeed <= 0L) "---" else (lastSpeed / 1024)]
+                        }
+                        return AsyncHandler.State.CONTINUE
+                    }
+                }).get()
+            fileStream.close()
+
+            //Then, we use the utility
+            Gdx.app.postRunnable {
+                progress = Progress.EXTRACTING
+                label.text = Localization["screen.autoUpdater.progress.extractingUpdateUtility"]
+            }
+            val extractFolder: File = updaterFolder.resolve("utility/")
+            val zipFile = ZipFile(zipFileLoc)
+            extractFolder.mkdir()
+            zipFile.extractAll(extractFolder.canonicalPath)
+            zipFileLoc.deleteOnExit()
+            val executable = extractFolder.resolve("RHREUpdateUtility.exe")
+            if (!executable.exists()) error("The update utility did not download properly. You can find the updated RHRE in $updaterFolder.")
+            RemixRecovery.removeSelfFromShutdownHooks()
+            val updaterFolderPath = updaterFolder.canonicalPath
+            Toolboks.LOGGER.info("Calling process `${Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath()}`, moving `${Path(updaterFolderPath, "Rhythm Heaven Remix Editor Refresh").toAbsolutePath()}` to `${jarFileLocation.parentFile.canonicalPath}`")
+            ProcessBuilder(Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath().toString(), Path(updaterFolderPath, "extract", "Rhythm Heaven Remix Editor Refresh").toAbsolutePath().toString(), jarFileLocation.parentFile.resolve("test").canonicalPath)
+                .redirectOutput(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
+                .redirectError(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
+                .start()
+            Toolboks.LOGGER.info("Launched Update Utility EXE, exiting now.")
+            exitProcess(0)
+
+        } catch (ie: InterruptedException) {
+            ie.printStackTrace()
+            AnalyticsHandler.track("Auto-Update Error", mapOf("state" to "downloading",
+                "throwable" to ie::class.java.canonicalName,
+                "stackTrace" to StringWriter().apply {
+                    val pw = PrintWriter(this)
+                    ie.printStackTrace(pw)
+                    pw.flush()
+                }.toString()))
+            cleanupUtilityAfterFail()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            AnalyticsHandler.track("Auto-Update Error", mapOf("state" to "downloading",
+                "throwable" to e::class.java.canonicalName,
+                "stackTrace" to StringWriter().apply {
+                    val pw = PrintWriter(this)
+                    e.printStackTrace(pw)
+                    pw.flush()
+                }.toString()))
+            Gdx.app.postRunnable {
+                progress = Progress.ERROR
+                label.textWrapping = true
+                label.text = Localization["screen.autoUpdater.error", "[LIGHT_GRAY]${e::class.java.canonicalName}\n${e.localizedMessage}[]"]
+                stage.backButton.visible = true
+                completeButton.visible = false
+                autocompleteCheckbox.visible = false
+                tryAgainButton.visible = true
+                tryAgainButton.leftClickAction = { _, _ ->
+                    tryAgainButton.visible = false
+                    Gdx.app.postRunnable {
+                        main.screen = AutoUpdaterScreen(main)
+                    }
+                }
+            }
+            cleanupUtilityAfterFail()
+        }
+    }
     
     private fun cleanupAfterFail() {
         // Delete any temporary files created
         updaterFolder.deleteRecursively()
+    }
+    private fun cleanupUtilityAfterFail() {
+        // Delete any temporary files created
+        updaterFolder.resolve("utility").deleteRecursively()
     }
     
     override fun renderUpdate() {

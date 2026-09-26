@@ -213,7 +213,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                         textLabel.text = "[GREEN]Reloaded metadata successfully![]"
                     } else {
                         resetReloadMetadataButton()
-                        textLabel.text = "[RED]Failed to reload modding metadata[]\n[LIGHT_GRAY]Check console for details[]"
+                        textLabel.text = "[RED]Failed to reload modding metadata[]\n[LIGHT_GRAY]Check log file for details[]"
                         textLabel.fontScaleMultiplier = 0.6f
                     }
                 }

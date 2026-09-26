@@ -185,7 +185,9 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         }
         val javaVersion = System.getProperty("java.version").trim()
         Toolboks.LOGGER.info("Running on JRE $javaVersion")
+        Toolboks.LOGGER.info("Running on ${System.getProperty("os.name")} ${System.getProperty("os.arch")}")
 
+        Toolboks.LOGGER.info("Running from ${RHREfresh::class.java.protectionDomain.codeSource.location.toURI()}")
         
         instance = this
         
@@ -220,8 +222,8 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
 
         // Copy over FFMPEG executables
         RHREfresh.FFMPEG_FOLDER.mkdirs()
-        val currentOSFfmpeg = Ffmpeg.currentOS
-        if (currentOSFfmpeg != Ffmpeg.OS.UNSUPPORTED) {
+        val currentOSFfmpeg = Ffmpeg.currentARCH_OS
+        if (currentOSFfmpeg != Ffmpeg.ARCH_OS.UNSUPPORTED) {
             Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
             RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
                 setReadable(true)
@@ -431,7 +433,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         githubVersion = Version.RETRIEVING
         val nano = System.nanoTime()
         val obj = JsonHandler.fromJson<ReleaseObject>(httpClient.prepareGet(RHREfresh.RELEASE_API_URL).execute().get().responseBody)
-        
+
         val ghVer = Version.fromStringOrNull(obj.tag_name!!) ?: Version.UNKNOWN
         githubVersion = ghVer
         Toolboks.LOGGER.info("Fetched editor version from GitHub in ${(System.nanoTime() - nano) / 1_000_000f} ms, is $githubVersion")

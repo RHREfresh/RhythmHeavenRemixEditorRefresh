@@ -18,6 +18,11 @@ object RHREfresh {
         MACOS,
         UNKNOWN
     }
+    enum class ARCH{
+        AMD64,
+        AARCH64,
+        UNKNOWN
+    }
 
     const val TITLE = "Rhythm Heaven Remix Editor Refresh"
     val VERSION: Version = Version(4, 0, 0, "")
@@ -36,6 +41,14 @@ object RHREfresh {
             OS.LINUX
         } else {
             OS.UNKNOWN
+        }
+    val CURRENT_ARCH =
+        if(System.getProperty("os.arch") == "amd64"){
+            ARCH.AMD64
+        } else if(System.getProperty("os.arch") == "aarch64"){
+            ARCH.AARCH64
+        } else{
+            ARCH.UNKNOWN
         }
     val RHREFRESH_FOLDER: FileHandle by lazy {
         (

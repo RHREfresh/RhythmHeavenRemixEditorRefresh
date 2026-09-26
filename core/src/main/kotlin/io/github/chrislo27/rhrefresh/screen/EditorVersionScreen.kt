@@ -169,7 +169,7 @@ class EditorVersionScreen(main: RHREfreshApplication)
                                         .coerceAtLeast(1)]
                     }
                     this@EditorVersionScreen.state = newState
-                    if (ghVer.major != 3)
+                    if (ghVer.major != 4)
                         gotoUpdaterButton.visible = false
                     text = Localization["screen.version.label", currentVer, onlineVer, humanFriendly]
                 }
