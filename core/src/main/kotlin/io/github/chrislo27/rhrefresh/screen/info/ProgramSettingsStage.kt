@@ -17,7 +17,6 @@ import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.*
-import io.github.chrislo27.rhrefresh.stage.FalseCheckbox
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.util.JsonHandler
 import io.github.chrislo27.rhrefresh.util.Semitones
@@ -136,14 +135,15 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 renderType = ImageLabel.ImageRendering.ASPECT_RATIO
                 image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_language"))
             })
-            this.tooltipText = "screen.info.autosaveTimer.tooltip"
-            this.tooltipTextIsLocalizationKey = true
 
             this.location.set(screenX = 1f - (padding + buttonWidth),
                               screenY = padding * 7 + buttonHeight * 6,
                               screenWidth = buttonWidth,
                               screenHeight = buttonHeight)
+            this.tooltipText = "editor.translationsMayNotBeAccurate"
+            this.tooltipTextIsLocalizationKey = true
         }
+
         // Autosave timer
         settings.elements += object : Button<InfoScreen>(palette, settings, settings) {
             private fun updateText() {
@@ -386,7 +386,8 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
 //            this.checked = preferences.getBoolean(PreferenceKeys.SETTINGS_DISCORD_RPC_ENABLED, true)
             this.checked = false
             this.enabled = false
-            this.tooltipText = "Rich Presence not yet available"
+            this.tooltipTextIsLocalizationKey = true
+            this.tooltipText = "screen.info.discordRichPresence.unavailable"
             this.textLabel.apply {
                 this.fontScaleMultiplier = fontScale
                 this.isLocalizationKey = true

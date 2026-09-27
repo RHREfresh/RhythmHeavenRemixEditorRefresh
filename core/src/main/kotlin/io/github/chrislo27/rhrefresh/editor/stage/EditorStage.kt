@@ -1449,7 +1449,8 @@ class EditorStage(parent: UIElement<EditorScreen>?,
                 addLabel(ImageLabel(palette, this, this.stage).apply {
                     this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_manual"))
                 })
-                this.tooltipText = "Manual (not implemented)"
+                this.tooltipText = "editor.manual"
+                this.tooltipTextIsLocalizationKey = true
                 this.location.set(screenWidth = size,
                     screenX = 1f- (size * 3 + padding * 2))
             }
