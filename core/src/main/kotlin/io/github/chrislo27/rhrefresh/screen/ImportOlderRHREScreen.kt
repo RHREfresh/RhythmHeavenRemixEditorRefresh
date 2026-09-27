@@ -159,7 +159,7 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     updateState(3)
                     val target = File(newFolder,"sfx/")
                     val source = File(newFolder,"sfx/${RHREfresh.MASTER_DATABASE_BRANCH}")
-                    source.copyRecursively(target)
+                    source.copyRecursively(target, overwrite = true)
                     source.deleteRecursively()
                 }
                 updateState(4)
