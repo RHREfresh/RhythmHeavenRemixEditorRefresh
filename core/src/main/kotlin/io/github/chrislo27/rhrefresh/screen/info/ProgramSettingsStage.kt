@@ -257,7 +257,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         updateLabels()
 
         // Disable time stretching
-        settings.elements += FalseCheckbox(palette, settings, settings).apply {
+        settings.elements += TrueCheckbox(palette, settings, settings).apply {
             this.checked = main.settings.disableTimeStretching
 
             this.textLabel.apply {
