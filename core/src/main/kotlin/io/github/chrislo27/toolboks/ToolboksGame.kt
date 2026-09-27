@@ -231,7 +231,7 @@ ${(screen as? ToolboksScreen<*, *>)?.getDebugString() ?: ""}"""
                 fonts.loadAll(defaultCamera.viewportWidth, defaultCamera.viewportHeight)
             }
             Toolboks.LOGGER.info("Reloaded all ${fonts.fonts.size} fonts in ${nano / 1_000_000.0} ms")
-        } else if(resizeAction == ResizeAction.ANY_SIZE_RELOAD &&
+        } else if (resizeAction == ResizeAction.ANY_SIZE_RELOAD &&
             (defaultCamera.viewportWidth to defaultCamera.viewportHeight) != lastCameraDimensions) {
             val nano = measureNanoTime {
                 fonts.loadAll(defaultCamera.viewportWidth, defaultCamera.viewportHeight)

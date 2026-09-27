@@ -19,7 +19,7 @@ object SoundCache {
     fun isLoaded(id: SampleID): Boolean = cache.containsKey(id)
     fun getNumReferences(id: SampleID): Int = cache[id]?.numReferences ?: 0
     fun getNumLoaded(): Int = cache.size
-    fun getTotalReferences(): Int = cache.values.sumBy { it.numReferences }
+    fun getTotalReferences(): Int = cache.values.sumOf { it.numReferences }
     
     /**
      * Loads the audio file and increments the internal reference counter.

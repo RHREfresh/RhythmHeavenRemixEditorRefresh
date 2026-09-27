@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.Os
 import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParseException
@@ -160,12 +161,6 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
     enum class ScrollMode(val msgLocalization: String, val buttonLocalization: String, val icon: String) {
         PITCH("editor.msg.repitch", "editor.scrollMode.pitch", "ui_icon_scroll_pitch"),
         VOLUME("editor.msg.changeVolume", "editor.scrollMode.volume", "ui_icon_sfx_volume");
-
-        companion object {
-
-            val VALUES: List<ScrollMode> = values().toList()
-
-        }
     }
 
     private data class AutosaveState(val result: AutosaveResult, var time: Float)
@@ -213,7 +208,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
                 }
             }
         }
-        if(!fromFile){
+        if (!fromFile) {
             newRemix.timeSignatures.add(TimeSignature(newRemix.timeSignatures, 0f,
                 TimeSignature.DEFAULT_NOTE_UNIT,
                 TimeSignature.DEFAULT_NOTE_UNIT))
@@ -322,13 +317,13 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
     val glassEffect: GlassEffect = GlassEffect(main, this)
 
     init{
-        if(main.preferences.getBoolean(PreferenceKeys.SETTINGS_LIVE_WAVEFORM)){
+        if (main.preferences.getBoolean(PreferenceKeys.SETTINGS_LIVE_WAVEFORM)) {
             views.add(ViewType.WAVEFORM)
         }
-        if(main.preferences.getBoolean(PreferenceKeys.SETTINGS_CHORUS_KIDS)){
+        if (main.preferences.getBoolean(PreferenceKeys.SETTINGS_CHORUS_KIDS)) {
             views.add(ViewType.GLEE_CLUB)
         }
-        if(main.preferences.getBoolean(PreferenceKeys.SETTINGS_GAME_BOUNDARIES)){
+        if (main.preferences.getBoolean(PreferenceKeys.SETTINGS_GAME_BOUNDARIES)) {
             views.add(ViewType.GAME_BOUNDARIES)
         }
         //volume
@@ -705,10 +700,10 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
                     batch.draw(texture, startX + i * (if (startX <= 0f)
                         staticCamera.viewportWidth / remix.midiInstruments
                     else renderWidth), startY, width.toFloat(),
-                               height * (if (isPlaying && playingEntity != null && playingEntity is IRepitchable)
+                               height * (if (isPlaying && playingEntity is IRepitchable)
                                    (Semitones.getALPitch(playingEntity.semitone.toFloat())) else 1f),
                                1 + (animation * (width + 2)),
-                               1 + (if (isPlaying) ((cellHeight + 2) * (if (isPlaying && playingEntity != null && playingEntity is IRepitchable && playingEntity.semitone > IRepitchable.DEFAULT_RANGE.last) 4 else 3)) else 0),
+                               1 + (if (isPlaying) ((cellHeight + 2) * (if (playingEntity is IRepitchable && playingEntity.semitone > IRepitchable.DEFAULT_RANGE.last) 4 else 3)) else 0),
                                width, height, false, false)
                 }
             }
@@ -1101,7 +1096,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
                                                 IStretchable.MIN_STRETCH)
                                     }
 
-                                    if(entity is RandomCueEntity){
+                                    if (entity is RandomCueEntity) {
                                         entity.updateBounds()
                                     }
                                 }
@@ -1266,7 +1261,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
 
                             if (selection.areAnyResponseCopyable()) {
                                 ctrlBuilder.separator().append(
-                                        Localization[if (SharedLibraryLoader.isMac) "editor.msg.callResponseHint.mac" else "editor.msg.callResponseHint"])
+                                        Localization[if (SharedLibraryLoader.os == Os.MacOsX) "editor.msg.callResponseHint.mac" else "editor.msg.callResponseHint"])
                             }
 
                             if (selection.size == 1) {
@@ -1490,7 +1485,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
 
     fun cycleScrollMode(dir: Int): ScrollMode {
         val last = scrollMode
-        val allValues = ScrollMode.VALUES
+        val allValues = ScrollMode.entries
         val indexOfCurrent = allValues.indexOf(last)
 
         if (indexOfCurrent == -1) {
@@ -2068,7 +2063,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
             return false
         }
 
-        val amountScrolled = if(amountX!= 0f){ceil(amountX).toInt()} else {ceil(amountY).toInt()}
+        val amountScrolled = if (amountX!= 0f) {ceil(amountX).toInt()} else {ceil(amountY).toInt()}
         val selection = selection
         val tool = currentTool
         val control = Gdx.input.isControlDown()
@@ -2291,11 +2286,11 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
             append(remix.entities.size).append("\n")
 
             append("  Trackers: ")
-            append(remix.trackers.sumBy { container ->
+            append(remix.trackers.sumOf { container ->
                 container.map.values.count { it.beat.roundToInt() in range || it.endBeat.roundToInt() in range }
             })
             append(" / ")
-            append(remix.trackers.sumBy { it.map.values.size }).append("\n")
+            append(remix.trackers.sumOf { it.map.values.size }).append("\n")
 
             append("Pos.: ♩")
             append(THREE_DECIMAL_PLACES_FORMATTER.format(remix.beat))

@@ -34,11 +34,11 @@ object Ffmpeg{
     }
 
     val currentARCH_OS: ARCH_OS = try {
-        val osName: String = System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT) ?: "???"
-        val archName: String = System.getProperty("os.arch", "???")?.toLowerCase(Locale.ROOT) ?: "???"
+        val osName: String = System.getProperty("os.name", "???")?.lowercase(Locale.ROOT) ?: "???"
+        val archName: String = System.getProperty("os.arch", "???")?.lowercase(Locale.ROOT) ?: "???"
         when {
             "win" in osName && archName == "amd64" -> ARCH_OS.WINDOWS_X64
-            "mac" in osName && archName == "aarch64"  -> ARCH_OS.MACOS_ARM64
+            "mac" in osName && archName == "aarch64" -> ARCH_OS.MACOS_ARM64
             osName.startsWith("linux") && archName == "amd64" -> ARCH_OS.LINUX_X64
             else -> ARCH_OS.UNSUPPORTED
         }
@@ -51,21 +51,21 @@ object Ffmpeg{
     // Return the encoder built for the platform or the one selected by the user, otherwise uhhhhh
     fun createEncoder(): Encoder{
         val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-        return if(File(ffmpegLocation).exists()){
+        return if (File(ffmpegLocation).exists()) {
             Encoder(ProcessLocator { ffmpegLocation })
-        }else {
-            if(isSupported){
+        } else {
+            if (isSupported) {
                 Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
-            } else{
+            } else {
                 Encoder()
             }
         }
     }
 
     fun createMultimediaObject(file: File): MultimediaObject{
-        return if(isSupported){
+        return if (isSupported) {
             MultimediaObject(file, ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
-        }else {
+        } else {
             MultimediaObject(file)
         }
     }
@@ -90,21 +90,21 @@ object Ffmpeg{
 
         val encoder = createEncoder()
         var filterChain = ""
-        if(tempoPercent>1f){
+        if (tempoPercent>1f) {
             filterChain += "atempo=$tempoPercent"
-        } else if(tempoPercent<1f) {
+        } else if (tempoPercent<1f) {
             val tempoMultiplier = tempoPercent.toDouble().pow(0.2)
-            for(i in 1..5){
+            for(i in 1..5) {
                 filterChain += "atempo=$tempoMultiplier,"
             }
         }
-        if(pitchSemitones!=0f){
-            if(!filterChain.endsWith(",")) filterChain+=","
+        if (pitchSemitones!=0f) {
+            if (!filterChain.endsWith(",")) filterChain+=","
             filterChain += "rubberband=pitch="+(2.0.pow(pitchSemitones.div(12).toDouble()))
         }
-        if(filterChain.isNotEmpty()){
+        if (filterChain.isNotEmpty()) {
             Encoder.setOptionAtIndex(ValueArgument(ArgType.OUTFILE, "-af") { Optional.of(filterChain) }, 33)
-        } else{
+        } else {
             Encoder.removeOptionAtIndex(33)
         }
         val multimediaFile = createMultimediaObject(input)

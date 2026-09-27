@@ -166,7 +166,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
         }
         stage.bottomStage.elements += readyButton
 
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             folderButton = Button(palette, stage.bottomStage, stage.bottomStage).apply {
                 this.addLabel(ImageLabel(palette, this, this.stage).apply {
                     this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_folder"))
@@ -205,7 +205,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
         }
         stage.bottomStage.elements += folderButton
 
-        copyGamesButton = object: Button<ExportRemixScreen>(palette, stage.bottomStage, stage.bottomStage){
+        copyGamesButton = object: Button<ExportRemixScreen>(palette, stage.bottomStage, stage.bottomStage) {
             val strings: List<String> = listOf("Copy\ngames", "[CYAN]Copied![]", "No\ngames...")
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
@@ -373,7 +373,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
                             override fun sourceInfo(info: MultimediaInfo?) {
                             }
-                            override fun progress(permil: Int){
+                            override fun progress(permil: Int) {
                                 updateProgress(codec, permil / 10, 2)
                             }
                             override fun message(message: String?) {
@@ -550,12 +550,12 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         persistDirectory(main, PreferenceKeys.FILE_CHOOSER_EXPORT, newInitialDirectory)
                         GlobalScope.launch {
                             try {
-                                val correctFile = if (file.extension.toLowerCase(Locale.ROOT) !in ExportFileType.EXTENSIONS)
+                                val correctFile = if (file.extension.lowercase(Locale.ROOT) !in ExportFileType.EXTENSIONS)
                                     file.parentFile.resolve("${file.name}.mp3")
                                 else
                                     file
                                 val fileType = ExportFileType.VALUES.firstOrNull {
-                                    it.extension == file.extension.toLowerCase(Locale.ROOT)
+                                    it.extension == file.extension.lowercase(Locale.ROOT)
                                 } ?: MP3
                                 
                                 export(correctFile, fileType, true)

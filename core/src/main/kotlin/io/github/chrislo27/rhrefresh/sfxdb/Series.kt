@@ -14,7 +14,7 @@ enum class Series(val console: String = "") {
         val VALUES: List<Series> = Series.values().toList()
     }
 
-    val lowerCaseName: String = this.name.toLowerCase(Locale.ROOT)
+    val lowerCaseName: String = this.name.lowercase(Locale.ROOT)
     val localization: String = "series.$lowerCaseName.name"
     val textureId: String = "series_icon_$lowerCaseName"
     val texturePath: String = "images/series/$lowerCaseName.png"

@@ -65,9 +65,9 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         stage.titleLabel.text = "Advanced Options"
         stage.backButton.visible = true
         stage.onBackButtonClick = {
-            if(didChangeSfxDbPreferences){
+            if (didChangeSfxDbPreferences) {
                 main.screen = ScreenRegistry.getNonNull("databaseUpdate")
-            } else{
+            } else {
                 main.screen = ScreenRegistry.getNonNull("info")
             }
         }
@@ -240,7 +240,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         centre.elements += reloadMetadataButton
 
         // Open containing folder for modding metadata
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             centre.elements += Button(palette, centre, centre).apply {
                 val width = buttonWidth * 0.09f
                 this.location.set(
@@ -358,7 +358,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
 
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
-                if(main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)){
+                if (main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)) {
                     //Switching to RELEASE
                     main.preferences.putBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, false)
                     RHREfresh.DATABASE_BRANCH = RHREfresh.MASTER_DATABASE_BRANCH
@@ -378,9 +378,9 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                 this.isLocalizationKey = false
                 this.textWrapping = false
                 this.fontScaleMultiplier = 0.8f
-                this.text = if(main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)){
+                this.text = if (main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)) {
                     "Change SFXDB update path (currently DEV)"
-                } else{
+                } else {
                     "Change SFXDB update path (currently RELEASE)"
                 }
             })

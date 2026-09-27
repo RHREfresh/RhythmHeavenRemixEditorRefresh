@@ -70,9 +70,9 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
     init {
         require(jarFileLocation.exists())
         require(jarFileLocation.isFile)
-        extension = when(jarFileLocation.extension){
-            "exe"-> Extension.EXE
-            "jar"-> Extension.JAR
+        extension = when (jarFileLocation.extension) {
+            "exe" -> Extension.EXE
+            "jar" -> Extension.JAR
             else -> throw IllegalArgumentException("Running from an unexpected place!")
         }
         val palette = stage.palette
@@ -172,15 +172,15 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
                 val assetNode = (releaseMeta["assets"] as ArrayNode).first {
                     val filename = it["name"].asText()
-                    when(extension){
-                        Extension.EXE->{
-                            when(RHREfresh.CURRENT_ARCH){
-                                RHREfresh.ARCH.AMD64->filename.startsWith("RHREfresh_") && filename.endsWith("win_x64.zip")
-                                RHREfresh.ARCH.AARCH64->filename.startsWith("RHREfresh_") && filename.endsWith("win_arm64.zip")
-                                else->false //Won't ever happen if you start with the EXE
+                    when (extension) {
+                        Extension.EXE -> {
+                            when (RHREfresh.CURRENT_ARCH) {
+                                RHREfresh.ARCH.AMD64 -> filename.startsWith("RHREfresh_") && filename.endsWith("win_x64.zip")
+                                RHREfresh.ARCH.AARCH64 -> filename.startsWith("RHREfresh_") && filename.endsWith("win_arm64.zip")
+                                else -> false //Won't ever happen if you start with the EXE
                             }
                         }
-                        Extension.JAR->{
+                        Extension.JAR -> {
                             filename.startsWith("RHREfresh_") && filename.endsWith("multiplatform_jar.zip")
                         }
                     }
@@ -254,7 +254,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
 
                 val md = MessageDigest.getInstance("SHA-256")
                 val sha256 = md.digest(zipFileLoc.readBytes()).fold("") { str, it -> str + "%02x".format(it) }
-                if(sha256 != digestHash){
+                if (sha256 != digestHash) {
                     throw Exception("SHA256 of downloaded file is different from the one reported by Github.")
                 }
 
@@ -272,7 +272,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 if (!mainFolder.isDirectory) error("Extracted 'Rhythm Heaven Remix Editor Refresh' was not a directory.  Download manually at https://rhre.dev/releases/latest")
                 // Copy over allowed files
                 val fileList = mainFolder.listFiles()!!.toList()
-                val newJarFile = when(extension){
+                val newJarFile = when (extension) {
                     Extension.EXE -> fileList.firstOrNull { it.name == "RHREfresh.exe" } ?: error("RHREfresh.exe was not found after extraction. Download manually at https://rhre.dev/releases/latest")
                         Extension.JAR -> fileList.firstOrNull { it.isDirectory && it.name == "bin" }?.listFiles()?.firstOrNull { it.name == "RHREfresh.jar" } ?: error("RHREfresh.jar was not found after extraction. Download manually at https://rhre.dev/releases/latest")
                 }
@@ -289,7 +289,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 if (autocompleteCheckbox.checked) {
                     // Continue
                     Gdx.app.postRunnable {
-                        when(extension){
+                        when (extension) {
                             Extension.JAR -> completeJarCopy(newJarFile)
                             Extension.EXE -> completeExeCopy(newJarFile)
                         }
@@ -301,7 +301,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                         label.text = Localization["screen.autoUpdater.progress.readyToComplete"]
                         completeButton.leftClickAction = { _, _ ->
                             completeButton.visible = false
-                            when(extension){
+                            when (extension) {
                                 Extension.JAR -> completeJarCopy(newJarFile)
                                 Extension.EXE -> completeExeCopy(newJarFile)
                             }
@@ -398,10 +398,10 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
             val assetNode = (releaseMeta["assets"] as ArrayNode).first {
                 val filename = it["name"].asText()
-                when(RHREfresh.CURRENT_ARCH){
-                    RHREfresh.ARCH.AMD64->filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_x64.zip")
-                    RHREfresh.ARCH.AARCH64->filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_arm64.zip")
-                    else->false //Won't ever happen since it's the exe
+                when (RHREfresh.CURRENT_ARCH) {
+                    RHREfresh.ARCH.AMD64 -> filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_x64.zip")
+                    RHREfresh.ARCH.AARCH64 -> filename.startsWith("RHREUpdateUtility") && filename.endsWith("win_arm64.zip")
+                    else -> false //Won't ever happen since it's the exe
                 }
             }
             val zipUrl = assetNode["browser_download_url"].asText()

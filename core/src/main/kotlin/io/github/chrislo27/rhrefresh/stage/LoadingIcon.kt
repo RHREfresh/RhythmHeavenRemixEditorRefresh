@@ -99,7 +99,7 @@ open class LoadingIcon<S : ToolboksScreen<*, *>>(private val palette: UIPalette,
             penImage.visible = false
         } else {
             val currentFrame: Int = (MathHelper.getSawtoothWave(SECONDS_PER_VARIATION / speed) * FRAMES).toInt().coerceIn(0, FRAMES - 1)
-            if(currentFrame<oldFrame){
+            if (currentFrame<oldFrame) {
                 do {
                     currentVariation = randomVariation()
                 } while(currentVariation == oldVariation)
@@ -121,16 +121,16 @@ open class LoadingIcon<S : ToolboksScreen<*, *>>(private val palette: UIPalette,
     }
 
     fun randomVariation(): Int{
-        if(totalVariationWeight == 0){
-            for((_, weight) in variations){
+        if (totalVariationWeight == 0) {
+            for((_, weight) in variations) {
                 totalVariationWeight += weight
             }
         }
         val random = Random.nextInt(totalVariationWeight)
         var variationWeight = 0
-        for((index, weight) in variations){
+        for((index, weight) in variations) {
             variationWeight += weight
-            if(variationWeight>random){
+            if (variationWeight>random) {
                 return index
             }
         }

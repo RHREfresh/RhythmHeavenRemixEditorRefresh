@@ -22,8 +22,8 @@ data class Game(val id: String, val rawName: String, val series: Series,
 
 
     val name: String = if (language != null) "$rawName (${language.langName})" else rawName
-    val lowerCaseName: String = name.toLowerCase(Locale.ROOT)
-    val searchHintsAsSet: Set<String> = searchHints.map { it.toLowerCase(Locale.ROOT) }.toMutableSet().also { set ->
+    val lowerCaseName: String = name.lowercase(Locale.ROOT)
+    val searchHintsAsSet: Set<String> = searchHints.map { it.lowercase(Locale.ROOT) }.toMutableSet().also { set ->
         if (series == Series.FEVER) {
             set += "wii"
         } else if (series == Series.MEGAMIX) {
@@ -139,7 +139,7 @@ object GameGroupListComparator: Comparator<Game> {
             return 1
         }
 
-        if(RHREfresh.PREFERENCES.getBoolean(PreferenceKeys.SETTINGS_ORDER_BY_GAME_ORDER)) {
+        if (RHREfresh.PREFERENCES.getBoolean(PreferenceKeys.SETTINGS_ORDER_BY_GAME_ORDER)) {
             // higher gameOrder are first
             if ((o2.gameOrder == -1 && o1.gameOrder != -1)) {
                 return -1
@@ -151,7 +151,7 @@ object GameGroupListComparator: Comparator<Game> {
             } else if (o2.gameOrder < o1.gameOrder) {
                 return 1
             }
-        } else{
+        } else {
             // higher priorities are first
             if (o1.priority > o2.priority) {
                 return -1

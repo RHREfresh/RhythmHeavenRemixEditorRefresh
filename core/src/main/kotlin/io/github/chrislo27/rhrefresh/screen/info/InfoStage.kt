@@ -146,7 +146,7 @@ class InfoStage(parent: UIElement<InfoScreen>?, camera: OrthographicCamera, val 
             this.text = "SFXDB VERSION"
         }
         info.elements += dbVersionLabel
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             info.elements += Button(palette, info, info).apply {
                 this.location.set(
                     screenX = 1f - (padding + buttonWidth),
@@ -230,7 +230,7 @@ class InfoStage(parent: UIElement<InfoScreen>?, camera: OrthographicCamera, val 
 
 
         // Open logs
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS){
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             info.elements += object : Button<InfoScreen>(palette, info, info) {
 
                 override fun onLeftClick(xPercent: Float, yPercent: Float) {

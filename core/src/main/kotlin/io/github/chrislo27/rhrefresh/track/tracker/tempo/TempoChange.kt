@@ -49,7 +49,7 @@ class TempoChange(container: TempoChanges, beat: Float, val bpm: Float, val swin
 
         if ((change < 0 && bpm <= MIN_TEMPO) || (change > 0 && bpm >= MAX_TEMPO))
             return null
-        if (beat == 0f){
+        if (beat == 0f) {
             (container as TempoChanges).defaultTempo = bpm+change
         }
         return TempoChange(container as TempoChanges, beat, (bpm + change).coerceIn(MIN_TEMPO, MAX_TEMPO), swing, width, immutable)
@@ -100,13 +100,13 @@ class TempoChange(container: TempoChanges, beat: Float, val bpm: Float, val swin
     }
 
     override fun getColour(theme: Theme): Color {
-        if(immutable){
+        if (immutable) {
             val colour = Color(theme.trackers.tempoChange)
             colour.r -= 0.2f
             colour.g -= 0.2f
             colour.b -= 0.2f
             return colour
-        }else {
+        } else {
             return theme.trackers.tempoChange
         }
     }

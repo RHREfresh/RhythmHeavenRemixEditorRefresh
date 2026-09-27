@@ -200,7 +200,7 @@ class EventScreen(main: RHREfreshApplication)
                     val logo = AssetRegistry.get<Texture>("logo_32")
                     val run = layout.runs[0]
                     var logoPos = 0f
-                    for(i in 0..layout.colors[2]){
+                    for(i in 0..layout.colors[2]) {
                         logoPos+=run.xAdvances[i]
                     }
                     logoPos += run.x
@@ -225,7 +225,7 @@ class EventScreen(main: RHREfreshApplication)
                     val logo = AssetRegistry.get<Texture>("logo_32")
                     val run = layout.runs[0]
                     var logoPos = 0f
-                    for(i in 0..layout.colors[2]){
+                    for(i in 0..layout.colors[2]) {
                         logoPos+=run.xAdvances[i]
                     }
                     logoPos += run.x

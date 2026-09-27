@@ -49,7 +49,7 @@ class LibgdxColorSerializer(cl: Class<Color>? = null) : StdSerializer<Color>(cl)
                 (value.b * 255).toInt().toString(16).padZeroes() +
                 if (value.a < 1f) (value.a * 255).toInt().toString(16).padZeroes() else ""
                                 )
-                                .toUpperCase(Locale.ROOT))
+                                .uppercase(Locale.ROOT))
     }
 
 }

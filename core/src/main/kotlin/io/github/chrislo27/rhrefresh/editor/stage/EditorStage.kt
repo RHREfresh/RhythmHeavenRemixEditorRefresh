@@ -287,7 +287,7 @@ class EditorStage(parent: UIElement<EditorScreen>?,
 
             if (isSearching) {
                 if (isDirty == DirtyType.SEARCH_DIRTY) {
-                    val query = searchBar.textField.text.toLowerCase(Locale.ROOT)
+                    val query = searchBar.textField.text.lowercase(Locale.ROOT)
 
                     searchFilter.query = query
                     searchFilter.update()
@@ -812,7 +812,7 @@ class EditorStage(parent: UIElement<EditorScreen>?,
                     this.fontScaleMultiplier = 0.9f
                 }
                 pickerStage.elements += gameStageText
-                if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS){
+                if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
                     customSoundsFolderButton = Button(palette, pickerStage, pickerStage).apply {
                         setLocation(Editor.ICON_COUNT_X, 0)
                         this.location.set(screenY = 0.5f - this.location.screenHeight / 2f)
@@ -1521,12 +1521,12 @@ class EditorStage(parent: UIElement<EditorScreen>?,
         this.updateSelected()
     }
 
-    fun updateFilters(){
-        for (filterButton in filterButtons){
+    fun updateFilters() {
+        for (filterButton in filterButtons) {
             val filter = filterButton.filter
-            if(filter is SimpleFilter){
+            if (filter is SimpleFilter) {
                 filter.shouldUpdate = true
-            } else if(filter is RecentFilter){
+            } else if (filter is RecentFilter) {
                 filter.shouldUpdate = true
             }
         }

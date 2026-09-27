@@ -262,9 +262,9 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         RHREfresh.PREFERENCES = preferences
         Toolboks.LOGGER.info("Loaded preferences")
 
-        RHREfresh.DATABASE_BRANCH = if(preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)){
+        RHREfresh.DATABASE_BRANCH = if (preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)) {
             "dev"
-        } else{
+        } else {
             "master"
         }
         RHREfresh.DATABASE_CURRENT_COMMIT = preferences.getString(PreferenceKeys.DATABASE_VERSION+ RHREfresh.DATABASE_BRANCH+PreferenceKeys.DATABASE_VERSION_COMMIT, "")
@@ -299,7 +299,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         Toolboks.LOGGER.info("Loaded audio volume from prefs")
         Toolboks.LOGGER.info("Loaded persistent data from preferences")
         
-        val discordRpcEnabled = preferences.getBoolean(PreferenceKeys.SETTINGS_DISCORD_RPC_ENABLED, true)
+        //val discordRpcEnabled = preferences.getBoolean(PreferenceKeys.SETTINGS_DISCORD_RPC_ENABLED, true)
         GlobalScope.launch {
             Toolboks.LOGGER.info("Starting Discord RPC")
             val nano = measureNanoTime {
@@ -347,9 +347,9 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
                 loadWindowSettings()
                 dontShowResizeInfo = false
                 val nextScreen = ScreenRegistry[
-                    if(RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && File(System.getProperty("user.home") + "/.rhre3").exists() && !RHREfresh.portableMode)){
+                    if (RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && File(System.getProperty("user.home") + "/.rhre3").exists() && !RHREfresh.portableMode)) {
                         "importOlderRhre"
-                    } else if (RHREfresh.skipGitScreen){
+                    } else if (RHREfresh.skipGitScreen) {
                         "sfxdbLoad"
                     }
                     else {
@@ -500,8 +500,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
             font.setColor(1f, 1f, 1f, 1f)
             font.data.setScale(1f)
         }
-        
-        @Suppress("ConstantConditionIf")
+
         if (RHREfresh.enableEarlyAccessMessage) {
             val font = defaultBorderedFont
             val height = 0.9f
@@ -593,7 +592,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
     
     fun loadWindowSettings() {
         val str: String = preferences.getString(PreferenceKeys.WINDOW_STATE,
-                                                "${RHREfresh.WIDTH}x${RHREfresh.HEIGHT}").toLowerCase(Locale.ROOT)
+                                                "${RHREfresh.WIDTH}x${RHREfresh.HEIGHT}").lowercase(Locale.ROOT)
         if (str == "fs") {
             Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
         } else {

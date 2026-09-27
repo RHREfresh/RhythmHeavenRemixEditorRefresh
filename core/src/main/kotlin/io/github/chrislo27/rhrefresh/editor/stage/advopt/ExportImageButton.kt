@@ -84,7 +84,7 @@ class ExportImageButton(val editor: Editor, palette: UIPalette, parent: UIElemen
 
                         editor.render(updateDelta = false, otherUI = false, noGlassEffect = true, disableThemeUsesMenu = true)
 
-                        val bufPix = ScreenUtils.getFrameBufferPixmap(0, 0, buffer.width, buffer.height)
+                        val bufPix = Pixmap.createFromFrameBuffer(0, 0, buffer.width, buffer.height)
                         val currentRow = x / (pixmap.width)
                         pixmap.drawPixmap(bufPix, x % (pixmap.width), (rows - 1 - currentRow) * (pixmap.height / rows), 0, (Editor.ENTITY_HEIGHT * 4.5f * scale).roundToInt(), bufPix.width, pixmap.height / rows)
                         // if the end of this section spans into the next row, render that section too

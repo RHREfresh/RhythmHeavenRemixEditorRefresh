@@ -50,7 +50,7 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
         settings.elements += object : TrueCheckbox<InfoScreen>(palette, settings, settings) {
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
-                if(checked){
+                if (checked) {
                     editor.views.add(ViewType.WAVEFORM)
                 } else {
                     editor.views.remove(ViewType.WAVEFORM)
@@ -87,7 +87,7 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
                 this.text = "editor.view.gleeClub"
             }
             this.leftClickAction = { _, _ ->
-                if(checked){
+                if (checked) {
                     editor.views.add(ViewType.GLEE_CLUB)
                 } else {
                     editor.views.remove(ViewType.GLEE_CLUB)
@@ -115,7 +115,7 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
         }
 
         //Advanced Instrument Select tooltip
-        settings.elements += object: TextLabel<InfoScreen>(palette, settings, settings){
+        settings.elements += object: TextLabel<InfoScreen>(palette, settings, settings) {
             override fun frameUpdate(screen: InfoScreen) {
 //                super.frameUpdate(screen)
                 this.visible = main.settings.advancedOptions
@@ -136,7 +136,7 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
             override fun frameUpdate(screen: InfoScreen) {
                 super.frameUpdate(screen)
                 this.visible = main.settings.advancedOptions
-                if(this.visible && !hasFocus){
+                if (this.visible && !hasFocus) {
                     this.text = main.settings.midiNote
                 }
             }
@@ -170,7 +170,7 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
 
         // Instrument Select (simple)
         settings.elements += object : Button<InfoScreen>(palette, settings, settings) {
-            private val label: TextLabel<InfoScreen> = object:TextLabel<InfoScreen>(palette, this, this.stage){
+            private val label: TextLabel<InfoScreen> = object:TextLabel<InfoScreen>(palette, this, this.stage) {
                 override fun frameUpdate(screen: InfoScreen) {
                     super.frameUpdate(screen)
                     this.visible = !main.settings.advancedOptions
@@ -192,9 +192,9 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
 
             private fun updateText() {
                 val midiNote = DefaultMidiNotes.findByCue(main.settings.midiNote)
-                if(midiNote != DefaultMidiNotes.NON_DEFAULT){
+                if (midiNote != DefaultMidiNotes.NON_DEFAULT) {
                     label.text = Localization["screen.info.midiNote", Localization[DefaultMidiNotes.findByCue(main.settings.midiNote).localizationKey]]
-                } else{
+                } else {
                     label.text = Localization["screen.info.midiNote", Localization[main.settings.midiNote]]
                 }
             }
@@ -202,11 +202,11 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
             private fun cycle(dir: Int) {
                 val values = DefaultMidiNotes.VALUES.dropLast(1)// Removing NON_DEFAULT
                 val currentNote = DefaultMidiNotes.findByCue(main.settings.midiNote)
-                if(currentNote!=DefaultMidiNotes.NON_DEFAULT){
+                if (currentNote!=DefaultMidiNotes.NON_DEFAULT) {
                     val index = values.indexOf(currentNote) + dir
                     val normalized = if (index < 0) values.size - 1 else if (index >= values.size) 0 else index
                     main.settings.midiNote = values[normalized].cue
-                } else{
+                } else {
                     main.settings.midiNote = values[0].cue
                 }
                 if (dir != 0) {
@@ -217,14 +217,14 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
             }
 
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
-                if(visible){
+                if (visible) {
                     super.onLeftClick(xPercent, yPercent)
                     cycle(1)
                 }
             }
 
             override fun onRightClick(xPercent: Float, yPercent: Float) {
-                if(visible){
+                if (visible) {
                     super.onRightClick(xPercent, yPercent)
                     cycle(-1)
                 }

@@ -20,8 +20,8 @@ data class ControllerMapping(var inUse: Boolean, val name: String,
         val INVALID = ControllerMapping(false, "<none>")
         fun convertGdx(controller: Controller): ControllerMapping{
             var gdxMapping = controller.mapping
-            val buttonA = if(controller.name.contains("Nintendo")) gdxMapping.buttonB else gdxMapping.buttonA
-            val buttonB = if(controller.name.contains("Nintendo")) gdxMapping.buttonA else gdxMapping.buttonB
+            val buttonA = if (controller.name.contains("Nintendo")) gdxMapping.buttonB else gdxMapping.buttonA
+            val buttonB = if (controller.name.contains("Nintendo")) gdxMapping.buttonA else gdxMapping.buttonB
             return ControllerMapping(false, controller.name,
                     buttonA = ControllerInput.Button(buttonA), buttonB = ControllerInput.Button(buttonB),
                     buttonLeft = ControllerInput.Button(gdxMapping.buttonDpadLeft),

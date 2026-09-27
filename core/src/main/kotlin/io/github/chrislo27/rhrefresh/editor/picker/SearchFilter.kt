@@ -62,7 +62,7 @@ class SearchFilter(val editorStage: EditorStage) : Filter() {
                 
                 // Find game group matches
                 val matchingGameGroups = SFXDatabase.data.gameGroupsList.filter { group ->
-                    query in group.name.toLowerCase(Locale.ROOT)
+                    query in group.name.lowercase(Locale.ROOT)
                 }.toMutableList()
                 val matchingGameGroupsSet = matchingGameGroups.toSet()
                 matchingGameGroups.associateWithTo(gamesPerGroup) {
@@ -90,7 +90,7 @@ class SearchFilter(val editorStage: EditorStage) : Filter() {
                 SFXDatabase.data.gameGroupsList.forEach { group ->
                     val result: List<List<Datamodel>> = group.games.mapNotNull { game ->
                         game.placeableObjects.filter {
-                            query in it.name.toLowerCase(Locale.ROOT)
+                            query in it.name.lowercase(Locale.ROOT)
                         }.takeIf { it.isNotEmpty() }
                     }
                     
@@ -131,7 +131,7 @@ class SearchFilter(val editorStage: EditorStage) : Filter() {
             }
             FAVOURITES -> {
                 SFXDatabase.data.gameGroupsList.filterTo(gameGroups) { group ->
-                    (group.isFavourited && query in group.name.toLowerCase(Locale.ROOT))
+                    (group.isFavourited && query in group.name.lowercase(Locale.ROOT))
                             || group.games.any { game ->
                         game.isFavourited && game.queryMatchesGame()
                     }

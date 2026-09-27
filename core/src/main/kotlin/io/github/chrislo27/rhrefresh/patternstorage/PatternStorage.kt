@@ -84,7 +84,7 @@ object PatternStorage {
     }
 
     private fun sort() {
-        val values = patterns.values.toList().sortedBy { it.name.toLowerCase(Locale.ROOT) }
+        val values = patterns.values.toList().sortedBy { it.name.lowercase(Locale.ROOT) }
 
         patterns as MutableMap
         patterns.clear()

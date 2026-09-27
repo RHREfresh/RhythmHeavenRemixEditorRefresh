@@ -259,7 +259,7 @@ class OpenRemixScreen(main: RHREfreshApplication)
                     val noteCount: Any = if (noteCue == null) "N/A" else remix.entities.count { it is ModelEntity<*> && it.datamodel == noteCue }
                     Localization["screen.open.info.midi", remix.midiInstruments, noteCount, "${noteCue?.name} (${noteCue?.game?.name})"]
                 } else {
-                    val dbVersionString = if(!wasDevBranch) databaseStr else "DEV-$databaseStr-$databaseCommitStr"
+                    val dbVersionString = if (!wasDevBranch) databaseStr else "DEV-$databaseStr-$databaseCommitStr"
                     Localization["screen.open.info",
                             goodBad(remix.version.toString(), remix.version != RHREfresh.VERSION),
                             dbVersionString,
@@ -268,10 +268,10 @@ class OpenRemixScreen(main: RHREfreshApplication)
                                     missingAssets.second > 0, "RED")]
                 }
                 if ((wasDevBranch && !main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, false))
-                    && RHREfresh.DATABASE_CURRENT_COMMIT != remix.databaseVersionCommit){
+                    && RHREfresh.DATABASE_CURRENT_COMMIT != remix.databaseVersionCommit) {
                     mainLabel.text += "\n\n" + Localization["screen.open.devDatabase"]
                 } else if ((wasDevBranch && main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, false))
-                    && RHREfresh.DATABASE_CURRENT_COMMIT != remix.databaseVersionCommit){
+                    && RHREfresh.DATABASE_CURRENT_COMMIT != remix.databaseVersionCommit) {
                     mainLabel.text += "\n\n" + Localization["screen.open.differentCommit"]
                 }
                 if (SFXDatabase.data.version < remix.databaseVersion)  {

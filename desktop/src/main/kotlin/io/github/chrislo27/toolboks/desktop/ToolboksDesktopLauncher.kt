@@ -11,7 +11,6 @@ import io.github.chrislo27.toolboks.util.CloseListener
  * The system property `file.encoding` is set to `UTF-8`.
  */
 class ToolboksDesktopLauncher3(val game: ToolboksGame) {
-
     val config = Lwjgl3ApplicationConfiguration()
 
     init {
@@ -24,14 +23,12 @@ class ToolboksDesktopLauncher3(val game: ToolboksGame) {
     }
 
     fun launch(): Lwjgl3Application {
-        val app = object : Lwjgl3Application(game, config) {
+        return object : Lwjgl3Application(game, config) {
             override fun exit() {
                 if ((game as? CloseListener)?.attemptClose() != false) {
                     super.exit()
                 }
             }
         }
-        return app
     }
-
 }

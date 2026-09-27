@@ -59,7 +59,7 @@ class EditorScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfreshApplica
 
         editor.updateMessageLabel()
 
-        if(RHREfresh.remixPath != ""){
+        if (RHREfresh.remixPath != "") {
             val screen = ScreenRegistry.getNonNullAsType<OpenRemixScreen>("openRemix")
             editor.main.screen = screen
             val remixFile = File(RHREfresh.remixPath)

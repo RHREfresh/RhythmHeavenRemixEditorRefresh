@@ -244,7 +244,7 @@ class InfoScreen(main: RHREfreshApplication)
 
     override fun renderUpdate() {
         super.renderUpdate()
-        if(!lockKeys){
+        if (!lockKeys) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && stage.backButton.visible && stage.backButton.enabled) {
                 stage.onBackButtonClick()
             } else if (!Gdx.input.isShiftDown() && !Gdx.input.isAltDown()) {

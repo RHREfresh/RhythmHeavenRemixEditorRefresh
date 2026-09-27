@@ -63,8 +63,8 @@ class RandomCueEntity(remix: Remix, datamodel: RandomCue)
         volumePercent = thisVolume
     }
 
-    fun updateBounds(){
-        for(entity in createdEntities){
+    fun updateBounds() {
+        for(entity in createdEntities) {
             entity.updateBounds {
                 entity.bounds.x = this.bounds.x
                 entity.bounds.width = this.bounds.width
