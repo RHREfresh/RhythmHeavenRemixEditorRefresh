@@ -108,7 +108,14 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         }
 
         stage.updatePositions()
-        val thread = Thread {
+    }
+
+    override fun render(delta: Float) {
+        super.render(delta)
+
+        if(!startedImporting){
+            startedImporting = true
+            val thread = Thread {
 
                 // Copy the legacy folder over, so that the two can coexist
                 val legacyFolder = File(System.getProperty("user.home") + "/.rhre3")
@@ -164,7 +171,8 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                 }
                 updateState(4)
             }
-        thread.start()
+            thread.start()
+        }
     }
 
     fun updateState(state: Int, extra: String = ""){
