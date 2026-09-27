@@ -434,7 +434,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         val nano = System.nanoTime()
         val obj = JsonHandler.fromJson<ReleaseObject>(httpClient.prepareGet(RHREfresh.RELEASE_API_URL).execute().get().responseBody)
 
-        val ghVer = Version.fromStringOrNull(obj.tag_name!!) ?: Version.UNKNOWN
+        val ghVer = obj.tag_name?.let(Version::fromStringOrNull) ?: Version.UNKNOWN
         githubVersion = ghVer
         Toolboks.LOGGER.info("Fetched editor version from GitHub in ${(System.nanoTime() - nano) / 1_000_000f} ms, is $githubVersion")
     }
