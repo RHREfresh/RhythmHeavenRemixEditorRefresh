@@ -24,7 +24,7 @@ class PatternDeleteScreen(main: RHREfreshApplication, val editor: Editor, val pa
 
     init {
         stage.titleLabel.text = "screen.patternStore.delete.title"
-        stage.titleIcon.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_pattern_delete"))
+        stage.titleIcon.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_eraser"))
         stage.backButton.visible = true
         stage.onBackButtonClick = {
             main.screen = lastScreen ?: ScreenRegistry["editor"]

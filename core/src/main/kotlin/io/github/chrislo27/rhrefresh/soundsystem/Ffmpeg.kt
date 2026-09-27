@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhrefresh.soundsystem
 
+import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.toolboks.Toolboks
 import ws.schild.jave.Encoder
@@ -47,12 +48,17 @@ object Ffmpeg{
     }
     val isSupported: Boolean get() = currentARCH_OS.supported
 
-    // Return the encoder built for the platform, otherwise uhhhhh
+    // Return the encoder built for the platform or the one selected by the user, otherwise uhhhhh
     fun createEncoder(): Encoder{
-        return if(isSupported){
-            Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
-        } else{
-            Encoder()
+        val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+        return if(File(ffmpegLocation).exists()){
+            Encoder(ProcessLocator { ffmpegLocation })
+        }else {
+            if(isSupported){
+                Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
+            } else{
+                Encoder()
+            }
         }
     }
 

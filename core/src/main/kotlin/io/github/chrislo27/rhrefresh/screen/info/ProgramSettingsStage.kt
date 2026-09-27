@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhrefresh.screen.info
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -9,19 +10,29 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
+import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.VersionHistory
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
+import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.*
 import io.github.chrislo27.rhrefresh.stage.FalseCheckbox
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.util.JsonHandler
 import io.github.chrislo27.rhrefresh.util.Semitones
+import io.github.chrislo27.rhrefresh.util.TinyFDWrapper
+import io.github.chrislo27.rhrefresh.util.attemptRememberDirectory
+import io.github.chrislo27.rhrefresh.util.getDefaultDirectory
+import io.github.chrislo27.rhrefresh.util.persistDirectory
 import io.github.chrislo27.toolboks.i18n.Localization
 import io.github.chrislo27.toolboks.registry.AssetRegistry
 import io.github.chrislo27.toolboks.ui.*
 import io.github.chrislo27.toolboks.version.Version
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.awt.Desktop
+import java.io.File
 import java.util.Locale
 import kotlin.math.sign
 
@@ -38,6 +49,13 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
 
     private val pitchStyleButton: Button<InfoScreen>
     private val clearRecentsButton: Button<InfoScreen>
+    private val ffmpegExecutableButton: Button<InfoScreen>
+
+    private var isChooserOpen = false
+        set(value) {
+            field = value
+            this.infoScreen.stage.backButton.enabled = !isChooserOpen
+        }
 
     init {
         val palette = infoScreen.stage.palette
@@ -251,10 +269,45 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
 
             this.location.set(screenX = padding,
                               screenY = padding * 7 + buttonHeight * 6,
-                              screenWidth = buttonWidth,
+                              screenWidth = buttonWidth-padding-(buttonWidth * 0.085f),
                               screenHeight = buttonHeight)
             this.enabled = Ffmpeg.isSupported
         }
+        // Select executable FFMPEG
+        ffmpegExecutableButton = Button(palette, settings, settings).apply {
+
+            this.location.set(screenX = buttonWidth-(buttonWidth * 0.085f)+padding,
+                screenY = padding * 7 + buttonHeight * 6,
+                screenWidth = buttonWidth * 0.085f,
+                screenHeight = buttonHeight)
+
+            val clipboardLabel = ImageLabel(palette, this, this.stage).apply {
+                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
+                if(preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()){
+                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                } else{
+                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
+                }
+            }
+            this.addLabel(clipboardLabel)
+            this.leftClickAction = { _, _ ->
+                openFfmpegPicker()
+            }
+            this.rightClickAction = { _, _ ->
+                preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
+                clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
+                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","bundled FFMPEG"]
+            }
+            this.tooltipTextIsLocalizationKey = false
+            val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+            this.tooltipText = if(ffmpegLocation.isNotEmpty()){
+                Localization["screen.info.timeStretching.selectFfmpeg",ffmpegLocation]
+            } else {
+                Localization["screen.info.timeStretching.selectFfmpeg","bundled FFMPEG"]
+            }
+        }
+        settings.elements += ffmpegExecutableButton
+
         // Exploding entities
         settings.elements += TrueCheckbox(palette, settings, settings).apply {
             this.leftClickAction = { _, _ ->
@@ -502,4 +555,22 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         }
     }
 
+    @Synchronized
+    private fun openFfmpegPicker() {
+        if (!isChooserOpen) {
+            GlobalScope.launch {
+                isChooserOpen = true
+                val initialDirectory: File? = attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_LOAD) ?: getDefaultDirectory()
+                val fileFilter = TinyFDWrapper.FileExtFilter(Localization["screen.info.timeStretching.selectFfmpegFilter"])
+                TinyFDWrapper.openFile(Localization["screen.open.fileChooserTitle"], initialDirectory, fileFilter) { file ->
+                    isChooserOpen = false
+                    if (file != null) {
+                        (ffmpegExecutableButton.labels.first() as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                        ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg",file.absolutePath]
+                        preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
+                    }
+                }
+            }
+        }
+    }
 }

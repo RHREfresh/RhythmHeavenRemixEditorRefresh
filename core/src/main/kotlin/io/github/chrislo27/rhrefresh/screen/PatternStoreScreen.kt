@@ -117,7 +117,7 @@ class PatternStoreScreen(main: RHREfreshApplication, val editor: Editor, val pat
 
     init {
         stage.titleLabel.text = if (pattern != null) "screen.patternStore.edit.title" else "screen.patternStore.title"
-        stage.titleIcon.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_pattern_store"))
+        stage.titleIcon.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
         stage.backButton.visible = true
         stage.onBackButtonClick = {
             main.screen = ScreenRegistry["editor"]
