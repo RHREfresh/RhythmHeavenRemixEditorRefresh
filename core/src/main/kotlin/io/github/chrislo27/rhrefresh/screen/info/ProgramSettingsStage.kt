@@ -92,6 +92,9 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             private val textLabel: TextLabel<InfoScreen>
                 get() = labels.first() as TextLabel<InfoScreen>
 
+            private val imageLabel: ImageLabel<InfoScreen>
+                get() = labels[1] as ImageLabel<InfoScreen>
+
             override fun render(screen: InfoScreen, batch: SpriteBatch, shapeRenderer: ShapeRenderer) {
                 if (textLabel.text.isEmpty()) {
                     updateText()
@@ -111,6 +114,12 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 persist()
             }
 
+            override fun onResize(width: Float, height: Float, pixelUnitX: Float, pixelUnitY: Float) {
+                super.onResize(width, height, pixelUnitX, pixelUnitY)
+                imageLabel.location.set(screenX = 0f, screenY = 0f, screenWidth = 0.1f, screenHeight = 1f)
+                imageLabel.onResize(this.location.realWidth, this.location.realHeight, pixelUnitX, pixelUnitY)
+            }
+
             init {
                 Localization.addListener {
                     updateText()
@@ -122,6 +131,10 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 this.text = ""
                 this.textWrapping = false
                 this.fontScaleMultiplier = fontScale
+            })
+            this.addLabel(ImageLabel(palette, this, this.stage).apply {
+                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
+                image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_language"))
             })
             this.tooltipText = "screen.info.autosaveTimer.tooltip"
             this.tooltipTextIsLocalizationKey = true
