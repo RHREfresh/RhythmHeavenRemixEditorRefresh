@@ -49,6 +49,8 @@ import net.beadsproject.beads.ugens.Clock
 import net.beadsproject.beads.ugens.DelayTrigger
 import net.beadsproject.beads.ugens.RangeLimiter
 import net.beadsproject.beads.ugens.RecordToFile
+import ws.schild.jave.Encoder
+import ws.schild.jave.EncoderException
 import ws.schild.jave.progress.EncoderProgressListener
 import ws.schild.jave.encode.AudioAttributes
 import ws.schild.jave.encode.EncodingAttributes
@@ -351,34 +353,40 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         main.run(args)
                     }
                     OGG_VORBIS, FLAC, AAC -> {
-                        val codec = when (fileType) {
-                            OGG_VORBIS -> "libvorbis"
+                        val outputFormat = when (fileType) {
+                            OGG_VORBIS -> "ogg"
                             FLAC -> "flac"
                             AAC -> "adts"
                             else -> error("Unsupported encoder for file type $fileType")
                         }
                         val audio = AudioAttributes();
-                        audio.setCodec(codec)
                         audio.setSamplingRate(context.sampleRate.toInt())
                         audio.setChannels(2)
 
                         val attrs = EncodingAttributes()
-                        attrs.setOutputFormat(fileType.extension)
+                        attrs.setOutputFormat(outputFormat)
                         attrs.setAudioAttributes(audio)
 
 
                         val encoder = Ffmpeg.createEncoder()
                         val multimediaFile = Ffmpeg.createMultimediaObject(recorderFile)
                         multimediaFile.info.metadata = mapOf("Comments" to commentTag)
-                        encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
-                            override fun sourceInfo(info: MultimediaInfo?) {
+                        try{
+                            encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
+                                override fun sourceInfo(info: MultimediaInfo?) {
+                                }
+                                override fun progress(permil: Int){
+                                    updateProgress(outputFormat, permil / 10, 2)
+                                }
+                                override fun message(message: String?) {
+                                }
+                            })
+                        } catch(e: EncoderException){
+                            for(line in encoder.unhandledMessages){
+                                Toolboks.LOGGER.error(line)
                             }
-                            override fun progress(permil: Int){
-                                updateProgress(codec, permil / 10, 2)
-                            }
-                            override fun message(message: String?) {
-                            }
-                        })
+                            throw e
+                        }
                     }
                 }
                 
