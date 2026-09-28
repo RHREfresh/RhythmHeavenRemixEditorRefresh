@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.RemixRecovery
-import io.github.chrislo27.rhrefresh.stage.FalseCheckbox
 import io.github.chrislo27.rhrefresh.stage.GenericStage
+import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.toolboks.ToolboksScreen
 import io.github.chrislo27.toolboks.registry.AssetRegistry
 import io.github.chrislo27.toolboks.ui.Button
@@ -42,7 +42,7 @@ class CloseWarningScreen(main: RHREfreshApplication, val lastScreen: Screen?) : 
 
         val palette = main.uiPalette
 
-        stage.centreStage.elements += FalseCheckbox(palette, stage.centreStage, stage.centreStage).apply {
+        stage.centreStage.elements += TrueCheckbox(palette, stage.centreStage, stage.centreStage).apply {
             this.checked = !main.preferences.getBoolean(PreferenceKeys.SETTINGS_CLOSE_WARNING, true)
 
             this.textLabel.apply {

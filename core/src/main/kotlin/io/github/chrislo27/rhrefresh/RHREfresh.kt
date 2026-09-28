@@ -78,7 +78,7 @@ object RHREfresh {
 
     const val GITHUB: String = "https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh"
     const val GITHUB_RELEASES = "$GITHUB/releases"
-    const val GITHUB_SHORTLINK: String = "https://rhre.dev"
+    const val GITHUB_SHORTLINK: String = ""
     const val DATABASE_URL: String = "https://github.com/TheAlternateDoctor/RHRE-database.git"
     const val DONATION_URL: String = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VA45DPLCC4958"
     val DEV_DATABASE_BRANCH: String = "dev"

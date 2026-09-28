@@ -5,21 +5,19 @@ import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.toolboks.Toolboks
 import ws.schild.jave.Encoder
 import ws.schild.jave.MultimediaObject
-import ws.schild.jave.encode.ArgType
-import ws.schild.jave.encode.AudioAttributes
-import ws.schild.jave.encode.EncodingAttributes
-import ws.schild.jave.encode.ValueArgument
 import ws.schild.jave.process.ProcessLocator
+import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator
+import ws.schild.jave.utils.RBufferedReader
 import java.io.File
-import java.util.Locale
-import java.util.Optional
+import java.io.InputStreamReader
+import java.util.*
 import kotlin.math.pow
 
 
 /**
  * A simple wrapper around the [FFMPEG](https://ffmpeg.org/) executables.
  */
-object Ffmpeg{
+object Ffmpeg {
 
     enum class ARCH_OS(val supported: Boolean, val executableName: String) {
         UNSUPPORTED(false, ""),
@@ -49,22 +47,27 @@ object Ffmpeg{
     val isSupported: Boolean get() = currentARCH_OS.supported
 
     // Return the encoder built for the platform or the one selected by the user, otherwise uhhhhh
-    fun createEncoder(): Encoder{
+    fun createEncoder(): Encoder {
+        return Encoder(createProcessLocator())
+    }
+    
+    // Return the ProcessLocator built for the platform or the one selected by the user, otherwise uhhhhh
+    fun createProcessLocator(): ProcessLocator {
         val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
         return if (File(ffmpegLocation).exists()) {
-            Encoder(ProcessLocator { ffmpegLocation })
+            ProcessLocator { ffmpegLocation }
         } else {
             if (isSupported) {
-                Encoder(ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
+                ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath }
             } else {
-                Encoder()
+                DefaultFFMPEGLocator()
             }
         }
     }
 
-    fun createMultimediaObject(file: File): MultimediaObject{
-        return if (isSupported) {
-            MultimediaObject(file, ProcessLocator { RHREfresh.FFMPEG_FOLDER.child(currentARCH_OS.executableName).file().absolutePath })
+    fun createMultimediaObject(file: File): MultimediaObject {
+        return if(isSupported) {
+            MultimediaObject(file, createProcessLocator())
         } else {
             MultimediaObject(file)
         }
@@ -83,10 +86,10 @@ object Ffmpeg{
      */
     fun processStreams(input: File, output: File, tempoPercent: Float, pitchSemitones: Float, ratePercent: Float, quick: Boolean) {
 
-        val audio = AudioAttributes();
-        audio.setCodec("pcm_s16le")
-        val attrs = EncodingAttributes()
-        attrs.setAudioAttributes(audio)
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+        ffmpegExecutor.addArgument("-y")
+        ffmpegExecutor.addArgument("-i")
+        ffmpegExecutor.addArgument(input.absolutePath)
 
         val encoder = createEncoder()
         var filterChain = ""
@@ -103,12 +106,24 @@ object Ffmpeg{
             filterChain += "rubberband=pitch="+(2.0.pow(pitchSemitones.div(12).toDouble()))
         }
         if (filterChain.isNotEmpty()) {
-            Encoder.setOptionAtIndex(ValueArgument(ArgType.OUTFILE, "-af") { Optional.of(filterChain) }, 33)
-        } else {
-            Encoder.removeOptionAtIndex(33)
+            ffmpegExecutor.addArgument("-af")
+            ffmpegExecutor.addArgument(filterChain)
         }
-        val multimediaFile = createMultimediaObject(input)
+        ffmpegExecutor.addArgument(output.absolutePath)
         Toolboks.LOGGER.info("FFMPEG ran for file ${input.path} with arguments `$filterChain`")
-        encoder.encode(multimediaFile, output, attrs)
+        try {
+            ffmpegExecutor.execute()
+            val reader =
+                RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (((reader.readLine().also { line = it } )) != null) {
+                Toolboks.LOGGER.info(line!!)
+            }
+            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+                // it failed, and the lines above say why
+            }
+        } finally {
+            ffmpegExecutor.destroy()
+        }
     }
 }

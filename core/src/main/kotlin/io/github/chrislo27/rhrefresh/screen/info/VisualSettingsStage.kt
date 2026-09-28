@@ -14,7 +14,6 @@ import io.github.chrislo27.rhrefresh.VersionHistory
 import io.github.chrislo27.rhrefresh.editor.CameraBehaviour
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.editor.view.ViewType
-import io.github.chrislo27.rhrefresh.stage.FalseCheckbox
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.stage.bg.Background
@@ -116,7 +115,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
         }
 
         // Disable minimap
-        settings.elements += FalseCheckbox(palette, settings, settings).apply {
+        settings.elements += TrueCheckbox(palette, settings, settings).apply {
             this.checked = main.settings.disableMinimap
             this.textLabel.apply {
                 this.fontScaleMultiplier = fontScale
@@ -329,6 +328,8 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
                 screenWidth = buttonWidth / 2 - padding / 2,
                 screenHeight = buttonHeight
             )
+            this.tooltipTextIsLocalizationKey = true
+            this.tooltipText = "editor.fullscreenButton.tooltip"
         }
 
         //Reset view
