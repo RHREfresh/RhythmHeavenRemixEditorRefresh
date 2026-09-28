@@ -17,7 +17,8 @@ object Articles {
 
     const val ARTICLE_COUNT = 9
 
-    private const val FETCH_URL: String = "https://api.rhre.dev:10443/rhre3/articles"
+//    private const val FETCH_URL: String = "https://api.rhre.dev:10443/rhre3/articles"
+    private const val FETCH_URL: String = "https://rhre.thealtdoc.fr/news.json"
     private val httpClient: AsyncHttpClient
         get() = RHREfreshApplication.httpClient
     private val articleFolder: FileHandle by lazy { RHREfresh.RHREFRESH_FOLDER.child("articles/") }
