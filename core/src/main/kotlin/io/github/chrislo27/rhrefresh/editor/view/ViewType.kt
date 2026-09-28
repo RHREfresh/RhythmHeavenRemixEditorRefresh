@@ -11,6 +11,4 @@ enum class ViewType(val tag: String) {
         val VALUES = values().toList()
     }
 
-    val localizationKey: String = "editor.view.$tag"
-
 }
