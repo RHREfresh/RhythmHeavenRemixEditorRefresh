@@ -20,7 +20,7 @@ import kotlin.math.pow
 object Ffmpeg {
 
     enum class ARCH_OS(val supported: Boolean, val executableName: String) {
-        UNSUPPORTED(false, ""),
+        UNSUPPORTED(false, "unsupported"),
         WINDOWS_X64(true, "ffmpeg_win_x64.exe"),
         MACOS_ARM64(true, "ffmpeg_macOS_arm64"),
         LINUX_X64(true, "ffmpeg_linux_x64");
@@ -54,7 +54,8 @@ object Ffmpeg {
     // Return the ProcessLocator built for the platform or the one selected by the user, otherwise uhhhhh
     fun createProcessLocator(): ProcessLocator {
         val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-        return if (File(ffmpegLocation).exists()) {
+        Toolboks.LOGGER.info("FFMPEG loading: [${ffmpegLocation.isNotEmpty() && File(ffmpegLocation).exists()}] && [${isSupported}]")
+        return if (ffmpegLocation.isNotEmpty() && File(ffmpegLocation).exists()) {
             ProcessLocator { ffmpegLocation }
         } else {
             if (isSupported) {
@@ -111,7 +112,7 @@ object Ffmpeg {
             ffmpegExecutor.addArgument(filterChain)
         }
         ffmpegExecutor.addArgument(output.absolutePath)
-        Toolboks.LOGGER.info("FFMPEG ran for file ${input.path} with arguments `$filterChain`")
+        Toolboks.LOGGER.info("${createProcessLocator().executablePath} ran for file ${input.path} with arguments `$filterChain`")
         try {
             ffmpegExecutor.execute()
             val reader =
