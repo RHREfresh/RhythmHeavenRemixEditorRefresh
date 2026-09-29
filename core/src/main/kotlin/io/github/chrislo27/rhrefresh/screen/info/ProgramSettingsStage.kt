@@ -105,12 +105,14 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 super.onLeftClick(xPercent, yPercent)
                 Localization.cycle(1)
                 persist()
+                updateLabels()
             }
 
             override fun onRightClick(xPercent: Float, yPercent: Float) {
                 super.onRightClick(xPercent, yPercent)
                 Localization.cycle(-1)
                 persist()
+                updateLabels()
             }
 
             override fun onResize(width: Float, height: Float, pixelUnitX: Float, pixelUnitY: Float) {
@@ -243,7 +245,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         }.apply {
             this.addLabel(TextLabel(palette, this, this.stage).apply {
                 this.isLocalizationKey = false
-                this.text = "Pitch note style: "
+                this.text = Localization["screen.info.pitchNoteStyle", ""]
                 this.textWrapping = false
                 this.fontScaleMultiplier = 0.8f
             })
@@ -254,7 +256,6 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 screenHeight = buttonHeight)
         }
         settings.elements += pitchStyleButton
-        updateLabels()
 
         // Disable time stretching
         settings.elements += TrueCheckbox(palette, settings, settings).apply {
@@ -309,14 +310,14 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             this.rightClickAction = { _, _ ->
                 preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
                 clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
-                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","bundled FFMPEG"]
+                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
             }
             this.tooltipTextIsLocalizationKey = false
             val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
             this.tooltipText = if (ffmpegLocation.isNotEmpty()) {
-                Localization["screen.info.timeStretching.selectFfmpeg",ffmpegLocation]
+                Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
             } else {
-                Localization["screen.info.timeStretching.selectFfmpeg","bundled FFMPEG"]
+                Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
             }
         }
         settings.elements += ffmpegExecutableButton
@@ -328,8 +329,8 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 main.settings.persist()
             }
             this.textLabel.also {
-                it.isLocalizationKey = false
-                it.text = "Entities explode when deleted"
+                it.isLocalizationKey = true
+                it.text = "screen.info.entitiesExplode"
                 it.textWrapping = false
                 it.fontScaleMultiplier = 0.8f
                 it.textAlign = Align.left
@@ -346,8 +347,8 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 main.settings.persist()
             }
             this.textLabel.also {
-                it.isLocalizationKey = false
-                it.text = "Ignore entity pitching restrictions"
+                it.isLocalizationKey = true
+                it.text = "screen.info.ignorePitchRestrictions"
                 it.textWrapping = false
                 it.fontScaleMultiplier = 0.8f
                 it.textAlign = Align.left
@@ -547,10 +548,19 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 screenHeight = buttonHeight)
         }
         settings.elements += clearRecentsButton
+
+        updateLabels()
     }
 
     private fun updateLabels() {
-        (pitchStyleButton.labels.first() as TextLabel).text = "Pitch note style: [LIGHT_GRAY]${Semitones.pitchStyle.displayName} (ex: ${Semitones.pitchStyle.example})[]"
+        val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+        ffmpegExecutableButton.tooltipText = if (ffmpegLocation.isNotEmpty()) {
+            Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
+        } else {
+            Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
+        }
+        (pitchStyleButton.labels.first() as TextLabel).text =
+            Localization["screen.info.pitchNoteStyle", Localization[Semitones.pitchStyle.displayName], Semitones.pitchStyle.example]
     }
 
     fun show() {
@@ -580,7 +590,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                     isChooserOpen = false
                     if (file != null) {
                         (ffmpegExecutableButton.labels.first() as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
-                        ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg",file.absolutePath]
+                        ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
                         preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
                     }
                 }

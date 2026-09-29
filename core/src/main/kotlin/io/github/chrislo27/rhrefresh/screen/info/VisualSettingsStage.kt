@@ -402,7 +402,8 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
                     }
                 }
 
-                nameLabel.text = "Menu theme: ${Background.backgroundMapByBg[GenericStage.backgroundImpl]?.name}"
+                nameLabel.text = Localization["screen.info.menuTheme", Localization[Background.backgroundMapByBg[GenericStage.backgroundImpl]?.name!!]]
+                nameLabel.isLocalizationKey = false
 
                 main.preferences.putString(PreferenceKeys.BACKGROUND, GenericStage.backgroundImpl.id).flush()
             }
@@ -466,7 +467,8 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
                     }
                 }
 
-                nameLabel.text = "Open the editor theme menu"
+                nameLabel.text = "screen.info.OpenThemeEditor"
+                nameLabel.isLocalizationKey = true
 
 //                main.preferences.putString(PreferenceKeys.BACKGROUND, GenericStage.backgroundImpl.id).flush()
             }

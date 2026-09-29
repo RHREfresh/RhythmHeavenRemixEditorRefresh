@@ -445,7 +445,11 @@ class EditorStage(parent: UIElement<EditorScreen>?,
                 } else if (filter == searchFilter) {
                     gameStageText.text = Localization["editor.nothing.search"]
                 } else if (filter is CustomFilter) {
-                    gameStageText.text = Localization["editor.nothing.customs", "${if (OSUtils.IS_WINDOWS) "<user>" else "~"}/" + RHREfresh.RHREFRESH_FOLDER.name() + "/" + SFXDatabase.CUSTOM_SFX_FOLDER.name()]
+                    gameStageText.text = when (RHREfresh.CURRENT_OS) {
+                        RHREfresh.OS.WINDOWS -> Localization["editor.nothing.customs", System.getProperty("user.home", "???")+"\\"+RHREfresh.RHREFRESH_FOLDER.path().replace('/','\\') + "\\" + SFXDatabase.CUSTOM_SFX_FOLDER.name()]
+                        RHREfresh.OS.LINUX,RHREfresh.OS.MACOS -> Localization["editor.nothing.customs", "~/"+RHREfresh.RHREFRESH_FOLDER + "/" + SFXDatabase.CUSTOM_SFX_FOLDER.name()]
+                        RHREfresh.OS.UNKNOWN -> Localization["editor.nothing.customs", RHREfresh.RHREFRESH_FOLDER.path() + "/" + SFXDatabase.CUSTOM_SFX_FOLDER.name()]
+                    }
                     val screenX = 0.25f - customSoundsFolderButton.location.screenWidth / 2f
                     if (customSoundsFolderButton.location.screenX != screenX) {
                         customSoundsFolderButton.location.set(screenY = 0.5f * pickerStage.percentageOfHeight(Editor.ICON_PADDING), screenX = screenX)

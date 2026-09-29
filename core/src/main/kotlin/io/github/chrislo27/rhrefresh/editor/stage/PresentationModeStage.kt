@@ -59,9 +59,9 @@ class PresentationModeStage(val editor: Editor, val palette: UIPalette, parent: 
         this.elements += TextLabel(infoTextPalette, this, this).apply {
             this.location.set(screenHeight = 0.125f, screenY = 0.125f)
             this.textWrapping = false
-            this.isLocalizationKey = false
+            this.isLocalizationKey = true
             this.textAlign = Align.center
-            this.text = "Made with Rhythm Heaven Remix Editor Refresh, which is licensed under GPL-3.0"
+            this.text = "editor.presentationMode.subtext"
             this.fontScaleMultiplier = fontScale
         }
 

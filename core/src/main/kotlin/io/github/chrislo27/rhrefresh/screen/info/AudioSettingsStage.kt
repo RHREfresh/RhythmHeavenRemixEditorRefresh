@@ -104,8 +104,8 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
 
         // Instrument select label
         settings.elements += TextLabel(palette, settings, settings).apply {
-            this.isLocalizationKey = false
-            this.text = "MIDI Instrument Select"
+            this.isLocalizationKey = true
+            this.text = "screen.info.midiInstrumentSelect"
             this.textWrapping = false
             this.fontScaleMultiplier = 0.9f
             this.location.set(screenX = padding,
