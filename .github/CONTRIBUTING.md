@@ -1,6 +1,6 @@
 # Making issues
-The Issue tracker is NOT your personal support forum. It is generally intended to report
-bugs and feature requests. Please also keep to the [Code of Conduct](../CODE_OF_CONDUCT.md).
+The issue tracker is generally intended to report bugs and feature requests.
+Please don't use it as a support forum for using RHREfresh.
 
 When making an issue, please keep to the [templates already provided](./ISSUE_TEMPLATE/). All
 you have to do is submit a log file using the upload function, state the

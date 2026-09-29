@@ -5,7 +5,10 @@ about: Create a bug report to help us improve
 ---
 
 ### Information
-**Log file**: [Upload your appropriate log file (found in `\<user>/.rhre3/logs`) here, it contains system information and other important info to help debug the problem]()
+**Log file**: _Upload your appropriate log file here, it contains system information and other important info to help debug the problem. Click "Open logs folder" in Settings, or find it in one of these places:_
+  * _Windows:_ `%APPDATA%\RHREfresh\logs\`
+  * _MacOS:_ `~/Library/Application Support/RHREfresh/logs/`
+  * _Linux:_ `~/.config/RHREfresh/logs/`
 
 **Editor version**: (insert relevant editor version here)
 
