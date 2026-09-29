@@ -42,7 +42,7 @@ class StartupStage(val screen: EditorScreen) : Stage<EditorScreen>(screen.stage,
         genericStage.centreStage.elements += TextLabel(palette, genericStage.centreStage, genericStage.centreStage).apply {
             this.text = """Welcome to Rhythm Heaven Remix Editor Refresh! (RHREfresh for short.) I hope you can enjoy this tool made by many members of the Rhythm Heaven community.
                 |
-                |Please refer to the [CYAN]Online Documentation[], accessible in your web browser left-clicking the button below. You should start with the [CYAN]README[] and [CYAN]Starting a remix[] sections.
+                |Please refer to the [CYAN]Online Documentation[], accessible in your web browser left-clicking the button below. You should start with the [CYAN]Starting a remix[] section.
                 |
                 |I encourage you to also make use of the various functionalities available,
 |like News, Info and Settings, and Themes.

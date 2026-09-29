@@ -4,6 +4,8 @@ about: Suggest an idea for this project
 
 ---
 
+**Editor version**: (insert your current editor version here. make sure it's up-to-date)
+
 ## Description of problem
 (describe your problem)
 
