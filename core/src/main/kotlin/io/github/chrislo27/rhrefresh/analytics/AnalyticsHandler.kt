@@ -103,7 +103,7 @@ object AnalyticsHandler : Disposable {
             put("app_version", RHREfresh.VERSION.toString())
             put("os_name", osName)
             put("os_version", System.getProperty("os.version"))
-            put("platform", osName.toLowerCase(Locale.ROOT))
+            put("platform", osName.lowercase(Locale.ROOT))
             put("time", System.currentTimeMillis())
             put("user_id", getUUID())
         }

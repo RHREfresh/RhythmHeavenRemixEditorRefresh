@@ -53,10 +53,10 @@ class TrackChangeButton(val editor: Editor, palette: UIPalette, parent: UIElemen
         if (remix.playState == PlayState.STOPPED && remix.canDecreaseTrackCount()) {
             if (!remix.wouldEntitiesFitNewTrackCount(remix.trackCount - 1)) {
                 // Jump to first blocking entity
-                val entities = if(editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)){
+                val entities = if (editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)) {
                     remix.entities.filterNot { it is EndRemixEntity }
                         .filter { (it.bounds.y + it.bounds.height).roundToInt() >= remix.trackCount }.takeUnless(List<Entity>::isEmpty) ?: return
-                } else{
+                } else {
                     remix.entities.filterNot { it is EndRemixEntity }
                         .filter { (it.bounds.y).roundToInt() <= 0 }.takeUnless(List<Entity>::isEmpty) ?: return
                 }

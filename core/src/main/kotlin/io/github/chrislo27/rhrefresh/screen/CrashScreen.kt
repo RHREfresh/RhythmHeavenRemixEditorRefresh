@@ -74,7 +74,7 @@ class CrashScreen(main: RHREfreshApplication, val throwable: Throwable, val last
             this.text = selectedSplash.title
             this.textAlign = selectedSplash.alignment
             this.fontScaleMultiplier = selectedSplash.titleScale
-            if(selectedSplash.alignment == Align.center){
+            if (selectedSplash.alignment == Align.center) {
                 this.location.set(screenX = 0f, screenWidth = 1f /*0.75f*/, screenY = 0.8f, screenHeight = 0.2f)
             } else {
                 this.location.set(screenX = 0.2f, screenWidth = 1f /*0.75f*/, screenY = 0.8f, screenHeight = 0.2f)

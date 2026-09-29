@@ -138,7 +138,7 @@ class ThemeChooserStage(val editor: Editor, val palette: UIPalette, parent: Edit
                 })
             }
 
-            if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+            if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
                 this.elements += Button(palette, this, this.stage).apply {
                     this.location.set(0f, 0f, 0f, 1f, 346f - 34f, 0f, 34f, 0f)
                     this.addLabel(ImageLabel(palette, this, this.stage).apply {

@@ -52,15 +52,15 @@ object RemixRecovery {
         try {
             val zipFile: ZipFile = ZipFile(fileHandle.file())
             zipFile.entries().iterator().forEachRemaining {
-                if (!it.isDirectory) {
-                    zipFile.getInputStream(it).buffered(2048).also {
+				if (!it.isDirectory) {
+                    zipFile.getInputStream(it).buffered(2048).also { stream ->
                         val array = ByteArray(2048)
-                        var amt = it.read(array)
+                        var amt = stream.read(array)
                         while (amt > -1) {
                             messageDigest.update(array, 0, amt)
-                            amt = it.read(array)
+                            amt = stream.read(array)
                         }
-                        StreamUtils.closeQuietly(it)
+                        StreamUtils.closeQuietly(stream)
                     }
                 }
             }

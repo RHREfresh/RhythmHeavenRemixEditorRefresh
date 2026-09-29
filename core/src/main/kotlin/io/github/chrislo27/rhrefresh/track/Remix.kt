@@ -154,7 +154,7 @@ open class Remix(val main: RHREfreshApplication)
         fun fromJson(tree: ObjectNode, remix: Remix, preloadSounds: Boolean): RemixLoadInfo {
             remix.version = Version.fromString(tree["version"].asText())
             remix.databaseVersion = tree["databaseVersion"].asInt(-1)
-            if(tree.has("databaseVersionCommit")){
+            if (tree.has("databaseVersionCommit")) {
                 remix.databaseVersionCommit = tree["databaseVersionCommit"].asText("")
                 remix.wasDevBranch = tree["wasDevBranch"].asBoolean(false)
             }
@@ -186,10 +186,10 @@ open class Remix(val main: RHREfreshApplication)
 
             // Used to "update" a remix to the global tempo system
             fun determineDefaultTempo(): Float {
-                if(remix.tempos.secondsMap.values.isNotEmpty()){
+                if (remix.tempos.secondsMap.values.isNotEmpty()) {
                     var earliestChange = remix.tempos.secondsMap.values.first()
-                    for(tempoChange in remix.tempos.secondsMap.values){
-                        if(earliestChange.beat > tempoChange.beat){
+                    for(tempoChange in remix.tempos.secondsMap.values) {
+                        if (earliestChange.beat > tempoChange.beat) {
                             earliestChange = tempoChange
                         }
                     }
@@ -201,12 +201,12 @@ open class Remix(val main: RHREfreshApplication)
             remix.tempos.defaultTempo = tree["defaultTempo"]?.floatValue() ?: determineDefaultTempo()
             // Makes the first tempo immutable, if there is none
             var hasImmutable = false
-            for(tempoChange in remix.tempos.secondsMap.values){
-                if(tempoChange.immutable){
+            for(tempoChange in remix.tempos.secondsMap.values) {
+                if (tempoChange.immutable) {
                     hasImmutable = true
                 }
             }
-            if(!hasImmutable){remix.tempos.secondsMap.values.first().immutable = true}
+            if (!hasImmutable) {remix.tempos.secondsMap.values.first().immutable = true}
 
             // entities
             val entitiesArray = tree["entities"] as ArrayNode
@@ -787,7 +787,7 @@ open class Remix(val main: RHREfreshApplication)
 
     fun canIncreaseTrackCount(): Boolean = trackCount < Editor.MAX_TRACK_COUNT
     fun canDecreaseTrackCount(): Boolean = trackCount > Editor.MIN_TRACK_COUNT
-    fun entitiesInTheWay(): Boolean = if(main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)) {entitiesTouchTrackTop} else {entitiesTouchTrackBottom}
+    fun entitiesInTheWay(): Boolean = if (main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)) {entitiesTouchTrackTop} else {entitiesTouchTrackBottom}
 
     fun isEmpty(): Boolean {
         return entities.isEmpty() && trackers.all { it.map.isEmpty() } && timeSignatures.map.isEmpty() && music == null

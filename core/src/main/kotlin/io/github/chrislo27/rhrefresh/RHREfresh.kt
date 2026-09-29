@@ -26,42 +26,42 @@ object RHREfresh {
 
     const val TITLE = "Rhythm Heaven Remix Editor Refresh"
     val VERSION: Version = Version(4, 0, 0, "")
-    val EXPERIMENTAL: Boolean = VERSION.suffix.matches("DEVELOPMENT|SNAPSHOT(?:.)*|RC\\d+".toRegex())
+    val EXPERIMENTAL: Boolean = VERSION.suffix.matches("DEVELOPMENT|SNAPSHOT.*|RC\\d+".toRegex())
     val enableEarlyAccessMessage: Boolean = EXPERIMENTAL && VERSION.suffix != "DEVELOPMENT"
     const val WIDTH = 1280
     const val HEIGHT = 720
     val DEFAULT_SIZE = WIDTH to HEIGHT
     val MINIMUM_SIZE: Pair<Int, Int> = 640 to 360
     val CURRENT_OS =
-        if(System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT)!!.contains("win")){
+        if (System.getProperty("os.name", "???")?.lowercase(Locale.ROOT)!!.contains("win")) {
             OS.WINDOWS
-        } else if(System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT)!!.contains("mac")){
+        } else if (System.getProperty("os.name", "???")?.lowercase(Locale.ROOT)!!.contains("mac")) {
             OS.MACOS
-        } else if(System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT)!!.startsWith("linux")){
+        } else if (System.getProperty("os.name", "???")?.lowercase(Locale.ROOT)!!.startsWith("linux")) {
             OS.LINUX
         } else {
             OS.UNKNOWN
         }
     val CURRENT_ARCH =
-        if(System.getProperty("os.arch") == "amd64"){
+        if (System.getProperty("os.arch") == "amd64") {
             ARCH.AMD64
-        } else if(System.getProperty("os.arch") == "aarch64"){
+        } else if (System.getProperty("os.arch") == "aarch64") {
             ARCH.AARCH64
-        } else{
+        } else {
             ARCH.UNKNOWN
         }
     val RHREFRESH_FOLDER: FileHandle by lazy {
         (
                 if (portableMode) {
                     Gdx.files.local(".rhrefresh/")
-                }else{
-                    if(CURRENT_OS == OS.LINUX) {
+                } else {
+                    if (CURRENT_OS == OS.LINUX) {
                         Gdx.files.external(".config/RHREfresh/")
-                    }else if(CURRENT_OS == OS.WINDOWS){
+                    } else if (CURRENT_OS == OS.WINDOWS) {
                         Gdx.files.external("AppData/Roaming/RHREfresh/")
-                    }else if(CURRENT_OS == OS.MACOS){
+                    } else if (CURRENT_OS == OS.MACOS) {
                         Gdx.files.external("Library/Application Support/RHREfresh/")
-                    } else{
+                    } else {
                         Gdx.files.external(".rhrefresh/")
                     }
                 }).apply(FileHandle::mkdirs)

@@ -73,13 +73,13 @@ class SnapButton(val editor: Editor, palette: UIPalette, parent: UIElement<Edito
     }
 
     override fun scrolled(amountX: Float, amountY: Float) :Boolean {
-        if(isMouseOver()){
+        if (isMouseOver()) {
             super.scrolled(amountX, amountY)
-            val direction = if(amountY> 0f) 1 else -1
-            val maxSnapLevel = if(preferences.getBoolean(PreferenceKeys.SETTINGS_ADVANCED_OPTIONS, false)) snapLevels.size else snapLevels.size - 1
+            val direction = if (amountY> 0f) 1 else -1
+            val maxSnapLevel = if (preferences.getBoolean(PreferenceKeys.SETTINGS_ADVANCED_OPTIONS, false)) snapLevels.size else snapLevels.size - 1
             index =
-                if(index+direction >= maxSnapLevel) 0
-                else if(index+direction < 0) maxSnapLevel-1
+                if (index+direction >= maxSnapLevel) 0
+                else if (index+direction < 0) maxSnapLevel-1
                 else index + direction
             updateAndFlash()
             return true
@@ -90,9 +90,9 @@ class SnapButton(val editor: Editor, palette: UIPalette, parent: UIElement<Edito
     override fun onLeftClick(xPercent: Float, yPercent: Float) {
         super.onLeftClick(xPercent, yPercent)
         val advancedOptionsEnabled = preferences.getBoolean(PreferenceKeys.SETTINGS_ADVANCED_OPTIONS, false)
-        if(advancedOptionsEnabled){
+        if (advancedOptionsEnabled) {
             index = if (index + 1 >= snapLevels.size) 0 else index + 1
-        }else {
+        } else {
             index = if (index + 1 >= snapLevels.size-1) 0 else index + 1
         }
         updateAndFlash()

@@ -296,9 +296,9 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
 
             val clipboardLabel = ImageLabel(palette, this, this.stage).apply {
                 renderType = ImageLabel.ImageRendering.ASPECT_RATIO
-                if(preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()){
+                if (preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()) {
                     image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
-                } else{
+                } else {
                     image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
                 }
             }
@@ -313,7 +313,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
             this.tooltipTextIsLocalizationKey = false
             val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-            this.tooltipText = if(ffmpegLocation.isNotEmpty()){
+            this.tooltipText = if (ffmpegLocation.isNotEmpty()) {
                 Localization["screen.info.timeStretching.selectFfmpeg",ffmpegLocation]
             } else {
                 Localization["screen.info.timeStretching.selectFfmpeg","bundled FFMPEG"]
@@ -553,7 +553,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         (pitchStyleButton.labels.first() as TextLabel).text = "Pitch note style: [LIGHT_GRAY]${Semitones.pitchStyle.displayName} (ex: ${Semitones.pitchStyle.example})[]"
     }
 
-    fun show(){
+    fun show() {
         clearRecentsButton.enabled = GameMetadata.recents.isNotEmpty()
     }
 

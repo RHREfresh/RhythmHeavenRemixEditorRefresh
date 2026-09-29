@@ -168,7 +168,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
         }
         stage.bottomStage.elements += readyButton
 
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             folderButton = Button(palette, stage.bottomStage, stage.bottomStage).apply {
                 this.addLabel(ImageLabel(palette, this, this.stage).apply {
                     this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_folder"))
@@ -207,7 +207,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
         }
         stage.bottomStage.elements += folderButton
 
-        copyGamesButton = object: Button<ExportRemixScreen>(palette, stage.bottomStage, stage.bottomStage){
+        copyGamesButton = object: Button<ExportRemixScreen>(palette, stage.bottomStage, stage.bottomStage) {
             val strings: List<String> = listOf("Copy\ngames", "[CYAN]Copied![]", "No\ngames...")
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
@@ -371,7 +371,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         val encoder = Ffmpeg.createEncoder()
                         val multimediaFile = Ffmpeg.createMultimediaObject(recorderFile)
                         multimediaFile.info.metadata = mapOf("Comments" to commentTag)
-                        try{
+                        try {
                             encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
                                 override fun sourceInfo(info: MultimediaInfo?) {
                                 }
@@ -381,10 +381,11 @@ class ExportRemixScreen(main: RHREfreshApplication)
                                 override fun message(message: String?) {
                                 }
                             })
-                        } catch(e: EncoderException){
-                            for(line in encoder.unhandledMessages){
+                        } catch (e: EncoderException) {
+                            for (line in encoder.unhandledMessages) {
                                 Toolboks.LOGGER.error(line)
                             }
+
                             throw e
                         }
                     }
@@ -558,12 +559,12 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         persistDirectory(main, PreferenceKeys.FILE_CHOOSER_EXPORT, newInitialDirectory)
                         GlobalScope.launch {
                             try {
-                                val correctFile = if (file.extension.toLowerCase(Locale.ROOT) !in ExportFileType.EXTENSIONS)
+                                val correctFile = if (file.extension.lowercase(Locale.ROOT) !in ExportFileType.EXTENSIONS)
                                     file.parentFile.resolve("${file.name}.mp3")
                                 else
                                     file
                                 val fileType = ExportFileType.VALUES.firstOrNull {
-                                    it.extension == file.extension.toLowerCase(Locale.ROOT)
+                                    it.extension == file.extension.lowercase(Locale.ROOT)
                                 } ?: MP3
                                 
                                 export(correctFile, fileType, true)

@@ -248,7 +248,7 @@ class ColourPicker<S : ToolboksScreen<*, *>>(palette: UIPalette, parent: UIEleme
                 this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_copy"))
             })
             this.leftClickAction = { _, _ ->
-                Gdx.app.clipboard.contents = currentColour.toString().toUpperCase(Locale.ROOT)
+                Gdx.app.clipboard.contents = currentColour.toString().uppercase(Locale.ROOT)
             }
         }
         elements += copyButton
@@ -292,7 +292,7 @@ class ColourPicker<S : ToolboksScreen<*, *>>(palette: UIPalette, parent: UIEleme
     private fun onHsvChange(triggerListener: Boolean) {
         currentColour.fromHsv(hsv.hue, hsv.saturation, hsv.value)
         currentColour.a = hsv.alpha / 255f
-        hex.text = currentColour.toString().toUpperCase(Locale.ROOT).take(if (hasAlpha) 8 else 6)
+        hex.text = currentColour.toString().uppercase(Locale.ROOT).take(if (hasAlpha) 8 else 6)
         maxSat.fromHsv(hsv.hue, 1f, hsv.value)
         noSat.fromHsv(hsv.hue, 0f, hsv.value)
         display.colour.set(currentColour)

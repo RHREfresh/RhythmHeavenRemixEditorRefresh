@@ -12,9 +12,9 @@ class TrackResizeAction(val editor: Editor, val oldSize: Int, val newSize: Int)
 
     override fun redo(context: Remix) {
         context.trackCount = newSize
-        if(!editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)){
-            for(entity in editor.remix.entities){
-                if(entity !is EndRemixEntity){
+        if (!editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)) {
+            for(entity in editor.remix.entities) {
+                if (entity !is EndRemixEntity) {
                     entity.updateBounds {
                         entity.bounds.setPosition(entity.bounds.x, entity.bounds.y + (newSize-oldSize))
                     }
@@ -25,9 +25,9 @@ class TrackResizeAction(val editor: Editor, val oldSize: Int, val newSize: Int)
 
     override fun undo(context: Remix) {
         context.trackCount = oldSize
-        if(!editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)){
-            for(entity in editor.remix.entities){
-                if(entity !is EndRemixEntity){
+        if (!editor.main.preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP)) {
+            for(entity in editor.remix.entities) {
+                if (entity !is EndRemixEntity) {
                     entity.updateBounds {
                         entity.bounds.setPosition(entity.bounds.x, entity.bounds.y + (oldSize-newSize))
                     }

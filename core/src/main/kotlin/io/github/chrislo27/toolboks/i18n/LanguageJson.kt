@@ -9,8 +9,14 @@ class LanguageObject {
     lateinit var locale: LocaleObject
 
     fun toNamedLocale(): NamedLocale =
-            NamedLocale(name, Locale(locale.language ?: "", locale.country ?: "", locale.variant ?: ""))
-
+            NamedLocale(
+                name,
+                Locale.Builder()
+                    .setLanguage(locale.language ?: "")
+                    .setRegion(locale.country ?: "")
+                    .setVariant(locale.variant ?: "")
+                    .build()
+            )
 }
 
 class LocaleObject {

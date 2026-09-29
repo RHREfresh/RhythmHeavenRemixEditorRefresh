@@ -55,7 +55,7 @@ class Playalong(val remix: Remix) {
 
             activeControllerMappings = controllers.map { c ->
                 var existingMapping: ControllerMapping? = mappings.find { c.name == it.name }
-                var finalMapping: ControllerMapping? = if(existingMapping != null) existingMapping else ControllerMapping.convertGdx(c)
+                var finalMapping: ControllerMapping? = if (existingMapping != null) existingMapping else ControllerMapping.convertGdx(c)
                 c to (finalMapping ?: ControllerMapping.INVALID.copy(name = c.name))
             }.toMap()
 
@@ -78,7 +78,7 @@ class Playalong(val remix: Remix) {
     /**
      * The number of input results expected. Instantaneous actions have one, two otherwise.
      */
-    val numResultsExpected: Int = inputActions.sumBy { if (it.isInstantaneous) 1 else 2 }
+    val numResultsExpected: Int = inputActions.sumOf { if (it.isInstantaneous) 1.toInt() else 2.toInt() }
     /**
      * Inputs that are fully done.
      */
@@ -341,7 +341,7 @@ class Playalong(val remix: Remix) {
         }
 
         score = inputted.values.flatMap { it.results }
-                .sumByDouble {
+                .sumOf {
                     (if (countScoreByTiming)
                         it.timing.scoreWeight
                     else (1f - (it.offset.absoluteValue / MAX_OFFSET_SEC).coerceIn(0f, 1f))) * 100.0

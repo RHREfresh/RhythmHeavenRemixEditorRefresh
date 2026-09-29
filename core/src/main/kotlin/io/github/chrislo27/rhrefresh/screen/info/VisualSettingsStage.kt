@@ -270,7 +270,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
 
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
-                if(checked){
+                if (checked) {
                     editor.views.add(ViewType.GAME_BOUNDARIES)
                 } else {
                     editor.views.remove(ViewType.GAME_BOUNDARIES)
@@ -300,7 +300,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
 
 
         // Fullscreen
-        settings.elements += object: Button<InfoScreen>(palette, settings, settings){
+        settings.elements += object: Button<InfoScreen>(palette, settings, settings) {
             private val label: TextLabel<InfoScreen> = TextLabel(palette, this, this.stage).apply {
                 this.isLocalizationKey = true
                 this.text = "editor.unfullscreen"
@@ -333,7 +333,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
         }
 
         //Reset view
-        settings.elements += object: Button<InfoScreen>(palette, settings, settings){
+        settings.elements += object: Button<InfoScreen>(palette, settings, settings) {
             private val label: TextLabel<InfoScreen> = TextLabel(palette, this, this.stage).apply {
                 this.isLocalizationKey = true
                 this.text = "editor.resetwindow"

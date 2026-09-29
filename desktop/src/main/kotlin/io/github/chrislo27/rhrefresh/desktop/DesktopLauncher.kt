@@ -11,8 +11,6 @@ import io.github.chrislo27.toolboks.desktop.ToolboksDesktopLauncher3
 import io.github.chrislo27.toolboks.lazysound.LazySound
 import io.github.chrislo27.toolboks.logging.Logger
 import java.io.File
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import java.util.Locale
 
 object DesktopLauncher {
@@ -27,19 +25,20 @@ object DesktopLauncher {
         System.setProperty("jna.nosys", "true")
         
         RHREfresh.launchArguments = args.toList()
-        val RHREFRESH_FOLDER:String
-        val osName: String = System.getProperty("os.name", "???")?.toLowerCase(Locale.ROOT) ?: "???"
+        
+        val osName: String = System.getProperty("os.name", "???")?.lowercase(Locale.ROOT) ?: "???"
         println("Running on \"$osName\"")
-        if(osName.startsWith("linux")){
-            RHREFRESH_FOLDER = ".config/RHREfresh"
-        } else if(osName.contains("win")){
-            RHREFRESH_FOLDER = "AppData/Roaming/RHREfresh/"
-        } else if(osName.contains("mac")){
-            RHREFRESH_FOLDER = "Library/Application Support/RHREfresh/"
-        } else{
-            RHREFRESH_FOLDER = ".rhrefresh"
-        }
-        val RHREFRESH_EXTERNAL_FOLDER = System.getProperty("user.home") +"/"+ RHREFRESH_FOLDER
+        
+		val refreshFolder: String = if (osName.startsWith("linux")) {
+			".config/RHREfresh"
+		} else if (osName.contains("win")) {
+			"AppData/Roaming/RHREfresh/"
+		} else if (osName.contains("mac")) {
+			"Library/Application Support/RHREfresh/"
+		} else {
+			".rhrefresh"
+		}
+        //val refreshExternalFolder: String = System.getProperty("user.home") +"/"+ refreshFolder
 
         val arguments = Arguments()
         val jcommander = JCommander.newBuilder().acceptUnknownOptions(false).addObject(arguments).build()
@@ -62,14 +61,14 @@ object DesktopLauncher {
         val logger = Logger()
         val portable = arguments.portableMode
 
-        if(portable && File("/$RHREFRESH_FOLDER/sfx/${RHREfresh.MASTER_DATABASE_BRANCH}/.git").exists()){
-            val target = File("/$RHREFRESH_FOLDER/sfx/")
-            val source = File("/$RHREFRESH_FOLDER/sfx/${RHREfresh.MASTER_DATABASE_BRANCH}")
+        if (portable && File("/$refreshFolder/sfx/${RHREfresh.MASTER_DATABASE_BRANCH}/.git").exists()) {
+            val target = File("/$refreshFolder/sfx/")
+            val source = File("/$refreshFolder/sfx/${RHREfresh.MASTER_DATABASE_BRANCH}")
             source.copyRecursively(target)
             source.deleteRecursively()
         }
 
-        val app = RHREfreshApplication(logger, File(if (portable) "$RHREFRESH_FOLDER/logs/" else System.getProperty("user.home") + "/$RHREFRESH_FOLDER/logs/"))
+        val app = RHREfreshApplication(logger, File(if (portable) "$refreshFolder/logs/" else System.getProperty("user.home") + "/$refreshFolder/logs/"))
         ToolboksDesktopLauncher3(app)
                 .editConfig {
                     this.setAutoIconify(true)
@@ -84,18 +83,18 @@ object DesktopLauncher {
                     this.setHdpiMode(HdpiMode.Logical)
 //                    this.setBackBufferConfig(8, 8, 8, 8, 16, 0, 2)
                     if (portable) {
-                        this.setPreferencesConfig("$RHREFRESH_FOLDER/.prefs/", Files.FileType.Local)
+                        this.setPreferencesConfig("$refreshFolder/.prefs/", Files.FileType.Local)
                     } else {
-                        logger.info("Setting preference folder to "+System.getProperty("user.home")+"/$RHREFRESH_FOLDER/prefs")
-                        val newPrefFolder = File(System.getProperty("user.home")+"/$RHREFRESH_FOLDER/prefs")
-                        if(!newPrefFolder.exists()){
+                        logger.info("Setting preference folder to "+System.getProperty("user.home")+"/$refreshFolder/prefs")
+                        val newPrefFolder = File(System.getProperty("user.home")+"/$refreshFolder/prefs")
+                        if (!newPrefFolder.exists()) {
                             val prefFolder = File(System.getProperty("user.home")+"/.prefs")
-                            if(prefFolder.exists() && prefFolder.isDirectory()){
-                                prefFolder.copyRecursively(File(System.getProperty("user.home") + "/$RHREFRESH_FOLDER/prefs"))
+                            if (prefFolder.exists() && prefFolder.isDirectory()) {
+                                prefFolder.copyRecursively(File(System.getProperty("user.home") + "/$refreshFolder/prefs"))
                                 logger.info("Copied older preference folder")
                             }
                         }
-                        this.setPreferencesConfig(System.getProperty("user.home") + "/$RHREFRESH_FOLDER/prefs/", Files.FileType.Absolute)
+                        this.setPreferencesConfig(System.getProperty("user.home") + "/$refreshFolder/prefs/", Files.FileType.Absolute)
                     }
                     
                     RHREfresh.portableMode = portable
@@ -129,5 +128,4 @@ object DesktopLauncher {
                 }
                 .launch()
     }
-    
 }

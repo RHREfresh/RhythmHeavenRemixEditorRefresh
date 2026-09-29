@@ -12,8 +12,8 @@ enum class DefaultMidiNotes(val cue: String, val localizationKey: String) {
         val VALUES = DefaultMidiNotes.values().toList()
         val MAP = VALUES.associateBy { it.name }
         fun findByCue(cue: String): DefaultMidiNotes{
-            for (value in VALUES){
-                if(value.cue == cue){
+            for (value in VALUES) {
+                if (value.cue == cue) {
                     return value
                 }
             }

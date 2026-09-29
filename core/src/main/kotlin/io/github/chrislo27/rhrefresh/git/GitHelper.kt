@@ -12,6 +12,7 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.transport.RefSpec
 import org.eclipse.jgit.transport.URIish
+import java.net.URI
 import java.net.URL
 
 
@@ -117,7 +118,7 @@ object GitHelper {
             if ("origin" !in git.repository.remoteNames) {
                 val remoteAdd = git.remoteAdd()
                 remoteAdd.setName("origin")
-                remoteAdd.setUri(URIish(URL(RHREfresh.DATABASE_URL)))
+                remoteAdd.setUri(URIish(URI(RHREfresh.DATABASE_URL).toURL()))
                 remoteAdd.call()
             }
         }
@@ -130,7 +131,7 @@ object GitHelper {
         }
     }
 
-    fun switchBranch(branch: String){
+    fun switchBranch(branch: String) {
         return temporarilyUseRepo {
             Git(this).checkout().setName(branch).call()
         }

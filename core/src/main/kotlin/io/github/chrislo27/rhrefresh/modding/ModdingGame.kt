@@ -17,7 +17,7 @@ enum class ModdingGame(val id: String, val gameName: String, val console: String
         val VALUES = values().toList()
     }
 
-    private val tickflowUnitsStr: String = "0x${tickflowUnits.toString(16).toUpperCase(Locale.ROOT)}"
+    private val tickflowUnitsStr: String = "0x${tickflowUnits.toString(16).uppercase(Locale.ROOT)}"
     val fullName: String = "$gameName ($console)"
 
     fun beatsToTickflow(beats: Float): Int = (beats * tickflowUnits).roundToInt()
@@ -28,6 +28,6 @@ enum class ModdingGame(val id: String, val gameName: String, val console: String
         val wholes = tickflow / tickflowUnits
         val leftover = tickflow % tickflowUnits
 
-        return "${if (wholes > 0) if (wholes > 1) "$wholes × $tickflowUnitsStr" else tickflowUnitsStr else ""}${if (wholes > 0 && leftover > 0) " + " else ""}${if (leftover > 0) "0x${leftover.toString(16).toUpperCase(Locale.ROOT)}" else ""} $tickflowUnitName".trim()
+        return "${if (wholes > 0) if (wholes > 1) "$wholes × $tickflowUnitsStr" else tickflowUnitsStr else ""}${if (wholes > 0 && leftover > 0) " + " else ""}${if (leftover > 0) "0x${leftover.toString(16).uppercase(Locale.ROOT)}" else ""} $tickflowUnitName".trim()
     }
 }

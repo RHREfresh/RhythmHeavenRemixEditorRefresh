@@ -128,7 +128,7 @@ class GitUpdateScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfreshAppl
                     }
                 }
                 // Doing weird stuff to update, yippee
-                if(RHREfresh.RHREFRESH_FOLDER.child("sfx/${RHREfresh.DATABASE_BRANCH}/.git").exists() && main.preferences.getInteger(PreferenceKeys.DATABASE_VERSION+ RHREfresh.DATABASE_BRANCH) < 139){
+                if (RHREfresh.RHREFRESH_FOLDER.child("sfx/${RHREfresh.DATABASE_BRANCH}/.git").exists() && main.preferences.getInteger(PreferenceKeys.DATABASE_VERSION+ RHREfresh.DATABASE_BRANCH) < 139) {
                     var gitConfig = RHREfresh.RHREFRESH_FOLDER.child("sfx/${RHREfresh.DATABASE_BRANCH}/.git/config").readString()
                     gitConfig = gitConfig.replace("chrislo27","TheAlternateDoctor")
                     RHREfresh.RHREFRESH_FOLDER.child("sfx/${RHREfresh.DATABASE_BRANCH}/.git/config").writeString(gitConfig, false)

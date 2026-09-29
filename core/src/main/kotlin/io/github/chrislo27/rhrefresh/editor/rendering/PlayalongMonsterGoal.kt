@@ -32,7 +32,7 @@ private val monsterMawCamera: OrthographicCamera = OrthographicCamera().also { c
 }
 
 private val monsterAnimation: Animation = bccad.animations.first { it.name == "mouth_close" }
-private val monsterAnimationDuration: Int = monsterAnimation.steps.sumBy { it.delay.toInt() }
+private val monsterAnimationDuration: Int = monsterAnimation.steps.sumOf { it.delay.toInt() }
 private var currentFrame: Int = 0
 
 fun Editor.renderPlayalongMonsterGoal(batch: SpriteBatch, shapeRenderer: ShapeRenderer) {

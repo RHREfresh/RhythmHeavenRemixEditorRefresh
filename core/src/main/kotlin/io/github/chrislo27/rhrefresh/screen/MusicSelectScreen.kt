@@ -74,7 +74,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
                 this.location.set(pixelX = 4f, pixelWidth = -8f)
             })
         }
-        moveMusicStartButton = object : Button<MusicSelectScreen>(palette, stage.bottomStage, stage.bottomStage){
+        moveMusicStartButton = object : Button<MusicSelectScreen>(palette, stage.bottomStage, stage.bottomStage) {
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
                 val remix = editor.remix
@@ -139,20 +139,20 @@ class MusicSelectScreen(main: RHREfreshApplication)
             this.location.set(screenHeight = 0.125f, screenY = 0.125f / 2f)
         }
 
-        tempoField = object: TextField<MusicSelectScreen>(palette, stage.centreStage, stage.centreStage){
+        tempoField = object: TextField<MusicSelectScreen>(palette, stage.centreStage, stage.centreStage) {
             override fun onTextChange(oldText: String) {
                 super.onTextChange(oldText)
                 try{
                     val oldChange = editor.remix.tempos.map[globalTempoChangeId]!!
                     val newTempo = TempoChange(editor.remix.tempos, oldChange.beat, text.toFloat(), oldChange.swing, oldChange.width, true)
                     editor.remix.mutate(TrackerValueChange(oldChange, newTempo))
-                } catch(e:Exception){
+                } catch(e:Exception) {
                     //We just ignore, the user is probably in the middle of typing
                 }
             }
         }.apply {
-            for(tempoChange in editor.remix.tempos.map){
-                if(tempoChange.value.immutable){
+            for(tempoChange in editor.remix.tempos.map) {
+                if (tempoChange.value.immutable) {
                     globalTempoChangeId = tempoChange.key as Float
                     this.text = tempoChange.value.bpm.toString()
                 }
@@ -178,12 +178,12 @@ class MusicSelectScreen(main: RHREfreshApplication)
         }
         stage.centreStage.elements += tempoFieldLabel
 
-        musicStartField = object: TextField<MusicSelectScreen>(palette, stage.centreStage, stage.centreStage){
+        musicStartField = object: TextField<MusicSelectScreen>(palette, stage.centreStage, stage.centreStage) {
             override fun onTextChange(oldText: String) {
                 super.onTextChange(oldText)
                 try{
                     editor.remix.musicStartSec = (text.toFloat())/1000
-                } catch(e:Exception){
+                } catch(e:Exception) {
                     //We just ignore, the user is probably in the middle of typing
                 }
             }
@@ -283,7 +283,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
                     musicStartFieldLabel.visible = true
                     tempoField.text = editor.remix.tempos.map[globalTempoChangeId]!!.bpm.toString()
                     musicStartField.text = (editor.remix.musicStartSec*1000).toInt().toString()
-                } else{
+                } else {
                     tempoField.visible = false
                     tempoFieldUnit.visible = false
                     tempoFieldLabel.visible = false

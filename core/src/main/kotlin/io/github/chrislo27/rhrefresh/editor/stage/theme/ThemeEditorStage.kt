@@ -247,7 +247,7 @@ class ThemeEditorStage(val editor: Editor, val palette: UIPalette, parent: Theme
                 this.tooltipText = "editor.themeEditor.editTexture"
             }
 
-            if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+            if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
                 buttonBar.elements += Button(palette, buttonBar, buttonBar).apply {
                     this.location.set(0f, 0f, 0f, 1f, 34f * 3 + 4f * 3, 0f, 34f, 0f)
                     this.addLabel(ImageLabel(palette, this, this.stage).apply {

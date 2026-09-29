@@ -58,7 +58,7 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         stage.centreStage.elements += TextLabel(palette, stage.centreStage, stage.centreStage).apply {
             this.isLocalizationKey = false
             this.textWrapping = false
-            this.text = when(RHREfresh.CURRENT_OS) {
+            this.text = when (RHREfresh.CURRENT_OS) {
                 RHREfresh.OS.WINDOWS -> Localization["screen.folderChangeWarning.content", System.getProperty("user.home", "???")+"\\"+RHREfresh.RHREFRESH_FOLDER.path().replace('/','\\')]
                 RHREfresh.OS.LINUX,RHREfresh.OS.MACOS -> Localization["screen.folderChangeWarning.content", "~/"+RHREfresh.RHREFRESH_FOLDER]
                 RHREfresh.OS.UNKNOWN -> Localization["screen.folderChangeWarning.content", RHREfresh.RHREFRESH_FOLDER]
@@ -103,7 +103,7 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
             this.location.set(screenX = 1f - this.location.screenWidth)
             this.visible = false
         }
-        if(RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
+        if (RHREfresh.CURRENT_OS != RHREfresh.OS.MACOS) {
             stage.bottomStage.elements += folderButton
         }
 
@@ -122,28 +122,28 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                 val legacyAdvFolder = File(System.getProperty("user.home") + "/.rhre3adv")
                 val legacyRefreshFolder = File(System.getProperty("user.home") + "/.rhrefresh")
                 val newFolder = RHREfresh.RHREFRESH_FOLDER.file()
-                if(legacyRefreshFolder.exists()){
+                if (legacyRefreshFolder.exists()) {
                     updateState(1, legacyRefreshFolder.path)
-                    legacyRefreshFolder.copyRecursively(newFolder, onError = {file, ioException->
-                        if(!(ioException is FileAlreadyExistsException)){
+                    legacyRefreshFolder.copyRecursively(newFolder, onError = {file, ioException ->
+                        if (!(ioException is FileAlreadyExistsException)) {
                             OnErrorAction.TERMINATE
                         } else {
                             OnErrorAction.SKIP
                         }
                     })
-                }else if(legacyAdvFolder.exists()){
+                } else if (legacyAdvFolder.exists()) {
                     updateState(1, legacyAdvFolder.path)
-                    legacyAdvFolder.copyRecursively(newFolder, onError = {file, ioException->
-                        if(!(ioException is FileAlreadyExistsException)){
+                    legacyAdvFolder.copyRecursively(newFolder, onError = {file, ioException ->
+                        if (!(ioException is FileAlreadyExistsException)) {
                             OnErrorAction.TERMINATE
                         } else {
                             OnErrorAction.SKIP
                         }
                     })
-                } else if(legacyFolder.exists()){
+                } else if (legacyFolder.exists()) {
                     updateState(1, legacyFolder.path)
-                    legacyFolder.copyRecursively(newFolder, onError = {file, ioException->
-                        if(!(ioException is FileAlreadyExistsException)){
+                    legacyFolder.copyRecursively(newFolder, onError = {file, ioException ->
+                        if (!(ioException is FileAlreadyExistsException)) {
                             OnErrorAction.TERMINATE
                         } else {
                             OnErrorAction.SKIP
@@ -152,7 +152,7 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     File(newFolder,"customSounds").deleteRecursively()
                 }
                 // Transfer the preferences
-                if(!File(newFolder,"prefs/RHREFRESH").exists() && File(newFolder,"prefs/RHRE3").exists()){
+                if (!File(newFolder,"prefs/RHREFRESH").exists() && File(newFolder,"prefs/RHRE3").exists()) {
                     updateState(2)
                     val prefFile = File(newFolder,"prefs/RHRE3")
                     val prefFileRecovery = File(newFolder,"prefs/RHRE3-recovery")
@@ -162,11 +162,11 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     prefFileRecovery.delete()
                 }
                 //Moves the SFXDB to its rightful place
-                if(File(newFolder,"sfx/${RHREfresh.MASTER_DATABASE_BRANCH}/.git").exists()){
+                if (File(newFolder,"sfx/${RHREfresh.MASTER_DATABASE_BRANCH}/.git").exists()) {
                     updateState(3)
                     val target = File(newFolder,"sfx/")
                     val source = File(newFolder,"sfx/${RHREfresh.MASTER_DATABASE_BRANCH}")
-                    source.copyRecursively(target)
+                    source.copyRecursively(target, overwrite = true)
                     source.deleteRecursively()
                 }
                 updateState(4)
@@ -175,14 +175,14 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         }
     }
 
-    fun updateState(state: Int, extra: String = ""){
-        when(state){
+    fun updateState(state: Int, extra: String = "") {
+        when (state) {
             1 -> importLoadTextLabel.text = Localization["screen.folderChangeWarning.importingFolder", extra]
             2 -> importLoadTextLabel.text = Localization["screen.folderChangeWarning.importingPrefs"]
-            3 ->importLoadTextLabel.text = Localization["screen.folderChangeWarning.movingSFXDB"]
+            3 -> importLoadTextLabel.text = Localization["screen.folderChangeWarning.movingSFXDB"]
             else -> {
-                for(element in stage.centreStage.elements){
-                    if(element != importLoadTextLabel){
+                for(element in stage.centreStage.elements) {
+                    if (element != importLoadTextLabel) {
                         element.visible = true
                     }
                 }

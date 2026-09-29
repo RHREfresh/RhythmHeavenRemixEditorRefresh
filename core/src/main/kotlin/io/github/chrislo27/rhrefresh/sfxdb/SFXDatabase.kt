@@ -103,9 +103,9 @@ object SFXDatabase : Disposable {
 
     fun initialize(): SFXDBData {
         check(isDataNotLoading()) { "Cannot initialize SFX database when loading" }
-        if(isDataLoaded()){
-            backingData.dispose();
-            backingData = SFXDBData();
+        if (isDataLoaded()) {
+            backingData.dispose()
+            backingData = SFXDBData()
         }
         return backingData
     }
@@ -354,9 +354,7 @@ object SFXDatabase : Disposable {
                                 }
                             }
                         }
-                    }.forEach {
-                        it.join()
-                    }
+                    }.joinAll()
                 }
             }
 
@@ -399,9 +397,7 @@ object SFXDatabase : Disposable {
                         }
                     }
 
-                    val results = coroutines.map {
-                        it.await()
-                    }.sortedBy { it.game.id }
+                    val results = coroutines.awaitAll().sortedBy { it.game.id }
                     val failures = results.count { !it.success && !it.game.jsonless }
 
                     results.filter { it.message.isNotBlank() }.forEach {
@@ -446,7 +442,7 @@ object SFXDatabase : Disposable {
 
                 game = Game(gameObject.id,
                             gameObject.name,
-                            Series.valueOf(gameObject.series?.toUpperCase(Locale.ROOT) ?: Series.OTHER.name),
+                            Series.valueOf(gameObject.series?.uppercase(Locale.ROOT) ?: Series.OTHER.name),
                             mutableListOf(),
                             directive.textureFh,
                             Language.getOrUnknown(gameObject.language),
