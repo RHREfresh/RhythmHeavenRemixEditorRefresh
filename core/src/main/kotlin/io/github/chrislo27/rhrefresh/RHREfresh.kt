@@ -76,17 +76,17 @@ object RHREfresh {
     }
     const val REMIX_FILE_EXTENSION = "rhref"
 
-    const val GITHUB: String = "https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh"
+    const val GITHUB: String = "https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh"
     const val GITHUB_RELEASES = "$GITHUB/releases"
     const val GITHUB_SHORTLINK: String = "https://rhre.thealtdoc.fr/github"
-    const val DATABASE_URL: String = "https://github.com/TheAlternateDoctor/RHRE-database.git"
+    const val DATABASE_URL: String = "https://github.com/RHREfresh/RHRE-database.git"
     const val DONATION_URL: String = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VA45DPLCC4958"
     val DEV_DATABASE_BRANCH: String = "dev"
     val MASTER_DATABASE_BRANCH: String = "master"
     var DATABASE_BRANCH: String = MASTER_DATABASE_BRANCH
     var DATABASE_CURRENT_COMMIT: String = ""
     val DATABASE_CURRENT_VERSION: String = "https://raw.githubusercontent.com/TheAlternateDoctor/RHRE-database/$DATABASE_BRANCH/current.json"
-    const val DATABASE_RELEASES = "https://github.com/TheAlternateDoctor/RHRE-database/releases"
+    const val DATABASE_RELEASES = "https://github.com/RHREfresh/RHRE-database/releases"
     const val RELEASE_API_URL = "https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest"
     const val OUT_OF_MEMORY_DOC_LINK: String = "https://docs.rhre.dev/Out-of-memory-on-music/"
     const val DOCS_URL: String = "https://rhre.readthedocs.io/en/latest/"

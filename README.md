@@ -2,9 +2,9 @@
 *A custom remix audio editor for the [Rhythm Heaven](https://en.wikipedia.org/wiki/Rhythm_Heaven_Megamix) series.*
 <img align="right" src="core/assets/images/icon/512.png" height="256" width="256">
 
-### [Download the latest release here!](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest)
+### [Download the latest release here!](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest)
 
-[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases) [![Discord](https://img.shields.io/badge/Discord-gray?logo=discord)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases) [![GitHub license](https://img.shields.io/github/license/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh.svg)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/blob/dev/LICENSE.txt)<br>
+[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases) [![Discord](https://img.shields.io/badge/Discord-gray?logo=discord)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases) [![GitHub license](https://img.shields.io/github/license/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/blob/dev/LICENSE.txt)<br>
 
 **Rhythm Heaven Remix Editor Refresh** is a fork of RHRE (based on [RHRE3](https://github.com/chrislo27/RhythmHeavenRemixEditor)) with many improvements and new features! Some of those include...
 * **Minigames from Rhythm Heaven Groove**
@@ -15,7 +15,7 @@
 * An EXE version, and MacOS support
 * And of course, bugfixes!
 
-Also check out the [RHREfresh SFX Database](https://github.com/TheAlternateDoctor/RHRE-database).
+Also check out the [RHREfresh SFX Database](https://github.com/RHREfresh/RHRE-database).
 
 ## Features
 <img align="right" src = ".github/rhrefresh_editor_1.png" width=320 height=180>
@@ -40,14 +40,14 @@ Also check out the [RHREfresh SFX Database](https://github.com/TheAlternateDocto
 
 ## Installation
 ### **Windows EXE Version** (Windows only)
-1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_win_A.zip` file, where `X` is the current version number and ``A`` is your CPU architecture (``x64`` or ``arm64``).
+1. Go to the [most recent release](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_win_A.zip` file, where `X` is the current version number and ``A`` is your CPU architecture (``x64`` or ``arm64``).
 2. Fully extract the zip file to a location you prefer. `RHREfresh.exe` AND the `jdk` folder must be in the same folder.
 3. Double-click ``RHREfresh.exe`` to open the program! If you see a popup that says "Windows protected your PC", click "More info" and then "Run anyway".
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
 
 ### **Multiplatform JAR Version** (Windows, Mac, and Linux)
-1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_multiplatform_jar.zip` file, where `X` is the current version number.
+1. Go to the [most recent release](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_multiplatform_jar.zip` file, where `X` is the current version number.
 2. Fully extract the zip file to a location you prefer. All files must be extracted.
 3. Depending on your operating system, run the following file:
   * **Windows**: Double-click ``run_windows.bat``. If it asks if you'd like to run the file, click "Run".
