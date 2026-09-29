@@ -57,7 +57,7 @@ class OpenRemixScreen(main: RHREfreshApplication)
     private var isLoadingSounds = false
 
     private enum class RemixType {
-        RHRE3, RHRE2, MIDI
+        RHREFRESH, RHRE3, RHRE2, MIDI
     }
 
     private val loadButton: LoadButton
@@ -77,7 +77,8 @@ class OpenRemixScreen(main: RHREfreshApplication)
     }
 
     private val icon: TextureRegion by lazy { TextureRegion(AssetRegistry.get<Texture>("ui_icon_folder")) }
-    private val rhre2Icon: TextureRegion by lazy { TextureRegion(AssetRegistry.get<Texture>("logo_rhre2_128")) }
+    private val rhre3Icon: TextureRegion by lazy { TextureRegion(AssetRegistry.get<Texture>("logo_legacy_rhre3_128")) }
+    private val rhre2Icon: TextureRegion by lazy { TextureRegion(AssetRegistry.get<Texture>("logo__legacy_rhre2_128")) }
 
     init {
         stage.titleIcon.image = icon
@@ -172,14 +173,27 @@ class OpenRemixScreen(main: RHREfreshApplication)
                 } else {
                     val zipFile = ZipFile(file)
                     val isRHRE2 = zipFile.getEntry("remix.json") == null
-
-                    remixType = if (isRHRE2) RemixType.RHRE2 else RemixType.RHRE3
+                    
+                    if (file.extension.equals("rhre3", ignoreCase = true)) {
+                        remixType = RemixType.RHRE3
+                    }
+                    else if (zipFile.getEntry("remix.json") == null) {
+                        remixType = RemixType.RHRE2
+                    }
+                    else {
+                        remixType = RemixType.RHREFRESH
+                    }
 
                     try {
-                        if (isRHRE2) {
+                        if (remixType == RemixType.RHRE2) {
                             stage.titleIcon.image = rhre2Icon
                             Remix.unpackRHRE2(newRemix, zipFile)
-                        } else {
+                        }
+                        else if (remixType == RemixType.RHRE3) {
+                            stage.titleIcon.image = rhre3Icon
+                            Remix.unpack(newRemix, zipFile, false)
+                        }
+                        else {
                             Remix.unpack(newRemix, zipFile, false)
                         }
                     } catch (e: Exception) {

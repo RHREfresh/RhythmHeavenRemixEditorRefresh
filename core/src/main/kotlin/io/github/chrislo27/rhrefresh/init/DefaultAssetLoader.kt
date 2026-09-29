@@ -27,7 +27,8 @@ class DefaultAssetLoader : AssetRegistry.IAssetLoader {
         listOf(16, 24, 32, 64, 128, 256, 512, 1024).forEach {
             AssetRegistry.loadAsset<Texture>("logo_$it", "images/icon/$it.png")
         }
-        AssetRegistry.loadAsset<Texture>("logo_rhre2_128", "images/icon/rhre2/128.png")
+        AssetRegistry.loadAsset<Texture>("logo_legacy_rhre2_128", "images/icon/legacy/rhre2_128.png")
+        AssetRegistry.loadAsset<Texture>("logo_legacy_rhre3_128", "images/icon/legacy/rhre3_128.png")
         
         AssetRegistry.loadAsset<Texture>("sfxdb_missing_icon", "images/gameicon/missing.png", nearestTexture())
         (Language.VALUES - Language.UNKNOWN).forEach { lang ->
