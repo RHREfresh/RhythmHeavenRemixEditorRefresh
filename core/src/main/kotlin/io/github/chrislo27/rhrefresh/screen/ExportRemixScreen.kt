@@ -208,7 +208,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
         stage.bottomStage.elements += folderButton
 
         copyGamesButton = object: Button<ExportRemixScreen>(palette, stage.bottomStage, stage.bottomStage) {
-            val strings: List<String> = listOf("Copy\ngames", "[CYAN]Copied![]", "No\ngames...")
+            val strings: List<String> = listOf("screen.export.copyGames", "screen.export.copyGames.copied", "screen.export.copyGames.noGames")
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
                 val games = editor.getGamesUsedInRemix()
@@ -226,9 +226,9 @@ class ExportRemixScreen(main: RHREfreshApplication)
                 get() {
                     val label = this.labels.first() as TextLabel
                     return when (label.text) {
-                        strings[1] -> "Copied successfully to clipboard!"
-                        strings[2] -> "No games in remix"
-                        else -> "Click to copy games used to clipboard"
+                        strings[1] -> "screen.export.copyGames.tooltip.copied"
+                        strings[2] -> "screen.export.copyGames.tooltip.noGames"
+                        else -> "screen.export.copyGames.tooltip"
                     }
                 }
         }.apply {
@@ -236,12 +236,14 @@ class ExportRemixScreen(main: RHREfreshApplication)
                 object : TextLabel<ExportRemixScreen>(palette, this, this.stage) {
                 }.apply {
                     this.setText(
-                        "Copy\ngames",
+                        "screen.export.copyGames",
                         Align.center, false, false
                     )
+                    this.isLocalizationKey = true
                     this.background = false
                     this.fontScaleMultiplier = 0.8f
                 })
+            this.tooltipTextIsLocalizationKey = true
             this.location.set(this@ExportRemixScreen.stage.backButton.location)
             this.location.set(screenX = 1f - this.location.screenWidth)
         }

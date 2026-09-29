@@ -46,10 +46,6 @@ class StartupStage(val screen: EditorScreen) : Stage<EditorScreen>(screen.stage,
                 |
                 |I encourage you to also make use of the various functionalities available,
 |like News, Info and Settings, and Themes.
-|
-|Please also note that by using this program,
-|you are agreeing to abide by the Code of Conduct found at
-|[#8CB8FF]https://codeofconduct.rhre.dev[].
                 |
                 |Enjoy, and have fun remixing!
             """.trimMargin()

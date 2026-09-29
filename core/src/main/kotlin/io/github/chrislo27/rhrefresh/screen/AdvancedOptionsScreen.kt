@@ -61,8 +61,8 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         stage = GenericStage(main.uiPalette, null, main.defaultCamera)
 
         stage.titleIcon.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_small_gear"))
-        stage.titleLabel.isLocalizationKey = false
-        stage.titleLabel.text = "Advanced Options"
+        stage.titleLabel.isLocalizationKey = true
+        stage.titleLabel.text = "screen.advOptions"
         stage.backButton.visible = true
         stage.onBackButtonClick = {
             if (didChangeSfxDbPreferences) {
@@ -78,10 +78,10 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
             this.checked = main.settings.advancedOptions
 
             this.textLabel.apply {
-                this.isLocalizationKey = false
+                this.isLocalizationKey = true
                 this.textWrapping = false
                 this.textAlign = Align.left
-                this.text = "Other Advanced Options Enabled"
+                this.text = "screen.advOptions.othersCheckbox"
             }
             this.leftClickAction = { _, _ ->
                 main.settings.advancedOptions = checked
@@ -110,7 +110,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         }
         centre.elements += moddingGameLabel
         moddingGameWarningLabel = TextLabel(palette, centre, centre).apply {
-            this.isLocalizationKey = false
+            this.isLocalizationKey = true
             this.text = ""
             this.textWrapping = false
             this.fontScaleMultiplier = 0.85f
@@ -126,7 +126,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
             private fun updateText() {
                 val game = ModdingUtils.currentGame
                 val underdeveloped = game.underdeveloped
-                textLabel.text = "[LIGHT_GRAY]Modding utilities with reference to:[]\n${if (underdeveloped) "[ORANGE]" else ""}${game.fullName}${if (underdeveloped) "[]" else ""}"
+                textLabel.text = Localization["screen.advOptions.modding.gameSelected",if (underdeveloped) "[ORANGE]" else "",game.fullName]
                 updateLabels()
             }
 
@@ -210,24 +210,20 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     }
                     if (success) {
                         resetReloadMetadataButton()
-                        textLabel.text = "[GREEN]Reloaded metadata successfully![]"
+                        textLabel.text = "screen.advOptions.modding.reloadMetadata.success"
                     } else {
                         resetReloadMetadataButton()
-                        textLabel.text = "[RED]Failed to reload modding metadata[]\n[LIGHT_GRAY]Check log file for details[]"
+                        textLabel.text = "screen.advOptions.modding.reloadMetadata.fail"
                         textLabel.fontScaleMultiplier = 0.6f
                     }
                 }
                 Toolboks.LOGGER.info("Reloaded modding metadata ${if (!success) "un" else ""}successfully in ${nano / 1_000_000.0} ms")
             }
-            //Not implemented.
-            override fun scrolled(p0: Float, p1: Float): Boolean {
-                return false
-            }
 
         }.apply {
             this.addLabel(TextLabel(palette, this, this.stage).apply {
-                this.isLocalizationKey = false
-                this.text = "Reload modding metadata"
+                this.isLocalizationKey = true
+                this.text = "screen.advOptions.modding.reloadMetadata"
                 this.textWrapping = false
                 this.fontScaleMultiplier = 0.8f
             })
@@ -362,13 +358,13 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     //Switching to RELEASE
                     main.preferences.putBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, false)
                     RHREfresh.DATABASE_BRANCH = RHREfresh.MASTER_DATABASE_BRANCH
-                    textLabel.text = "Change SFXDB update path (currently RELEASE)"
+                    textLabel.text = Localization["screen.advOptions.sfxdb.updatePath", "RELEASE"]
                     GitHelper.switchBranch("origin/"+RHREfresh.MASTER_DATABASE_BRANCH)
                 } else {
                     //Switching to DEV
                     main.preferences.putBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, true)
                     RHREfresh.DATABASE_BRANCH = RHREfresh.DEV_DATABASE_BRANCH
-                    textLabel.text = "Change SFXDB update path (currently DEV)"
+                    textLabel.text = Localization["screen.advOptions.sfxdb.updatePath", "DEV"]
                     GitHelper.switchBranch("origin/"+RHREfresh.DEV_DATABASE_BRANCH)
                 }
                 didChangeSfxDbPreferences = true
@@ -379,27 +375,27 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                 this.textWrapping = false
                 this.fontScaleMultiplier = 0.8f
                 this.text = if (main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)) {
-                    "Change SFXDB update path (currently DEV)"
+                    Localization["screen.advOptions.sfxdb.updatePath", "DEV"]
                 } else {
-                    "Change SFXDB update path (currently RELEASE)"
+                    Localization["screen.advOptions.sfxdb.updatePath", "RELEASE"]
                 }
             })
 
             this.location.set(screenX = 1f - (padding + buttonWidth),
-                screenY = padding * 8 + buttonHeight * 7,
+                screenY = padding * 7 + buttonHeight * 6,
                 screenWidth = buttonWidth,
-                screenHeight = buttonHeight)
+                screenHeight = buttonHeight*2)
         }
         centre.elements += switchSFXDBButton
 
         sfxDbWarningLabel = TextLabel(palette, centre, centre).apply {
-            this.isLocalizationKey = false
-            this.text = "[YELLOW]Caution:[] Leaving this screen after\nchanging this setting will\nprompt an SFXDB update!"
+            this.isLocalizationKey = true
+            this.text = "screen.advOptions.sfxdb.updatePath.caution"
             this.textWrapping = false
             this.fontScaleMultiplier = 0.85f
             this.textAlign = Align.top or Align.center
             this.location.set(screenX = 1f - (padding + buttonWidth),
-                screenY = padding * 7 + buttonHeight * 6,
+                screenY = padding * 6 + buttonHeight * 5,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
@@ -410,11 +406,11 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
 
     private fun updateLabels() {
         val game = ModdingUtils.currentGame
-        moddingGameWarningLabel.text = "[LIGHT_GRAY]${if (game.underdeveloped)
-            "[ORANGE]Warning:[] modding info for this game\nis very underdeveloped and may be\nextremely lacking in info or incorrect."
+        moddingGameWarningLabel.text = if (game.underdeveloped)
+            "screen.advOptions.modding.gameSelected.warningUnderdeveloped"
         else
-            "[YELLOW]Caution:[] modding info for this game\nmay only be partially complete and\nsubject to change."}[]\n"
-        moddingGameLabel.text = "1 ♩ (quarter note) = ${game.beatsToTickflowString(1f)}${if (game.tickflowUnitName.isEmpty()) " rest units" else ""}"
+            "screen.advOptions.modding.gameSelected.warning"
+        moddingGameLabel.text = Localization["screen.advOptions.modding.gameSelected.tickUnits",game.beatsToTickflowString(1f)]
     }
 
     override fun tickUpdate() {
@@ -461,7 +457,7 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
 
     private fun resetReloadMetadataButton() {
         (reloadMetadataButton.labels.first() as TextLabel).let {
-            it.text = "Reload modding metadata"
+            it.text = "screen.advOptions.modding.reloadMetadata"
             it.fontScaleMultiplier = 0.8f
         }
     }

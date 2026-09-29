@@ -73,7 +73,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
         extension = when (jarFileLocation.extension) {
             "exe" -> Extension.EXE
             "jar" -> Extension.JAR
-            else -> throw IllegalArgumentException("Running from an unexpected place!")
+            else -> throw IllegalArgumentException(Localization["screen.autoUpdater.unknownExtension"])
         }
         val palette = stage.palette
         
@@ -255,7 +255,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 val md = MessageDigest.getInstance("SHA-256")
                 val sha256 = md.digest(zipFileLoc.readBytes()).fold("") { str, it -> str + "%02x".format(it) }
                 if (sha256 != digestHash) {
-                    throw Exception("SHA256 of downloaded file is different from the one reported by Github.")
+                    throw Exception(Localization["screen.autoUpdater.downloadError.nonMatchingChecksum"])
                 }
 
                 Gdx.app.postRunnable {
@@ -268,13 +268,13 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 zipFile.extractAll(extractFolder.canonicalPath)
                 zipFileLoc.deleteOnExit()
                 val mainFolder = extractFolder.resolve("Rhythm Heaven Remix Editor Refresh/")
-                if (!mainFolder.exists()) error("'Rhythm Heaven Remix Editor Refresh' directory did not exist after extraction.  Download manually at https://rhre.dev/releases/latest")
-                if (!mainFolder.isDirectory) error("Extracted 'Rhythm Heaven Remix Editor Refresh' was not a directory.  Download manually at https://rhre.dev/releases/latest")
+                if (!mainFolder.exists()) error(Localization["screen.autoUpdater.downloadError.inexistant"])
+                if (!mainFolder.isDirectory) error(Localization["screen.autoUpdater.downloadError.notADirectory"])
                 // Copy over allowed files
                 val fileList = mainFolder.listFiles()!!.toList()
                 val newJarFile = when (extension) {
-                    Extension.EXE -> fileList.firstOrNull { it.name == "RHREfresh.exe" } ?: error("RHREfresh.exe was not found after extraction. Download manually at https://rhre.dev/releases/latest")
-                        Extension.JAR -> fileList.firstOrNull { it.isDirectory && it.name == "bin" }?.listFiles()?.firstOrNull { it.name == "RHREfresh.jar" } ?: error("RHREfresh.jar was not found after extraction. Download manually at https://rhre.dev/releases/latest")
+                    Extension.EXE -> fileList.firstOrNull { it.name == "RHREfresh.exe" } ?: error(Localization["screen.autoUpdater.downloadError.missingExe"])
+                        Extension.JAR -> fileList.firstOrNull { it.isDirectory && it.name == "bin" }?.listFiles()?.firstOrNull { it.name == "RHREfresh.jar" } ?: error(Localization["screen.autoUpdater.downloadError.missingJar"])
                 }
                 fileList.filter {
                     (it.isDirectory && it.name in listOf("oss_licenses", "bin")) || (it.isFile && it.extension == "txt")
@@ -480,7 +480,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             zipFile.extractAll(extractFolder.canonicalPath)
             zipFileLoc.deleteOnExit()
             val executable = extractFolder.resolve("RHREUpdateUtility.exe")
-            if (!executable.exists()) error("The update utility did not download properly. You can find the updated RHRE in $updaterFolder.")
+            if (!executable.exists()) error(Localization["screen.autoUpdater.downloadError.updateUtility.missingExe",updaterFolder])
             RemixRecovery.removeSelfFromShutdownHooks()
             val updaterFolderPath = updaterFolder.canonicalPath
             Toolboks.LOGGER.info("Calling process `${Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath()}`, moving `${Path(updaterFolderPath, "Rhythm Heaven Remix Editor Refresh").toAbsolutePath()}` to `${jarFileLocation.parentFile.canonicalPath}`")

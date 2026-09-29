@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import io.github.chrislo27.rhrefresh.stage.bg.Background.Companion.BgData
 import io.github.chrislo27.toolboks.registry.AssetRegistry
 
 
@@ -14,29 +15,27 @@ abstract class Background(val id: String) {
     companion object {
         data class BgData(val bg: Background, val name: String)
         
-        private val kmStripes2: BgData = BgData(KarateManStripesBackground("karateManStripes2"), "Karate Man GBA 2")
-        
         val backgroundsData: List<BgData> by lazy {
             listOf(
-                    BgData(TengokuBackground("tengoku"), "GBA Game Select"),
-                    BgData(KarateManBackground("karateMan"), "Karate Man"),
+                    BgData(TengokuBackground("tengoku"), "menuTheme.gbaMenu"),
+                    BgData(KarateManBackground("karateMan"), "menuTheme.karateMan"),
                     BgData(TilingBackground("rhdsPolkaDots", 5f,
                                             speedX = 3f, speedY = -3f, widthCoeff = 0.5f, heightCoeff = 0.5f)
-                           { AssetRegistry["bg_polkadot"] }, "DS Game Select"),
-                    BgData(SpaceDanceBackground("spaceDance"), "Space Dance"),
-                    BgData(RetroBackground("retro"), "Retro"),
-                    BgData(TilingBackground("tapTrial", 5f, speedX = 0f, speedY = 1f) { AssetRegistry["bg_tapTrial"] }, "Tap Trial"),
-                    BgData(TilingBackground("tiled", 5f, speedX = 1f, speedY = 1f) { AssetRegistry["bg_tile"] }, "Notes"),
-                    BgData(LaunchPartyBackground("launchParty"), "Launch Party"),
-                    BgData(KittiesBackground("kitties"), "Kitties!"),
-                    BgData(SeesawBackground("seesaw"), "See-Saw"),
+                           { AssetRegistry["bg_polkadot"] }, "menuTheme.dsMenu"),
+                    BgData(SpaceDanceBackground("spaceDance"), "menuTheme.spaceDance"),
+                    BgData(RetroBackground("retro"), "menuTheme.retro"),
+                    BgData(TilingBackground("tapTrial", 5f, speedX = 0f, speedY = 1f) { AssetRegistry["bg_tapTrial"] }, "menuTheme.tapTrial"),
+                    BgData(TilingBackground("tiled", 5f, speedX = 1f, speedY = 1f) { AssetRegistry["bg_tile"] }, "menuTheme.notes"),
+                    BgData(LaunchPartyBackground("launchParty"), "menuTheme.launchParty"),
+                    BgData(KittiesBackground("kitties"), "menuTheme.kitties"),
+                    BgData(SeesawBackground("seesaw"), "menuTheme.seeSaw"),
                     BgData(KarateManStripesBackground("karateManStripes1", stripe1 = Color.valueOf("FEC652"),
-                                                      stripe2 = Color.valueOf("FFE86C")), "Karate Man GBA"),
-                    kmStripes2,
-                    BgData(BTSDSBackground("btsDS"), "Built to Scale DS"),
-                    BgData(BTSDSBackground("btsDS2", Color.valueOf("E1E11FFF")), "Built to Scale DS 2"),
-                    BgData(BTSDSBackground("btsDSBlue", Color.valueOf("2963FFFF")), "Built to Scale DS (Blue)"),
-                    BgData(StaticBackground("lightningBolting") { AssetRegistry["bg_thunder"] }, "Lightning Bolting")
+                                                      stripe2 = Color.valueOf("FFE86C")), "menuTheme.karateManGba"),
+                    BgData(KarateManStripesBackground("karateManStripes2"), "menuTheme.karateManGba2"),
+                    BgData(BTSDSBackground("btsDS"), "menuTheme.btsDs"),
+                    BgData(BTSDSBackground("btsDS2", Color.valueOf("E1E11FFF")), "menuTheme.btsDs2"),
+                    BgData(BTSDSBackground("btsDSBlue", Color.valueOf("2963FFFF")), "menuTheme.btsDsBlue"),
+                    BgData(StaticBackground("lightningBolting") { AssetRegistry["bg_thunder"] }, "menuTheme.lightningBolting")
 //                    BgData(PolyrhythmBackground("polyrhythm"), "Polyrhythm")
                   )
         }

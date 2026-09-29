@@ -16,6 +16,7 @@ import io.github.chrislo27.rhrefresh.entity.model.ModelEntity
 import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen
 import io.github.chrislo27.rhrefresh.util.*
 import io.github.chrislo27.toolboks.Toolboks
+import io.github.chrislo27.toolboks.i18n.Localization
 import io.github.chrislo27.toolboks.ui.*
 import io.github.chrislo27.toolboks.util.gdxutils.isShiftDown
 import java.io.IOException
@@ -29,11 +30,12 @@ class ExportImageButton(val editor: Editor, palette: UIPalette, parent: UIElemen
 
     init {
         addLabel(TextLabel(palette, this, this.stage).apply {
-            this.text = "Export\nImage"
+            this.text = "screen.export.exportImage"
             this.textWrapping = false
-            this.isLocalizationKey = false
+            this.isLocalizationKey = true
             this.fontScaleMultiplier = 0.8f
         })
+        this.tooltipTextIsLocalizationKey = true
     }
 
     override fun render(screen: ExportRemixScreen, batch: SpriteBatch, shapeRenderer: ShapeRenderer) {
@@ -44,14 +46,14 @@ class ExportImageButton(val editor: Editor, palette: UIPalette, parent: UIElemen
     override var tooltipText: String?
         set(_) {}
         get() {
-            return "Export remix as image\nHold [CYAN]SHIFT[] and click to export a horizontal image"
+            return "screen.export.exportImage.tooltip"
         }
 
     override fun onLeftClick(xPercent: Float, yPercent: Float) {
         super.onLeftClick(xPercent, yPercent)
         val wasShiftHeld = Gdx.input.isShiftDown()
-        val filter = TinyFDWrapper.FileExtFilter("Supported image output files (.png)", "*.png")
-        TinyFDWrapper.saveFile("Choose image to export to", attemptRememberDirectory(editor.main, PreferenceKeys.FILE_CHOOSER_EXPORT_IMAGE) ?: getDefaultDirectory(), filter) { file ->
+        val filter = TinyFDWrapper.FileExtFilter(Localization["screen.export.exportImage.fileChooserFilter"], "*.png")
+        TinyFDWrapper.saveFile(Localization["screen.export.exportImage.fileChooser"], attemptRememberDirectory(editor.main, PreferenceKeys.FILE_CHOOSER_EXPORT_IMAGE) ?: getDefaultDirectory(), filter) { file ->
             val remix = editor.remix
             val duration = remix.duration
             if (file != null && duration > 0f) {

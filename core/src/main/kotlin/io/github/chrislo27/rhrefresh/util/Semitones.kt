@@ -65,11 +65,11 @@ object Semitones {
             11 to "Si")
 
     enum class PitchStyle(val converter: (Int) -> String, val example: String, val displayName: String) {
-        SHARPS({ convertToName(sharpKeyNames, it)}, "A$SHARP", "Sharps (US style)"),
-        FLATS({ convertToName(flatKeyNames, it) }, "B$FLAT", "Flats (US style)"),
-        SHARPSDOREMI({ convertToName(sharpKeyNamesDoremi, it)}, "La$SHARP", "Sharps (EU style)"),
-        FLATSDOREMI({ convertToName(flatKeyNamesDoremi, it) }, "Si$FLAT", "Flats (EU style)"),
-        INTEGRAL({ if (it == 0) "0" else if (it < 0) "$it" else "+$it" }, "+3, -5", "Interval");
+        SHARPS({ convertToName(sharpKeyNames, it)}, "A$SHARP", "pitchNoteStyle.sharpsUS"),
+        FLATS({ convertToName(flatKeyNames, it) }, "B$FLAT", "pitchNoteStyle.flatsUS"),
+        SHARPSDOREMI({ convertToName(sharpKeyNamesDoremi, it)}, "La$SHARP", "pitchNoteStyle.sharpsEU"),
+        FLATSDOREMI({ convertToName(flatKeyNamesDoremi, it) }, "Si$FLAT", "pitchNoteStyle.flatsEU"),
+        INTEGRAL({ if (it == 0) "0" else if (it < 0) "$it" else "+$it" }, "+3, -5", "pitchNoteStyle.interval");
 
         val usedKeyNames = mutableMapOf<Int, String>()
 
