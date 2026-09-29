@@ -474,9 +474,6 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
             this.addLabel(paletteLabel)
             this.addLabel(nameLabel)
 
-            this.tooltipText = "screen.info.glassEntities.tooltip"
-            this.tooltipTextIsLocalizationKey = false
-
             this.cycle(0)
 
             this.location.set(

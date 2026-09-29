@@ -88,6 +88,7 @@ object Ffmpeg {
 
         val ffmpegExecutor = createProcessLocator().createExecutor()
         ffmpegExecutor.addArgument("-y")
+        ffmpegExecutor.addArgument("-hide_banner")
         ffmpegExecutor.addArgument("-i")
         ffmpegExecutor.addArgument(input.absolutePath)
 

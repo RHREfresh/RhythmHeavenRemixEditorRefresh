@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Align
+import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
+import io.github.chrislo27.rhrefresh.PreferenceKeys.LANG_INDEX
 import io.github.chrislo27.rhrefresh.analytics.AnalyticsHandler
 import io.github.chrislo27.rhrefresh.init.DefaultAssetLoader
 import io.github.chrislo27.rhrefresh.midi.MidiHandler
@@ -23,6 +25,7 @@ import io.github.chrislo27.rhrefresh.patternstorage.PatternStorage
 import io.github.chrislo27.rhrefresh.playalong.Playalong
 import io.github.chrislo27.rhrefresh.screen.*
 import io.github.chrislo27.rhrefresh.screen.info.InfoScreen
+import io.github.chrislo27.rhrefresh.screen.info.ProgramSettingsStage
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
@@ -201,7 +204,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
                 Localization.logMissingLocalizations()
             }
         }
-        
+
         // font stuff
         run {
             fonts[defaultFontLargeKey] = createDefaultLargeFont()
@@ -262,11 +265,28 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         RHREfresh.PREFERENCES = preferences
         Toolboks.LOGGER.info("Loaded preferences")
 
+        //Localization stuff again
+
+        val jsonStr: String = preferences.getString(LANGUAGE, null).takeUnless(String::isEmpty) ?: "{}"
+        val langObj: ProgramSettingsStage.LangObj = JsonHandler.fromJson(jsonStr, ProgramSettingsStage.LangObj::class.java)
+        val language: String = langObj.language?.toLowerCase(Locale.ROOT) ?: ""
+        val country: String = langObj.country?.toLowerCase(Locale.ROOT) ?: ""
+        val variant: String = langObj.variant?.toLowerCase(Locale.ROOT) ?: ""
+
+        Localization.currentBundle = Localization.bundles.find {
+            it.locale.locale.language == language && it.locale.locale.country == country && it.locale.locale.variant == variant
+        } ?: Localization.bundles.find {
+            it.locale.locale.language == language && it.locale.locale.country == country
+        } ?: Localization.bundles.find {
+            it.locale.locale.language == language
+        } ?: Localization.bundles.first()
+
         RHREfresh.DATABASE_BRANCH = if (preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH)) {
             "dev"
         } else {
             "master"
         }
+
         RHREfresh.DATABASE_CURRENT_COMMIT = preferences.getString(PreferenceKeys.DATABASE_VERSION+ RHREfresh.DATABASE_BRANCH+PreferenceKeys.DATABASE_VERSION_COMMIT, "")
         
         GlobalScope.launch {
