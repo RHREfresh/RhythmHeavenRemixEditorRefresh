@@ -113,7 +113,15 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
     override fun render(delta: Float) {
         super.render(delta)
 
-        if(!startedImporting){
+        if(!File(System.getProperty("user.home") + "/.rhre3").exists()){
+            main.preferences.putBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING, true)
+            main.preferences.flush()
+            val screen = ScreenRegistry[if (RHREfresh.skipGitScreen) "sfxdbLoad" else "databaseUpdate"]
+            main.screen = screen
+        }
+
+
+        if(!startedImporting && !main.preferences.getBoolean(PreferenceKeys.IMPORTED_RHRE3, false)){
             startedImporting = true
             val thread = Thread {
 
@@ -170,9 +178,12 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                     source.copyRecursively(target, overwrite = true)
                     source.deleteRecursively()
                 }
+                main.preferences.putBoolean(PreferenceKeys.IMPORTED_RHRE3, true)
                 updateState(4)
             }
             thread.start()
+        } else if(!startedImporting){
+            updateState(4)
         }
     }
 

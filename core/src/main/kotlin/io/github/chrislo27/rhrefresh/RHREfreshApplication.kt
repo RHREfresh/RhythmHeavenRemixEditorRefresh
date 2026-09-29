@@ -366,7 +366,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
                 loadWindowSettings()
                 dontShowResizeInfo = false
                 val nextScreen = ScreenRegistry[
-                    if (RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && File(System.getProperty("user.home") + "/.rhre3").exists() && !RHREfresh.portableMode)) {
+                    if (RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && !RHREfresh.portableMode)) {
                         "importOlderRhre"
                     } else if (RHREfresh.skipGitScreen) {
                         "sfxdbLoad"
