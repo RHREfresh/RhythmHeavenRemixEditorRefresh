@@ -150,6 +150,7 @@ class ImportOlderRHREScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
                         }
                     })
                     File(newFolder,"customSounds").deleteRecursively()
+                    File(newFolder,"customSounds").mkdir()
                 }
                 // Transfer the preferences
                 if (!File(newFolder,"prefs/RHREFRESH").exists() && File(newFolder,"prefs/RHRE3").exists()) {
