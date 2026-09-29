@@ -4,7 +4,7 @@
 
 ### [Download the latest release here!](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest)
 
-[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases) [![GitHub license](https://img.shields.io/github/license/chrislo27/RhythmHeavenRemixEditor.svg)](https://github.com/chrislo27/RhythmHeavenRemixEditor/blob/dev/LICENSE.txt)<br>
+[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases) [![Discord](https://img.shields.io/badge/Discord-gray?logo=discord)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases) [![GitHub license](https://img.shields.io/github/license/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh.svg)](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/blob/dev/LICENSE.txt)<br>
 
 **Rhythm Heaven Remix Editor Refresh** is a fork of RHRE (based on [RHRE3](https://github.com/chrislo27/RhythmHeavenRemixEditor)) with many improvements and new features! Some of those include...
 * **Minigames from Rhythm Heaven Groove**
@@ -40,19 +40,20 @@ Also check out the [RHREfresh SFX Database](https://github.com/TheAlternateDocto
 
 ## Installation
 ### **EXE Version** (Windows only)
-1. Go to the [most recent release](https://github.com/chrislo27/RhythmHeavenRemixEditor/releases/latest) and download the `RHREfresh_X_exe.zip` file, where `X` is the current version number.
+1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_exe_A.zip` file, where `X` is the current version number and ``A`` is your CPU architecture (``x64`` or ``arm64``).
 2. Fully extract the zip file to a location you prefer. `RHREfresh.exe` AND the `jdk` folder must be in the same folder.
 3. Double-click ``RHREfresh.exe`` to open the program! If you see a popup that says "Windows protected your PC", click "More info" and then "Run anyway".
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
 
 ### **JAR Version** (Windows, Mac, and Linux)
-1. Go to the [most recent release](https://github.com/chrislo27/RhythmHeavenRemixEditor/releases/latest) and download the `RHREfresh_X_jar.zip` file, where `X` is the current version number.
+1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_multiplatform_jar.zip` file, where `X` is the current version number.
 2. Fully extract the zip file to a location you prefer. All files must be extracted.
 3. Depending on your operating system, run the following file:
-* **Windows**: Double-click ``run_windows.bat``. If it asks if you'd like to run the file, click "Run".
-* **Mac**: Open Terminal, drag in the ``run_macos.sh`` file, and hit [Enter].
-* **Linux**: Run the ``run_linux.sh`` file.
+  * **Windows**: Double-click ``run_windows.bat``. If it asks if you'd like to run the file, click "Run".
+  * **Mac**: Open Terminal, type in ``chmod + x ``, drag in the ``run_macos.sh`` file, and hit [Enter] to add the execute permissions for the first-time installation.
+    * Then, to launch, just open Terminal, drag in the ``run_macos.sh`` file, and hit [Enter].
+  * **Linux**: Run the ``run_linux.sh`` file.
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
 
@@ -67,6 +68,10 @@ You can also check for updates at any time in the Info and Settings page of Sett
 ### From RHRE3:
 Simply follow the installation instructions above. RHREfresh will automatically move over your settings, themes, and other data.
 * Custom SFX will **NOT** be transferred! Make sure they don't have any conflicts with the built-in SFX (for example, a custom SFX pack for Rhythm Heaven Groove), then you can copy your sound packs over.
+
+## Discord
+RHREfresh has an official Discord server for support, bug reports, feature requests, and sharing remixes. [Click here](https://discord.gg/XDS985ZTkH) to join!<br>
+_The Discord will **always** be optional to join! Bug reports and feature requests can **always** be submitted on the GitHub Issues page, and will be treated the same as ones submitted in Discord._
 
 ## Other information
 Rhythm Heaven is the intellectual property of Nintendo.<br>
