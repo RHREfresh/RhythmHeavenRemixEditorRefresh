@@ -166,7 +166,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                  */
                 val releaseResponseBody = RHREfreshApplication.httpClient
 //                        .prepareGet("https://thealtdoc.fr/rhre/latest.json")
-                        .prepareGet("https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest")
+                        .prepareGet("https://api.github.com/repos/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest")
                         .addHeader("Accept", "application/vnd.github.v3+json")
                         .execute().get().responseBody
                 val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
@@ -392,7 +392,8 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             6. Copy jar file atomically and exit forcibly (System.exit())
              */
             val releaseResponseBody = RHREfreshApplication.httpClient
-                .prepareGet("https://git.thealtdoc.fr/api/v1/repos/thatzeogal/RHREUpdateUtility/releases/latest")
+//                .prepareGet("https://github.com/api/v1/repos/thatzeogal/RHREUpdateUtility/releases/latest")
+                .prepareGet("https://api.github.com/repos/RHREfresh/RHREUpdateUtility/releases/latest")
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .execute().get().responseBody
             val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
