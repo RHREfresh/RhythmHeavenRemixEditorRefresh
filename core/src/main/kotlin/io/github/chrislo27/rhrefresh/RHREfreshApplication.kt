@@ -267,11 +267,11 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
 
         //Localization stuff again
 
-        val jsonStr: String = preferences.getString(LANGUAGE, null).takeUnless(String::isEmpty) ?: "{}"
+        val jsonStr: String = preferences.getString(LANGUAGE, null)?.takeUnless(String::isEmpty) ?: "{}"
         val langObj: ProgramSettingsStage.LangObj = JsonHandler.fromJson(jsonStr, ProgramSettingsStage.LangObj::class.java)
-        val language: String = langObj.language?.toLowerCase(Locale.ROOT) ?: ""
-        val country: String = langObj.country?.toLowerCase(Locale.ROOT) ?: ""
-        val variant: String = langObj.variant?.toLowerCase(Locale.ROOT) ?: ""
+        val language: String = langObj.language?.lowercase(Locale.ROOT) ?: ""
+        val country: String = langObj.country?.lowercase(Locale.ROOT) ?: ""
+        val variant: String = langObj.variant?.lowercase(Locale.ROOT) ?: ""
 
         Localization.currentBundle = Localization.bundles.find {
             it.locale.locale.language == language && it.locale.locale.country == country && it.locale.locale.variant == variant
