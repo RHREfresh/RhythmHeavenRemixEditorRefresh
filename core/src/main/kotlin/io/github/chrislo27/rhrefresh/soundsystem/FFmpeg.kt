@@ -15,9 +15,9 @@ import kotlin.math.pow
 
 
 /**
- * A simple wrapper around the [FFMPEG](https://ffmpeg.org/) executables.
+ * A simple wrapper around the [FFmpeg](https://ffmpeg.org/) executables.
  */
-object Ffmpeg {
+object FFmpeg {
 
     enum class ARCH_OS(val supported: Boolean, val executableName: String) {
         UNSUPPORTED(false, "unsupported"),

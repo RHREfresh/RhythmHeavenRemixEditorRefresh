@@ -676,7 +676,7 @@ open class Remix(val main: RHREfreshApplication)
         private set
     
     val timeStretchingAllowed: Boolean
-        get() = Ffmpeg.isSupported && !main.settings.disableTimeStretching
+        get() = FFmpeg.isSupported && !main.settings.disableTimeStretching
 
     val currentSubtitles: MutableList<SubtitleEntity> = mutableListOf()
     val currentSubtitlesReversed: Iterable<SubtitleEntity> = currentSubtitles.asReversed()

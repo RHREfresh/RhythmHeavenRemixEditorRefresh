@@ -38,7 +38,7 @@ object Credits {
 LWJGL
 Toolboks
 Beads
-FFMPEG
+FFmpeg
 Async HTTP Client
 Jackson
 JGit

@@ -1,6 +1,5 @@
 package io.github.chrislo27.rhrefresh.screen.info
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -10,12 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
-import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.VersionHistory
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
-import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.*
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.util.JsonHandler
@@ -23,14 +20,12 @@ import io.github.chrislo27.rhrefresh.util.Semitones
 import io.github.chrislo27.rhrefresh.util.TinyFDWrapper
 import io.github.chrislo27.rhrefresh.util.attemptRememberDirectory
 import io.github.chrislo27.rhrefresh.util.getDefaultDirectory
-import io.github.chrislo27.rhrefresh.util.persistDirectory
 import io.github.chrislo27.toolboks.i18n.Localization
 import io.github.chrislo27.toolboks.registry.AssetRegistry
 import io.github.chrislo27.toolboks.ui.*
 import io.github.chrislo27.toolboks.version.Version
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.awt.Desktop
 import java.io.File
 import java.util.Locale
 import kotlin.math.sign
@@ -68,7 +63,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         settings.elements += object : Button<InfoScreen>(palette, settings, settings) {
 
             private fun updateText() {
-                textLabel.text = "${Localization["editor.language"]}${Localization.currentBundle.locale.name}"
+                textLabel.text = "${Localization["editor.language"]} ${Localization.currentBundle.locale.name}"
             }
 
             private fun persist() {
@@ -270,7 +265,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
 
             this.tooltipTextIsLocalizationKey = true
-            this.tooltipText = if (Ffmpeg.isSupported) "screen.info.disableTimeStretching.tooltip" else "screen.info.disableTimeStretching.notSupported.tooltip"
+            this.tooltipText = if (FFmpeg.isSupported) "screen.info.disableTimeStretching.tooltip" else "screen.info.disableTimeStretching.notSupported.tooltip"
 
             this.checkedStateChanged = {
                 if (!main.settings.disableTimeStretching && it) {
@@ -285,7 +280,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                               screenY = padding * 7 + buttonHeight * 6,
                               screenWidth = buttonWidth-padding-(buttonWidth * 0.085f),
                               screenHeight = buttonHeight)
-            this.enabled = Ffmpeg.isSupported
+            this.enabled = FFmpeg.isSupported
         }
         // Select executable FFMPEG
         ffmpegExecutableButton = Button(palette, settings, settings).apply {

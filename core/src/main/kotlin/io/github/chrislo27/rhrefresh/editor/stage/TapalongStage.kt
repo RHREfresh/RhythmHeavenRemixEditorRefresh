@@ -239,7 +239,7 @@ class TapalongStage(val editor: Editor, val palette: UIPalette, parent: EditorSt
                 tempoLabel.text = "0"
             }
             tapRecords.size == 1 -> {
-                tempoLabel.text = Localization["editor.tapalong.first"]
+                tempoLabel.text = "-"
             }
             else -> {
                 tempoLabel.text = "$roundedTempo"

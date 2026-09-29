@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
-import io.github.chrislo27.rhrefresh.PreferenceKeys.LANG_INDEX
 import io.github.chrislo27.rhrefresh.analytics.AnalyticsHandler
 import io.github.chrislo27.rhrefresh.init.DefaultAssetLoader
 import io.github.chrislo27.rhrefresh.midi.MidiHandler
@@ -29,7 +28,7 @@ import io.github.chrislo27.rhrefresh.screen.info.ProgramSettingsStage
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
-import io.github.chrislo27.rhrefresh.soundsystem.Ffmpeg
+import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.soundsystem.SoundCache
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.stage.LoadingIcon
@@ -225,8 +224,8 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
 
         // Copy over FFMPEG executables
         RHREfresh.FFMPEG_FOLDER.mkdirs()
-        val currentOSFfmpeg = Ffmpeg.currentARCH_OS
-        if (currentOSFfmpeg != Ffmpeg.ARCH_OS.UNSUPPORTED) {
+        val currentOSFfmpeg = FFmpeg.currentARCH_OS
+        if (currentOSFfmpeg != FFmpeg.ARCH_OS.UNSUPPORTED) {
             Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
             RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
                 setReadable(true)
