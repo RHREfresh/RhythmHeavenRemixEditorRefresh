@@ -407,6 +407,8 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             }
             val zipUrl = assetNode["browser_download_url"].asText()
             val filesize = assetNode["size"].asLong(1L).coerceAtLeast(1L)
+            val digestMethod = assetNode["digest"].asText().split(":").first()
+            val digestHash = assetNode["digest"].asText().split(":").last()
 
             val zipFileLoc = updaterFolder.resolve("RHREUpdateUtility.zip").apply {
                 createNewFile()
@@ -469,6 +471,12 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                     }
                 }).get()
             fileStream.close()
+
+            val md = MessageDigest.getInstance("SHA-256")
+            val sha256 = md.digest(zipFileLoc.readBytes()).fold("") { str, it -> str + "%02x".format(it) }
+            if (sha256 != digestHash) {
+                throw Exception(Localization["screen.autoUpdater.downloadError.nonMatchingChecksum"])
+            }
 
             //Then, we use the utility
             Gdx.app.postRunnable {
