@@ -21,6 +21,15 @@ object Credits {
                 "consulting" crediting "chrislo27, Kievit",
                 "logo" crediting "dexiedoo_octo, Katie1118, Kievit, viviancherry",
                 "updateutil" crediting "Zeo",
+                "localization" crediting
+                        """[LIGHT_GRAY]Français (French)[]
+                |TheAlternateDoctor
+                |
+                |[LIGHT_GRAY]Español (Spanish)[]
+                |patataofcourse
+                |
+                |[LIGHT_GRAY]Deutsch (German)[]
+                |Blizeatos""".trimMargin(),
                 "playtest" crediting "patataofcourse, Haikaede, Mizu Bunny, Maddy, viviancherry, Chloe, conhlee, dexiedoo_octo, Dracobot, elp, Gosh, Killble, OpaliteDelight, Seanski2, Yumiko!, Zeo",
                 "resources" crediting
                         """Rhythm Heaven assets by Nintendo
