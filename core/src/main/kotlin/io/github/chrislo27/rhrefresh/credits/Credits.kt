@@ -15,7 +15,7 @@ object Credits {
         return listOf(
                 "title" crediting RHREfresh.GITHUB,
                 "fresh" crediting "",
-                "programming" crediting "TheAlternateDoctor\n${Localization["credits.title.programming.contributions", "iestyn129"]}",
+                "programming" crediting "TheAlternateDoctor\n${Localization["credits.title.programming.contributions", "ThatZeoGal, iestyn129"]}",
                 "sfx" crediting (SFXDatabase.let { if (!it.isDataLoading()) it.data.sfxCredits.sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ") else null } ?: sfxCreditsLegacyFallback),
                 "gfx" crediting "dexiedoo_octo, Katie1118, viviancherry",
                 "consulting" crediting "chrislo27, Kievit",
