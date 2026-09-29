@@ -30,23 +30,23 @@ Also check out the [RHREfresh SFX Database](https://github.com/TheAlternateDocto
 
 
 ## System Requirements
-### **EXE Version** (Windows only)
+### **Windows EXE Version** (Windows only)
 * Windows 10 or newer
 * An internet connection to download the SFX Database
 
-### **JAR Version** (Windows, Mac, and Linux)
+### **Multiplatform JAR Version** (Windows, Mac, and Linux)
 * [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) or [newer](https://www.oracle.com/java/technologies/downloads/), and an OS that can run your chosen version
 * An internet connection to download the SFX Database
 
 ## Installation
-### **EXE Version** (Windows only)
-1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_exe_A.zip` file, where `X` is the current version number and ``A`` is your CPU architecture (``x64`` or ``arm64``).
+### **Windows EXE Version** (Windows only)
+1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_win_A.zip` file, where `X` is the current version number and ``A`` is your CPU architecture (``x64`` or ``arm64``).
 2. Fully extract the zip file to a location you prefer. `RHREfresh.exe` AND the `jdk` folder must be in the same folder.
 3. Double-click ``RHREfresh.exe`` to open the program! If you see a popup that says "Windows protected your PC", click "More info" and then "Run anyway".
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
 
-### **JAR Version** (Windows, Mac, and Linux)
+### **Multiplatform JAR Version** (Windows, Mac, and Linux)
 1. Go to the [most recent release](https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_multiplatform_jar.zip` file, where `X` is the current version number.
 2. Fully extract the zip file to a location you prefer. All files must be extracted.
 3. Depending on your operating system, run the following file:
@@ -60,8 +60,8 @@ Also check out the [RHREfresh SFX Database](https://github.com/TheAlternateDocto
 ## Updating the program
 ### From RHREfresh:
 RHREfresh will automatically check for updates when it opens. Simply follow the on-screen instructions!
-* For the **EXE version**, RHREfresh will automatically re-open once the update is complete.
-* For the **JAR version**, you will have to re-open RHREfresh manually after the update is finished installing.
+* For the **Windows EXE version**, RHREfresh will automatically re-open once the update is complete.
+* For the **Multiplatform JAR version**, you will have to re-open RHREfresh manually after the update is finished installing.
 
 You can also check for updates at any time in the Info and Settings page of Settings by clicking "View editor version info", or update manually by downloading the latest release with the instructions above.<br>
 
