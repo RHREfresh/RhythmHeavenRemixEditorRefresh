@@ -1,2 +1,2 @@
-java -jar -Xmx1024m bin/RHRE.jar
+java -Xmx4G -jar bin/RHREfresh.jar
 pause
