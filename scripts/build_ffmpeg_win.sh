@@ -1,0 +1,73 @@
+# git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+# cd ffmpeg
+make clean
+PATH="build_win/bin:$PATH" PKG_CONFIG_PATH="build_win/ffmpeg_build/lib/pkgconfig" ./configure \
+  --prefix="build_win/ffmpeg_build" \
+  --pkg-config-flags="--static" \
+  --extra-cflags="-Ibuild_win/ffmpeg_build/include" \
+  --extra-ldflags="-Lbuild_win/ffmpeg_build/lib --static" \
+  --extra-libs="-lpthread -lm" \
+  --bindir="build_win/bin" \
+  --arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32- \
+    --enable-pic \
+    --enable-static \
+    --disable-shared \
+    --disable-doc \
+    --disable-debug \
+    --disable-avdevice \
+    --disable-swscale \
+    --disable-programs \
+    --enable-ffmpeg \
+    --disable-network \
+    --disable-muxers \
+    --disable-demuxers \
+    --disable-zlib \
+    --disable-lzma \
+    --disable-bzlib \
+    --disable-iconv \
+    --disable-libxcb \
+    --disable-bsfs \
+    --disable-filters \
+    --disable-parsers \
+    --disable-indevs \
+    --disable-outdevs \
+    --disable-encoders \
+    --disable-decoders \
+    --disable-hwaccels \
+    --disable-vdpau \
+    --disable-vulkan \
+    --disable-vaapi \
+    --disable-nvdec \
+    --disable-nvenc \
+    --disable-libdrm \
+    --disable-ffnvcodec \
+    --disable-dxva2 \
+    --disable-d3d12va \
+    --disable-d3d11va \
+    --disable-cuvid \
+    --disable-cuda-llvm \
+    --disable-amf \
+    --disable-videotoolbox \
+    --disable-audiotoolbox \
+    --disable-filters \
+    --disable-protocols \
+    --enable-protocol=file \
+    --enable-libvorbis \
+    --enable-librubberband \
+    --enable-gpl \
+    --enable-decoder=pcm_s16le \
+    --enable-demuxer=wav \
+    --enable-encoder=aac \
+    --enable-encoder=flac \
+    --enable-encoder=libvorbis \
+    --enable-encoder=pcm_s16le \
+    --enable-muxer=ogg \
+    --enable-muxer=flac \
+    --enable-muxer=adts \
+    --enable-muxer=wav \
+    --enable-filter=aresample \
+    --enable-filter=rubberband \
+    --enable-filter=atempo
+PATH="build_win/bin:$PATH" make -j6 && \
+make install && \
+hash -r
