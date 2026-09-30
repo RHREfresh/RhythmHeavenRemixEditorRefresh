@@ -4,7 +4,7 @@
 
 ### [Download the latest release here!](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest)
 
-[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases) [![Discord](https://img.shields.io/badge/Discord-gray?logo=discord)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases) [![GitHub license](https://img.shields.io/github/license/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/blob/dev/LICENSE.txt)<br>
+[![Downloads](https://img.shields.io/github/downloads/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/total.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases) [![Discord](https://img.shields.io/badge/Discord-gray?logo=discord)](https://discord.gg/XDS985ZTkH) [![GitHub license](https://img.shields.io/github/license/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh.svg)](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/blob/dev/LICENSE.txt)<br>
 
 **Rhythm Heaven Remix Editor Refresh** is a fork of RHRE (based on [RHRE3](https://github.com/chrislo27/RhythmHeavenRemixEditor)) with many improvements and new features! Some of those include...
 * **Minigames from Rhythm Heaven Groove**
