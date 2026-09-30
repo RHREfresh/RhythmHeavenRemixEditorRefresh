@@ -10,7 +10,11 @@ about: Create a bug report to help us improve
   * MacOS: ~/Library/Application Support/RHREfresh/logs/
   * Linux: ~/.config/RHREfresh/logs/
 
-**Editor version**: (insert relevant editor version here)
+**Platform**: (windows, mac, or linux. if you know your cpu architecture, please include that too)
+
+**Program Type**: (EXE or JAR)
+
+**Editor version**: (insert relevant editor version here, such as v4.0.0)
 
 ### Description
 (describe your problem)
