@@ -148,9 +148,10 @@ class DefaultAssetLoader : AssetRegistry.IAssetLoader {
         AssetRegistry.loadAsset<Texture>("bg_thunder", "images/menu/bg_thunder.png")
 
         // play-yan
-        AssetRegistry.loadAsset<Texture>("playyan_jumping", "images/playyan/jumping_26.png")
-        AssetRegistry.loadAsset<Texture>("playyan_pogo", "images/playyan/pogo.png")
-        
+        AssetRegistry.loadAsset<Texture>("playyan_jumping", "images/playyan/jumping_pixel.png")
+        AssetRegistry.loadAsset<Texture>("playyan_pogo", "images/playyan/pogo_pixel.png")
+//        AssetRegistry.loadAsset<Texture>("playyan_walking", "images/playyan/walking_pixel.png")
+
         // glee club midi visualization
         AssetRegistry.loadAsset<Texture>("glee_club", "images/chorusmen_rot.png")
         
@@ -191,7 +192,7 @@ class DefaultAssetLoader : AssetRegistry.IAssetLoader {
 //                    "images/icon/$it.png")
 //        }
         
-        assets["playyan_walking"] = Texture("images/playyan/walking.png")
+        assets["playyan_walking"] = Texture("images/playyan/walking_pixel.png")
         
         assets["cursor_horizontal_resize"] =
                 Gdx.graphics.newCursor(Pixmap(Gdx.files.internal("images/cursor/horizontal_resize.png")),
