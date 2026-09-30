@@ -51,8 +51,8 @@ Also check out the [RHREfresh SFX Database](https://github.com/RHREfresh/RHRE-da
 2. Fully extract the zip file to a location you prefer. All files must be extracted.
 3. Depending on your operating system, run the following file:
   * **Windows**: Double-click ``run_windows.bat``. If it asks if you'd like to run the file, click "Run".
-  * **Mac**: Open Terminal, type in ``chmod + x ``, drag in the ``run_macos.sh`` file, and hit [Enter] to add the execute permissions for the first-time installation.
-    * Then, to launch, just open Terminal, drag in the ``run_macos.sh`` file, and hit [Enter].
+  * **Mac**: Open Terminal, type in ``chmod + x ``, drag in the ``run_macos.command`` file, and hit [Enter] to add the execute permissions for the first-time installation.
+    * Then, to launch, just double-click ``run_macos.command``.
   * **Linux**: Run the ``run_linux.sh`` file.
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
