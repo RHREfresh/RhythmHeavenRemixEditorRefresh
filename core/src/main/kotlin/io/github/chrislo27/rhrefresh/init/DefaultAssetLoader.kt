@@ -29,7 +29,8 @@ class DefaultAssetLoader : AssetRegistry.IAssetLoader {
         }
         AssetRegistry.loadAsset<Texture>("logo_legacy_rhre2_128", "images/icon/legacy/rhre2_128.png")
         AssetRegistry.loadAsset<Texture>("logo_legacy_rhre3_128", "images/icon/legacy/rhre3_128.png")
-        
+        AssetRegistry.loadAsset<Texture>("logo_legacy_rhre3_32", "images/icon/legacy/rhre3_32.png")
+
         AssetRegistry.loadAsset<Texture>("sfxdb_missing_icon", "images/gameicon/missing.png", nearestTexture())
         (Language.VALUES - Language.UNKNOWN).forEach { lang ->
             AssetRegistry.loadAsset<Pixmap>("sfxdb_langicon_${lang.code}_pixmap", "images/gameicon/lang/${lang.code}.png")

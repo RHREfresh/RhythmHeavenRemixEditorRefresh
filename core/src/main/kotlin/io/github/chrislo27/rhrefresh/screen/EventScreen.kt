@@ -44,6 +44,7 @@ class EventScreen(main: RHREfreshApplication)
     enum class EventType(val canImmediatelyContinue: Boolean, val backgroundFactory: () -> Background? = { null }) {
         NONE(true),
         ANNIVERSARY(false),
+        ANNIVERSARY_REFRESH(false),
         XMAS(true, { WinterBackground("winterBackground") })
     }
 
@@ -52,6 +53,7 @@ class EventScreen(main: RHREfreshApplication)
 
         fun getPossibleEvent(main: RHREfreshApplication, nextScreen: ToolboksScreen<*, *>?): EventScreen? {
             val anniversaryButNow: LocalDate = RHREfresh.RHRE_ANNIVERSARY.withYear(NOW.year)
+            val anniversaryRefreshButNow: LocalDate = RHREfresh.RHREFRESH_ANNIVERSARY.withYear(NOW.year)
             val xmasThisYear: LocalDate = LocalDate.of(NOW.year, 12, 24).withYear(NOW.year)
 
             // Event check
@@ -67,6 +69,13 @@ class EventScreen(main: RHREfreshApplication)
                 anniversaryButNow -> {
                     EventScreen(main).takeIf {
                         it.loadEventJson(EventType.ANNIVERSARY, Gdx.files.internal("event/anniversary.json"), nextScreen)
+                    }
+                }
+                // RHREfresh anniversary:
+                // Occurs from day of only
+                    anniversaryRefreshButNow -> {
+                    EventScreen(main).takeIf {
+                        it.loadEventJson(EventType.ANNIVERSARY_REFRESH, Gdx.files.internal("event/anniversary.json"), nextScreen)
                     }
                 }
                 // Xmas
@@ -197,7 +206,7 @@ class EventScreen(main: RHREfreshApplication)
                     val layout = font.drawCompressed(batch,
                                                      "Happy $years${getNumberSuffix(years)} [#FFFFFF00]$rhre[] Anniversary!",
                                                      0f, baseY, camera.viewportWidth, Align.center)
-                    val logo = AssetRegistry.get<Texture>("logo_32")
+                    val logo = AssetRegistry.get<Texture>("logo_legacy_rhre3_32")
                     val run = layout.runs[0]
                     var logoPos = 0f
                     for(i in 0..layout.colors[2]) {
@@ -211,6 +220,43 @@ class EventScreen(main: RHREfreshApplication)
                                         baseY - font.lineHeight * 2, camera.viewportWidth, Align.center)
                     font.drawCompressed(batch, "Here's to more RHRE!", 0f,
                                         baseY - font.lineHeight * 3, camera.viewportWidth, Align.center)
+                }
+                EventType.ANNIVERSARY_REFRESH -> {
+                    val baseY = camera.viewportHeight * 0.8f
+                    val years = NOW.year - RHREfresh.RHREFRESH_ANNIVERSARY.year
+                    val rhre = "RHRE"
+                    val layoutRHRE = font.drawCompressed(batch,
+                        "[#FFFFFF00]$rhre",
+                        0f, baseY, camera.viewportWidth, Align.center)
+                    val rhreWidth = layoutRHRE.runs[0].width
+                    val layout = if (years !=0){
+                        font.drawCompressed(batch,
+                            "Happy $years${getNumberSuffix(years)} [#FFFFFF00]$rhre[] Anniversary!",
+                            0f, baseY, camera.viewportWidth, Align.center)
+                    } else {
+                        font.drawCompressed(batch,
+                            "Thank you for downloading [#FFFFFF00]$rhre[] on release day!",
+                            0f, baseY, camera.viewportWidth, Align.center)
+                    }
+                    val logo = AssetRegistry.get<Texture>("logo_32")
+                    val run = layout.runs[0]
+                    var logoPos = 0f
+                    for(i in 0..layout.colors[2]) {
+                        logoPos+=run.xAdvances[i]
+                    }
+                    logoPos += run.x
+                    batch.draw(logo, logoPos, run.y + baseY - font.capHeight / 2 - rhreWidth/ 2, rhreWidth,
+                        rhreWidth)
+                    batch.setColor(1f, 1f, 1f, 1f)
+                    if (years != 0){
+                        font.drawCompressed(batch, "Thank you for your continued support over the years.", 0f,
+                            baseY - font.lineHeight * 2, camera.viewportWidth, Align.center)
+                        font.drawCompressed(batch, "Here's to more RHREfresh!", 0f,
+                            baseY - font.lineHeight * 3, camera.viewportWidth, Align.center)
+                    } else {
+                        font.drawCompressed(batch, "We hope you enjoy!", 0f,
+                            baseY - font.lineHeight * 2, camera.viewportWidth, Align.center)
+                    }
                 }
                 EventType.XMAS -> {
                     val baseY = camera.viewportHeight * 0.8f

@@ -94,6 +94,7 @@ object RHREfresh {
     lateinit var PREFERENCES: Preferences
 
     val RHRE_ANNIVERSARY: LocalDate = LocalDate.of(2016, Month.MAY, 29)
+    val RHREFRESH_ANNIVERSARY: LocalDate = LocalDate.of(2026, Month.SEPTEMBER, 30)
     private val RHRE3_ANNIVERSARY: LocalDate = LocalDate.of(2017, Month.AUGUST, 30)
     private val RHRE2_ANNIVERSARY: LocalDate = LocalDate.of(2016, Month.DECEMBER, 6)
 
