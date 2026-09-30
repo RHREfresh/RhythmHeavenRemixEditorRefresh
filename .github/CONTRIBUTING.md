@@ -1,32 +1,30 @@
 # Making issues
-The issue tracker is generally intended to report bugs and feature requests.
-Please don't use it as a support forum for using RHREfresh.
+The Issue tracker is generally intended to report bugs and feature requests. Please do not use it as a support form for help with using the program.
 
-When making an issue, please keep to the [templates already provided](./ISSUE_TEMPLATE/). All
-you have to do is submit a log file using the upload function, state the
-version affected, and describe your problem. Failing to keep to this template
-will have your issue closed almost immediately, and you may be blocked from creating issues in the future.
+When making an issue, please keep to the templates already provided.
 
-If submitting a feature request, state the version and description only.
-(You do not need a log file or the behaviours section.)
+If submitting a bug report, submit a log file using the upload function, state the version affected, and describe your problem. Failing to keep to this template will likely have your issue closed.
+
+If submitting a feature request, state the version and description only. Just like with bug reports, please use the template provided.
 
 Please make your titles descriptive of the problem/feature.
-#### Good titles
-* Shake entity shows pitch when hovered over
-  * Short and to the point
-* Response copies on macOS don't work
-  * Also short and to the point
-* Pie charts on inspections general stats screen should be percentage of time used and not count
-  * While a bit verbose, it still conveys its point
-* Music Volume Beyond 100%/Change Volume of Specific Cues
-  * This is a good feature request title -- short and to the point
 
-#### Bad titles
+#### Good titles:
+* Shake entity shows pitch when hovered over
+  * Short and to the point.
+* Response copies on macOS don't work
+  *  Also short and to the point.
+* Pie charts on inspections general stats screen should be percentage of time used and not count
+  * While a bit verbose, it still conveys its point.
+* Music Volume Beyond 100%/Change Volume of Specific Cu
+  * This is a good feature request title -- short and to the point.
+
+#### Bad titles:
 * Rap Women needs to have better segmenting AND has offbeat patterns
-  * Issues are not **demands**.
+  * Bad phrasing - please do not phrase feature/sfxdb requests as commands.
 * I think there might be another language for Love Rap you're missing...
-  * I don't hide things. Again, issues are not demands.
+  * Again, bad phrasing - "Korean Love Rap" would be just fine.
 * How to install it?!
-  * Issues are not your personal support forum. This is not helpful.
+  * The issues page is for bugs and feature requests, please don't ask for help here.
 * It wont let me open the file to use it
-  * Sounds like "I can't do the thing and it won't let me do it". This is not descriptive.
+  * Not descriptive enough; what happens when you try to open the file?
