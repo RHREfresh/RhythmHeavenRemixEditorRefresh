@@ -50,9 +50,11 @@ Also check out the [RHREfresh SFX Database](https://github.com/RHREfresh/RHRE-da
 1. Go to the [most recent release](https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest) and download the `RHREfresh_X_multiplatform_jar.zip` file, where `X` is the current version number.
 2. Fully extract the zip file to a location you prefer. All files must be extracted.
 3. Depending on your operating system, run the following file:
-  * **Windows**: Double-click ``run_windows.bat``. If it asks if you'd like to run the file, click "Run".
+  * **Windows**: Double-click ``run_windows.bat``.
+    * If it asks if you'd like to run the file, click "Run".
   * **Mac**: Open Terminal, type in ``chmod + x ``, drag in the ``run_macos.command`` file, and hit [Enter] to add the execute permissions for the first-time installation.
-    * Then, to launch, just double-click ``run_macos.command``.
+    * Then, right-click the ``run_macos.command`` file, click "Open", and then "Open" again. 
+    * In the future, you will be able to just double-click ``run_macos.command``.
   * **Linux**: Run the ``run_linux.sh`` file.
 4. Let the program download the necessary data from the SFXDB. You'll see something along the lines of "Receiving objects" while it loads. This may take up to several minutes.
 5. Have fun remixing!
