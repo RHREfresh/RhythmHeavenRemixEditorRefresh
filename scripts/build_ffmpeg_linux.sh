@@ -68,5 +68,4 @@ PATH="build_linux/bin:$PATH" PKG_CONFIG_PATH="build_linux/ffmpeg_build/lib/pkgco
     --enable-filter=aresample \
     --enable-filter=rubberband \
     --enable-filter=atempo
-PATH="build_linux/bin:$PATH" make -j6
-make install
+# PATH="build_linux/bin:$PATH" make -j6

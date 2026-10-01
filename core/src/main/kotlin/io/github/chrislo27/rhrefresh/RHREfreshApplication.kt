@@ -221,18 +221,6 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
             fonts.loadUnloaded(defaultCamera.viewportWidth, defaultCamera.viewportHeight)
             Toolboks.LOGGER.info("Loaded fonts (initial)")
         }
-
-        // Copy over FFMPEG executables
-        RHREfresh.FFMPEG_FOLDER.mkdirs()
-        val currentOSFfmpeg = FFmpeg.currentARCH_OS
-        if (currentOSFfmpeg != FFmpeg.ARCH_OS.UNSUPPORTED) {
-            Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
-            RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
-                setReadable(true)
-                setExecutable(true)
-            }
-            Toolboks.LOGGER.info("Copied FFMPEG executables successfully")
-        }
         
         // Generate hue bar
         run {
@@ -263,6 +251,19 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         preferences = Gdx.app.getPreferences("RHREFRESH")
         RHREfresh.PREFERENCES = preferences
         Toolboks.LOGGER.info("Loaded preferences")
+
+        // Copy over FFMPEG executables
+        RHREfresh.FFMPEG_FOLDER.mkdirs()
+        val currentOSFfmpeg = FFmpeg.currentARCH_OS
+        if (currentOSFfmpeg != FFmpeg.ARCH_OS.UNSUPPORTED) {
+            Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
+            RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
+                setReadable(true)
+                setExecutable(true)
+            }
+            Toolboks.LOGGER.info("Copied FFMPEG executables successfully")
+            FFmpeg.testFFmpeg()
+        }
 
         //Localization stuff again
 

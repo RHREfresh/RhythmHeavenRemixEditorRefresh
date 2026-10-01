@@ -44,7 +44,17 @@ object FFmpeg {
         e.printStackTrace()
         ARCH_OS.UNSUPPORTED
     }
-    val isSupported: Boolean get() = currentARCH_OS.supported
+
+    // We assume it is supported if there's a custom FFMPEG setup
+    val isSupported: Boolean get() {
+        val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+        if(ffmpegLocation.isNotEmpty()){
+            return true
+        }
+        return !forceUnsupported && currentARCH_OS.supported
+    }
+
+    var forceUnsupported = false
 
     // Return the encoder built for the platform or the one selected by the user, otherwise uhhhhh
     fun createEncoder(): Encoder {
@@ -123,6 +133,26 @@ object FFmpeg {
             }
             if (ffmpegExecutor.getProcessExitCode() !== 0) {
                 // it failed, and the lines above say why
+            }
+        } finally {
+            ffmpegExecutor.destroy()
+        }
+    }
+
+    fun testFFmpeg(){
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+        ffmpegExecutor.addArgument("-version")
+        try {
+            ffmpegExecutor.execute()
+            val reader =
+                RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (((reader.readLine().also { line = it } )) != null) {
+                Toolboks.LOGGER.info(line!!)
+            }
+            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+                Toolboks.LOGGER.info("Bundled FFmpeg sadly unsupported")
+                forceUnsupported = true
             }
         } finally {
             ffmpegExecutor.destroy()
