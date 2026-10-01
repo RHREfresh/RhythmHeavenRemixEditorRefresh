@@ -43,6 +43,13 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
 
     private val pitchStyleButton: Button<InfoScreen>
     private val clearRecentsButton: Button<InfoScreen>
+    private val ffmpegExecutableButton: Button<InfoScreen>
+
+    private var isChooserOpen = false
+        set(value) {
+            field = value
+            this.infoScreen.stage.backButton.enabled = !isChooserOpen
+        }
 
 
     init {
@@ -475,6 +482,68 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         }
         settings.elements += clearRecentsButton
 
+
+        // Select executable FFMPEG
+        ffmpegExecutableButton = object : Button<InfoScreen>(palette, settings, settings){
+
+            private val textLabel: TextLabel<InfoScreen>
+                get() = labels.first() as TextLabel<InfoScreen>
+
+            private val clipboardLabel: ImageLabel<InfoScreen>
+                get() = labels[1] as ImageLabel<InfoScreen>
+
+            override fun onLeftClick(xPercent: Float, yPercent: Float) {
+                super.onLeftClick(xPercent, yPercent)
+                openFfmpegPicker()
+            }
+            override fun onRightClick(xPercent: Float, yPercent: Float) {
+                preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
+                clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_warn"))
+                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg"]
+            }
+
+            override fun onResize(width: Float, height: Float, pixelUnitX: Float, pixelUnitY: Float) {
+                super.onResize(width, height, pixelUnitX, pixelUnitY)
+                clipboardLabel.location.set(screenX = 0f, screenY = 0f, screenWidth = 0.1f, screenHeight = 1f)
+                clipboardLabel.onResize(this.location.realWidth, this.location.realHeight, pixelUnitX, pixelUnitY)
+            }
+
+            override fun render(screen: InfoScreen, batch: SpriteBatch, shapeRenderer: ShapeRenderer) {
+                super.render(screen, batch, shapeRenderer)
+                val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+                if (ffmpegLocation.isNotEmpty()) {
+                    textLabel.text = "screen.info.timeStretching.change"
+                    this.tooltipText = Localization["screen.info.timeStretching.changeFfmpeg","[PINK]$ffmpegLocation"]
+                } else {
+                    textLabel.text = "screen.info.timeStretching.select"
+                    this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg"]
+                }
+            }
+        }.apply {
+            this.addLabel(TextLabel(palette, this, this.stage).apply {
+                this.isLocalizationKey = true
+                this.text = ""
+                this.textWrapping = false
+                this.fontScaleMultiplier = fontScale
+            })
+            this.addLabel(ImageLabel(palette, this, this.stage).apply {
+                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
+                image = if (preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()) {
+                    TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                } else {
+                    TextureRegion(AssetRegistry.get<Texture>("ui_icon_warn"))
+                }
+            })
+
+            this.location.set(screenX = padding,
+                screenY = padding,
+                screenWidth = buttonWidth,
+                screenHeight = buttonHeight)
+            this.tooltipTextIsLocalizationKey = false
+            this.visible = FFmpeg.forceUnsupported && !FFmpeg.currentARCH_OS.supported
+        }
+        settings.elements += ffmpegExecutableButton
+
         updateLabels()
     }
 
@@ -496,6 +565,25 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             this.language = language
             this.country = country
             this.variant = variant
+        }
+    }
+
+    @Synchronized
+    private fun openFfmpegPicker() {
+        if (!isChooserOpen) {
+            GlobalScope.launch {
+                isChooserOpen = true
+                val initialDirectory: File? = attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_LOAD) ?: getDefaultDirectory()
+                val fileFilter = TinyFDWrapper.FileExtFilter(Localization["screen.info.timeStretching.selectFfmpegFilter"])
+                TinyFDWrapper.openFile(Localization["screen.open.fileChooserTitle"], initialDirectory, fileFilter) { file ->
+                    isChooserOpen = false
+                    if (file != null) {
+                        (ffmpegExecutableButton.labels[1] as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                        ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
+                        preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
+                    }
+                }
+            }
         }
     }
 }

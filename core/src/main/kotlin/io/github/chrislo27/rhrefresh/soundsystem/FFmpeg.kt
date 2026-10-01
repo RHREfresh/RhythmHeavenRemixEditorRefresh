@@ -9,6 +9,7 @@ import ws.schild.jave.process.ProcessLocator
 import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator
 import ws.schild.jave.utils.RBufferedReader
 import java.io.File
+import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 import kotlin.math.pow
@@ -154,7 +155,10 @@ object FFmpeg {
                 Toolboks.LOGGER.info("Bundled FFmpeg sadly unsupported")
                 forceUnsupported = true
             }
-        } finally {
+        } catch (e: IOException){
+            forceUnsupported = true
+        }
+        finally {
             ffmpegExecutor.destroy()
         }
     }

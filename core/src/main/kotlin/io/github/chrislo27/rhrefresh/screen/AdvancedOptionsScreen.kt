@@ -471,14 +471,14 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
             this.rightClickAction = { _, _ ->
                 preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
                 clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
-                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
+                this.tooltipText = Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
             }
             this.tooltipTextIsLocalizationKey = false
             val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
             this.tooltipText = if (ffmpegLocation.isNotEmpty()) {
-                Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
+                Localization["screen.info.advOpt.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
             } else {
-                Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
+                Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
             }
         }
         centre.elements += ffmpegExecutableButton
@@ -489,9 +489,9 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
     private fun updateLabels() {
         val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
         ffmpegExecutableButton.tooltipText = if (ffmpegLocation.isNotEmpty()) {
-            Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
+            Localization["screen.info.advOpt.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
         } else {
-            Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
+            Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
         }
 
         val game = ModdingUtils.currentGame
@@ -557,12 +557,12 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
             GlobalScope.launch {
                 isChooserOpen = true
                 val initialDirectory: File? = attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_LOAD) ?: getDefaultDirectory()
-                val fileFilter = TinyFDWrapper.FileExtFilter(Localization["screen.info.timeStretching.selectFfmpegFilter"])
+                val fileFilter = TinyFDWrapper.FileExtFilter(Localization["screen.info.advOpt.timeStretching.selectFfmpegFilter"])
                 TinyFDWrapper.openFile(Localization["screen.open.fileChooserTitle"], initialDirectory, fileFilter) { file ->
                     isChooserOpen = false
                     if (file != null) {
                         (ffmpegExecutableButton.labels.first() as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
-                        ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
+                        ffmpegExecutableButton.tooltipText = Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
                         preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
                     }
                 }
