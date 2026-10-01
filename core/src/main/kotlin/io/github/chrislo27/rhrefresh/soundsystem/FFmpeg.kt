@@ -27,7 +27,7 @@ object FFmpeg {
         LINUX_X64(true, "ffmpeg_linux_x64");
 
         companion object {
-            val ALL_VALUES: List<ARCH_OS> = values().toList()
+            val ALL_VALUES: List<ARCH_OS> = entries
             val SUPPORTED: List<ARCH_OS> = ALL_VALUES - UNSUPPORTED
         }
     }
@@ -132,7 +132,7 @@ object FFmpeg {
             while (((reader.readLine().also { line = it } )) != null) {
                 Toolboks.LOGGER.info(line!!)
             }
-            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
                 // it failed, and the lines above say why
             }
         } finally {
@@ -151,7 +151,7 @@ object FFmpeg {
             while (((reader.readLine().also { line = it } )) != null) {
                 Toolboks.LOGGER.info(line!!)
             }
-            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
                 Toolboks.LOGGER.info("Bundled FFmpeg sadly unsupported")
                 forceUnsupported = true
             }
