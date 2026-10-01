@@ -493,7 +493,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             RemixRecovery.removeSelfFromShutdownHooks()
             val updaterFolderPath = updaterFolder.canonicalPath
             Toolboks.LOGGER.info("Calling process `${Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath()}`, moving `${Path(updaterFolderPath, "Rhythm Heaven Remix Editor Refresh").toAbsolutePath()}` to `${jarFileLocation.parentFile.canonicalPath}`")
-            ProcessBuilder(Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath().toString(), Path(updaterFolderPath, "extract", "Rhythm Heaven Remix Editor Refresh").toAbsolutePath().toString(), jarFileLocation.parentFile.resolve("test").canonicalPath)
+            ProcessBuilder(Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath().toString(), Path(updaterFolderPath, "extract", "Rhythm Heaven Remix Editor Refresh").toAbsolutePath().toString(), jarFileLocation.parentFile.canonicalPath)
                 .redirectOutput(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
                 .redirectError(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
                 .start()
