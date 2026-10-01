@@ -145,6 +145,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
                 try{
                     val oldChange = editor.remix.tempos.map[globalTempoChangeId]!!
                     val newTempo = TempoChange(editor.remix.tempos, oldChange.beat, text.toFloat(), oldChange.swing, oldChange.width, true)
+                    editor.remix.tempos.defaultTempo = text.toFloat()
                     editor.remix.mutate(TrackerValueChange(oldChange, newTempo))
                 } catch(e:Exception) {
                     //We just ignore, the user is probably in the middle of typing

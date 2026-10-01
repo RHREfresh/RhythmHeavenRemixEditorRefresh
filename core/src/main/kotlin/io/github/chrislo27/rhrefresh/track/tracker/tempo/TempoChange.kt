@@ -49,7 +49,7 @@ class TempoChange(container: TempoChanges, beat: Float, val bpm: Float, val swin
 
         if ((change < 0 && bpm <= MIN_TEMPO) || (change > 0 && bpm >= MAX_TEMPO))
             return null
-        if (beat == 0f) {
+        if (immutable) {
             (container as TempoChanges).defaultTempo = bpm+change
         }
         return TempoChange(container as TempoChanges, beat, (bpm + change).coerceIn(MIN_TEMPO, MAX_TEMPO), swing, width, immutable)
