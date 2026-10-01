@@ -567,6 +567,11 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         Themes.dispose()
         ThumbnailFetcher.dispose()
         persistWindowSettings()
+
+        // emptying tmpMusic deletes the music file being used by a recovered remix
+        // so the recovery shutdown hook fails because the file is deleted by then
+        RemixRecovery.saveRemixInRecovery()
+        RemixRecovery.dontSave = true
         RHREfresh.tmpMusic.emptyDirectory()
         BeadsSoundSystem.dispose()
         AnalyticsHandler.track("Close Program",
