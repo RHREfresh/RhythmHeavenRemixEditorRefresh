@@ -5,3 +5,5 @@ distribution/* linguist-vendored
 docs/* linguist-documentation
 gradlew.bat linguist-vendored
 
+*.sh text eol=lf
+*.command text eol=lf

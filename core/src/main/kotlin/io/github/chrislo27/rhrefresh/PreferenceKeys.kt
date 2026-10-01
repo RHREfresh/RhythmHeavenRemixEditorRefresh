@@ -79,4 +79,5 @@ object PreferenceKeys {
     val EVENT_PREFIX = "event_"
 
     val PASSED_FOLDER_CHANGE_WARNING = "passedFolderChangeWarning"
+    val IMPORTED_RHRE3 = "importedRHRE3"
 }

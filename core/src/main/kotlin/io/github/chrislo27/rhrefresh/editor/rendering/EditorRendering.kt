@@ -35,14 +35,14 @@ fun Editor.renderPlayYan(batch: SpriteBatch) {
 
         val currentSwing = remix.tempos.swingAt(beat)
         batch.draw(AssetRegistry.get<Texture>(if (currentSwing.ratio == 50) "playyan_jumping" else "playyan_pogo"), beat,
-                   remix.trackCount + 1f * jumpHeight, toScaleX(26f), toScaleY(35f),
-                   0, 0, 26, 35, false, false)
+                   remix.trackCount + 1f * jumpHeight, toScaleX(34f), toScaleY(42f),
+                   0, 0, 34, 42, false, false)
     } else {
         val step = (MathHelper.getSawtoothWave(0.25f) * 4).toInt()
         batch.draw(AssetRegistry.get<Texture>("playyan_walking"), beat,
                    remix.trackCount * 1f,
-                   toScaleX(26f), toScaleY(35f),
-                   step * 26, 0, 26, 35, false, false)
+                   toScaleX(34f), toScaleY(38f),
+                   step * 32, 0, 32, 38, false, false)
     }
 }
 

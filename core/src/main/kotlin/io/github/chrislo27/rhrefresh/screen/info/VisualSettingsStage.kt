@@ -303,7 +303,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
         settings.elements += object: Button<InfoScreen>(palette, settings, settings) {
             private val label: TextLabel<InfoScreen> = TextLabel(palette, this, this.stage).apply {
                 this.isLocalizationKey = true
-                this.text = "editor.unfullscreen"
+                this.text = "editor.windowed"
                 this.textWrapping = false
                 this.fontScaleMultiplier = fontScale * 0.9f
                 this.location.set(pixelX = 2f, pixelWidth = -4f)
@@ -314,7 +314,7 @@ class VisualSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCa
                 super.onLeftClick(xPercent, yPercent)
                 if (Gdx.graphics.isFullscreen) {
                     editor.main.attemptEndFullscreen()
-                    label.text = "editor.unfullscreen"
+                    label.text = "editor.windowed"
                 } else {
                     editor.main.attemptFullscreen()
                     label.text = "editor.fullscreen"

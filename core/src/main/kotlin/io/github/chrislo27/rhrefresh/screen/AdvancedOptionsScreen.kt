@@ -19,11 +19,17 @@ import io.github.chrislo27.rhrefresh.analytics.AnalyticsHandler
 import io.github.chrislo27.rhrefresh.git.GitHelper
 import io.github.chrislo27.rhrefresh.modding.ModdingGame
 import io.github.chrislo27.rhrefresh.modding.ModdingUtils
+import io.github.chrislo27.rhrefresh.screen.info.InfoScreen
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
+import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
+import io.github.chrislo27.rhrefresh.soundsystem.SoundCache
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.util.FadeIn
 import io.github.chrislo27.rhrefresh.util.FadeOut
+import io.github.chrislo27.rhrefresh.util.TinyFDWrapper
+import io.github.chrislo27.rhrefresh.util.attemptRememberDirectory
+import io.github.chrislo27.rhrefresh.util.getDefaultDirectory
 import io.github.chrislo27.toolboks.Toolboks
 import io.github.chrislo27.toolboks.ToolboksScreen
 import io.github.chrislo27.toolboks.i18n.Localization
@@ -36,7 +42,10 @@ import io.github.chrislo27.toolboks.ui.TextLabel
 import io.github.chrislo27.toolboks.ui.UIElement
 import io.github.chrislo27.toolboks.util.gdxutils.fillRect
 import io.github.chrislo27.toolboks.util.gdxutils.getInputX
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.awt.Desktop
+import java.io.File
 import kotlin.system.measureNanoTime
 
 
@@ -55,6 +64,13 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
 
     private val reloadMetadataButton: Button<AdvancedOptionsScreen>
     private val switchSFXDBButton: Button<AdvancedOptionsScreen>
+    private val ffmpegExecutableButton: Button<AdvancedOptionsScreen>
+
+    private var isChooserOpen = false
+        set(value) {
+            field = value
+            this.stage.backButton.enabled = !isChooserOpen
+        }
 
     init {
         val palette = main.uiPalette
@@ -401,10 +417,83 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         }
         centre.elements += sfxDbWarningLabel
 
+
+        // Disable time stretching
+        centre.elements += TrueCheckbox(palette, centre, centre).apply {
+            this.checked = !main.settings.disableTimeStretching
+
+            this.textLabel.apply {
+                this.fontScaleMultiplier = fontScale * 0.9f
+                this.isLocalizationKey = true
+                this.textWrapping = false
+                this.textAlign = Align.left
+                this.text = "screen.info.disableTimeStretching"
+            }
+
+            this.tooltipTextIsLocalizationKey = true
+            this.tooltipText = if (FFmpeg.isSupported) "screen.info.disableTimeStretching.tooltip" else "screen.info.disableTimeStretching.notSupported.tooltip"
+
+            this.checkedStateChanged = {
+                if (!main.settings.disableTimeStretching && !it) {
+                    SoundCache.unloadAllDerivatives()
+                }
+                main.settings.disableTimeStretching = !it
+                main.settings.persist()
+                didChangeSettings = true
+            }
+
+            this.location.set(screenX = 1f - (padding + buttonWidth),
+                screenY = padding * 3 + buttonHeight * 2,
+                screenWidth = buttonWidth-padding-(buttonWidth * 0.085f),
+                screenHeight = buttonHeight)
+            this.enabled = FFmpeg.isSupported
+        }
+        // Select executable FFMPEG
+        ffmpegExecutableButton = Button(palette, centre, centre).apply {
+
+            this.location.set(screenX = 1f-(buttonWidth * 0.085f)-padding,
+                screenY = padding * 3 + buttonHeight * 2,
+                screenWidth = buttonWidth * 0.09f,
+                screenHeight = buttonHeight)
+
+            val clipboardLabel = ImageLabel(palette, this, this.stage).apply {
+                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
+                if (preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()) {
+                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                } else {
+                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
+                }
+            }
+            this.addLabel(clipboardLabel)
+            this.leftClickAction = { _, _ ->
+                openFfmpegPicker()
+            }
+            this.rightClickAction = { _, _ ->
+                preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
+                clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
+                this.tooltipText = Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
+            }
+            this.tooltipTextIsLocalizationKey = false
+            val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+            this.tooltipText = if (ffmpegLocation.isNotEmpty()) {
+                Localization["screen.info.advOpt.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
+            } else {
+                Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
+            }
+        }
+        centre.elements += ffmpegExecutableButton
+
         updateLabels()
     }
 
     private fun updateLabels() {
+        val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+        ffmpegExecutableButton.tooltipText = if (ffmpegLocation.isNotEmpty()) {
+            Localization["screen.info.advOpt.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
+        } else {
+            Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.advOpt.timeStretching.bundledFfmpeg"]}"]
+        }
+
         val game = ModdingUtils.currentGame
         moddingGameWarningLabel.text = if (game.underdeveloped)
             "screen.advOptions.modding.gameSelected.warningUnderdeveloped"
@@ -462,9 +551,23 @@ class AdvancedOptionsScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfre
         }
     }
 
-    //Not implemented.
-    override fun scrolled(p0: Float, p1: Float): Boolean {
-        return false
+    @Synchronized
+    private fun openFfmpegPicker() {
+        if (!isChooserOpen) {
+            GlobalScope.launch {
+                isChooserOpen = true
+                val initialDirectory: File? = attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_LOAD) ?: getDefaultDirectory()
+                val fileFilter = TinyFDWrapper.FileExtFilter(Localization["screen.info.advOpt.timeStretching.selectFfmpegFilter"])
+                TinyFDWrapper.openFile(Localization["screen.open.fileChooserTitle"], initialDirectory, fileFilter) { file ->
+                    isChooserOpen = false
+                    if (file != null) {
+                        (ffmpegExecutableButton.labels.first() as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                        ffmpegExecutableButton.tooltipText = Localization["screen.info.advOpt.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
+                        preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -485,10 +588,5 @@ class LinePuzzleEndScreen(main: RHREfreshApplication) : ToolboksScreen<RHREfresh
     }
 
     override fun dispose() {
-    }
-
-    //Not implemented.
-    override fun scrolled(p0: Float, p1: Float): Boolean {
-        return false
     }
 }

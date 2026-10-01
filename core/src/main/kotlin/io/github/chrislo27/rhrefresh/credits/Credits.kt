@@ -14,13 +14,22 @@ object Credits {
     fun generateList(): List<Credit> {
         return listOf(
                 "title" crediting RHREfresh.GITHUB,
-                "fresh" crediting "",
+                "refresh" crediting "",
                 "programming" crediting "TheAlternateDoctor\n${Localization["credits.title.programming.contributions", "ThatZeoGal, iestyn129"]}",
                 "sfx" crediting (SFXDatabase.let { if (!it.isDataLoading()) it.data.sfxCredits.sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ") else null } ?: sfxCreditsLegacyFallback),
                 "gfx" crediting "dexiedoo_octo, Katie1118, viviancherry",
                 "consulting" crediting "chrislo27, Kievit",
                 "logo" crediting "dexiedoo_octo, Katie1118, Kievit, viviancherry",
                 "updateutil" crediting "Zeo",
+                "localization" crediting
+                        """[LIGHT_GRAY]Français (French)[]
+                |TheAlternateDoctor
+                |
+                |[LIGHT_GRAY]Español (Spanish)[]
+                |patataofcourse
+                |
+                |[LIGHT_GRAY]Deutsch (German)[]
+                |Blizeatos""".trimMargin(),
                 "playtest" crediting "patataofcourse, Haikaede, Mizu Bunny, Maddy, viviancherry, Chloe, conhlee, dexiedoo_octo, Dracobot, elp, Gosh, Killble, OpaliteDelight, Seanski2, Yumiko!, Zeo",
                 "resources" crediting
                         """Rhythm Heaven assets by Nintendo
@@ -29,7 +38,7 @@ object Credits {
 LWJGL
 Toolboks
 Beads
-FFMPEG
+FFmpeg
 Async HTTP Client
 Jackson
 JGit

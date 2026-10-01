@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
-import io.github.chrislo27.rhrefresh.PreferenceKeys.LANG_INDEX
 import io.github.chrislo27.rhrefresh.analytics.AnalyticsHandler
 import io.github.chrislo27.rhrefresh.init.DefaultAssetLoader
 import io.github.chrislo27.rhrefresh.midi.MidiHandler
@@ -29,7 +28,7 @@ import io.github.chrislo27.rhrefresh.screen.info.ProgramSettingsStage
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
-import io.github.chrislo27.rhrefresh.soundsystem.Ffmpeg
+import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.soundsystem.SoundCache
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.stage.LoadingIcon
@@ -222,18 +221,6 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
             fonts.loadUnloaded(defaultCamera.viewportWidth, defaultCamera.viewportHeight)
             Toolboks.LOGGER.info("Loaded fonts (initial)")
         }
-
-        // Copy over FFMPEG executables
-        RHREfresh.FFMPEG_FOLDER.mkdirs()
-        val currentOSFfmpeg = Ffmpeg.currentARCH_OS
-        if (currentOSFfmpeg != Ffmpeg.ARCH_OS.UNSUPPORTED) {
-            Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
-            RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
-                setReadable(true)
-                setExecutable(true)
-            }
-            Toolboks.LOGGER.info("Copied FFMPEG executables successfully")
-        }
         
         // Generate hue bar
         run {
@@ -265,9 +252,22 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
         RHREfresh.PREFERENCES = preferences
         Toolboks.LOGGER.info("Loaded preferences")
 
+        // Copy over FFMPEG executables
+        RHREfresh.FFMPEG_FOLDER.mkdirs()
+        val currentOSFfmpeg = FFmpeg.currentARCH_OS
+        if (currentOSFfmpeg != FFmpeg.ARCH_OS.UNSUPPORTED) {
+            Gdx.files.internal("ffmpeg/${currentOSFfmpeg.executableName}").copyTo(RHREfresh.FFMPEG_FOLDER)
+            RHREfresh.FFMPEG_FOLDER.child(currentOSFfmpeg.executableName).file().apply {
+                setReadable(true)
+                setExecutable(true)
+            }
+            Toolboks.LOGGER.info("Copied FFMPEG executables successfully")
+            FFmpeg.testFFmpeg()
+        }
+
         //Localization stuff again
 
-        val jsonStr: String = preferences.getString(LANGUAGE, null)?.takeUnless(String::isEmpty) ?: "{}"
+        val jsonStr: String = preferences.getString(LANGUAGE, "").takeUnless(String::isEmpty) ?: "{}"
         val langObj: ProgramSettingsStage.LangObj = JsonHandler.fromJson(jsonStr, ProgramSettingsStage.LangObj::class.java)
         val language: String = langObj.language?.lowercase(Locale.ROOT) ?: ""
         val country: String = langObj.country?.lowercase(Locale.ROOT) ?: ""
@@ -367,7 +367,7 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
                 loadWindowSettings()
                 dontShowResizeInfo = false
                 val nextScreen = ScreenRegistry[
-                    if (RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && File(System.getProperty("user.home") + "/.rhre3").exists() && !RHREfresh.portableMode)) {
+                    if (RHREfresh.triggerFolderChangeScreen || (!preferences.getBoolean(PreferenceKeys.PASSED_FOLDER_CHANGE_WARNING) && !RHREfresh.portableMode)) {
                         "importOlderRhre"
                     } else if (RHREfresh.skipGitScreen) {
                         "sfxdbLoad"

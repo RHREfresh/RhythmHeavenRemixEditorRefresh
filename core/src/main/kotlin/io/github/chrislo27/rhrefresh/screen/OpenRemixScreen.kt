@@ -278,7 +278,7 @@ class OpenRemixScreen(main: RHREfreshApplication)
                             goodBad(remix.version.toString(), remix.version != RHREfresh.VERSION),
                             dbVersionString,
                             goodBad(missingAssets.first.toString(), missingAssets.first > 0, "RED"),
-                            goodBad(if (remixType != RemixType.RHRE3) "?" else missingAssets.second.toString(),
+                            goodBad(if (remixType != RemixType.RHRE3) "0" else missingAssets.second.toString(),
                                     missingAssets.second > 0, "RED")]
                 }
                 if ((wasDevBranch && !main.preferences.getBoolean(PreferenceKeys.ADVOPT_SFXDB_USE_DEV_BRANCH, false))

@@ -1,7 +1,6 @@
 package io.github.chrislo27.rhrefresh.soundsystem
 
 import com.badlogic.gdx.files.FileHandle
-import io.github.chrislo27.rhrefresh.RHREfresh
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -42,7 +41,7 @@ object SoundCache {
                 val tmpFile: File = File.createTempFile("rhre-lampshade-derivative-gen-", ".wav").apply {
                     deleteOnExit()
                 }
-                Ffmpeg.processStreams(originalWav, tmpFile,
+                FFmpeg.processStreams(originalWav, tmpFile,
                                             derivative.tempoPercent, derivative.pitchSemitones, derivative.ratePercent, false)
                 val moddedAudio: BeadsAudio = BeadsSoundSystem.newAudio(FileHandle(tmpFile))
                 tmpFile.delete()

@@ -9,18 +9,19 @@ import ws.schild.jave.process.ProcessLocator
 import ws.schild.jave.process.ffmpeg.DefaultFFMPEGLocator
 import ws.schild.jave.utils.RBufferedReader
 import java.io.File
+import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 import kotlin.math.pow
 
 
 /**
- * A simple wrapper around the [FFMPEG](https://ffmpeg.org/) executables.
+ * A simple wrapper around the [FFmpeg](https://ffmpeg.org/) executables.
  */
-object Ffmpeg {
+object FFmpeg {
 
     enum class ARCH_OS(val supported: Boolean, val executableName: String) {
-        UNSUPPORTED(false, ""),
+        UNSUPPORTED(false, "unsupported"),
         WINDOWS_X64(true, "ffmpeg_win_x64.exe"),
         MACOS_ARM64(true, "ffmpeg_macOS_arm64"),
         LINUX_X64(true, "ffmpeg_linux_x64");
@@ -44,7 +45,17 @@ object Ffmpeg {
         e.printStackTrace()
         ARCH_OS.UNSUPPORTED
     }
-    val isSupported: Boolean get() = currentARCH_OS.supported
+
+    // We assume it is supported if there's a custom FFMPEG setup
+    val isSupported: Boolean get() {
+        val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+        if(ffmpegLocation.isNotEmpty()){
+            return true
+        }
+        return !forceUnsupported && currentARCH_OS.supported
+    }
+
+    var forceUnsupported = false
 
     // Return the encoder built for the platform or the one selected by the user, otherwise uhhhhh
     fun createEncoder(): Encoder {
@@ -54,7 +65,8 @@ object Ffmpeg {
     // Return the ProcessLocator built for the platform or the one selected by the user, otherwise uhhhhh
     fun createProcessLocator(): ProcessLocator {
         val ffmpegLocation = RHREfresh.PREFERENCES.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-        return if (File(ffmpegLocation).exists()) {
+        Toolboks.LOGGER.info("FFMPEG loading: [${ffmpegLocation.isNotEmpty() && File(ffmpegLocation).exists()}] && [${isSupported}]")
+        return if (ffmpegLocation.isNotEmpty() && File(ffmpegLocation).exists()) {
             ProcessLocator { ffmpegLocation }
         } else {
             if (isSupported) {
@@ -111,7 +123,7 @@ object Ffmpeg {
             ffmpegExecutor.addArgument(filterChain)
         }
         ffmpegExecutor.addArgument(output.absolutePath)
-        Toolboks.LOGGER.info("FFMPEG ran for file ${input.path} with arguments `$filterChain`")
+        Toolboks.LOGGER.info("${createProcessLocator().executablePath} ran for file ${input.path} with arguments `$filterChain`")
         try {
             ffmpegExecutor.execute()
             val reader =
@@ -124,6 +136,29 @@ object Ffmpeg {
                 // it failed, and the lines above say why
             }
         } finally {
+            ffmpegExecutor.destroy()
+        }
+    }
+
+    fun testFFmpeg(){
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+        ffmpegExecutor.addArgument("-version")
+        try {
+            ffmpegExecutor.execute()
+            val reader =
+                RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (((reader.readLine().also { line = it } )) != null) {
+                Toolboks.LOGGER.info(line!!)
+            }
+            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+                Toolboks.LOGGER.info("Bundled FFmpeg sadly unsupported")
+                forceUnsupported = true
+            }
+        } catch (e: IOException){
+            forceUnsupported = true
+        }
+        finally {
             ffmpegExecutor.destroy()
         }
     }

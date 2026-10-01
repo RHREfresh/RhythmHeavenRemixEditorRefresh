@@ -166,7 +166,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                  */
                 val releaseResponseBody = RHREfreshApplication.httpClient
 //                        .prepareGet("https://thealtdoc.fr/rhre/latest.json")
-                        .prepareGet("https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest")
+                        .prepareGet("https://api.github.com/repos/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest")
                         .addHeader("Accept", "application/vnd.github.v3+json")
                         .execute().get().responseBody
                 val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
@@ -392,7 +392,8 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             6. Copy jar file atomically and exit forcibly (System.exit())
              */
             val releaseResponseBody = RHREfreshApplication.httpClient
-                .prepareGet("https://git.thealtdoc.fr/api/v1/repos/thatzeogal/RHREUpdateUtility/releases/latest")
+//                .prepareGet("https://github.com/api/v1/repos/thatzeogal/RHREUpdateUtility/releases/latest")
+                .prepareGet("https://api.github.com/repos/RHREfresh/RHREUpdateUtility/releases/latest")
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .execute().get().responseBody
             val releaseMeta: JsonNode = JsonHandler.OBJECT_MAPPER.readTree(releaseResponseBody)
@@ -406,6 +407,8 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             }
             val zipUrl = assetNode["browser_download_url"].asText()
             val filesize = assetNode["size"].asLong(1L).coerceAtLeast(1L)
+            val digestMethod = assetNode["digest"].asText().split(":").first()
+            val digestHash = assetNode["digest"].asText().split(":").last()
 
             val zipFileLoc = updaterFolder.resolve("RHREUpdateUtility.zip").apply {
                 createNewFile()
@@ -469,6 +472,12 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
                 }).get()
             fileStream.close()
 
+            val md = MessageDigest.getInstance("SHA-256")
+            val sha256 = md.digest(zipFileLoc.readBytes()).fold("") { str, it -> str + "%02x".format(it) }
+            if (sha256 != digestHash) {
+                throw Exception(Localization["screen.autoUpdater.downloadError.nonMatchingChecksum"])
+            }
+
             //Then, we use the utility
             Gdx.app.postRunnable {
                 progress = Progress.EXTRACTING
@@ -484,7 +493,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             RemixRecovery.removeSelfFromShutdownHooks()
             val updaterFolderPath = updaterFolder.canonicalPath
             Toolboks.LOGGER.info("Calling process `${Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath()}`, moving `${Path(updaterFolderPath, "Rhythm Heaven Remix Editor Refresh").toAbsolutePath()}` to `${jarFileLocation.parentFile.canonicalPath}`")
-            ProcessBuilder(Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath().toString(), Path(updaterFolderPath, "extract", "Rhythm Heaven Remix Editor Refresh").toAbsolutePath().toString(), jarFileLocation.parentFile.resolve("test").canonicalPath)
+            ProcessBuilder(Path(updaterFolderPath, "utility", "RHREUpdateUtility.exe").toAbsolutePath().toString(), Path(updaterFolderPath, "extract", "Rhythm Heaven Remix Editor Refresh").toAbsolutePath().toString(), jarFileLocation.parentFile.canonicalPath)
                 .redirectOutput(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
                 .redirectError(ProcessBuilder.Redirect.to(extractFolder.resolve("utility.log")))
                 .start()

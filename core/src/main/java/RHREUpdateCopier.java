@@ -34,6 +34,6 @@ public class RHREUpdateCopier {
                 Thread.sleep(waitBetween);
             }
         }
-        JOptionPane.showMessageDialog(null, (attemptNum >= maxAttempts ? "Rhythm Heaven Remix Editor Refresh update failed. Please try again, or consider updating manually from https://github.com/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest." : "Rhythm Heaven Remix Editor Refresh updated successfully! You can relaunch the program now."), "RHREfresh Auto-Update Information", attemptNum >= maxAttempts ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, (attemptNum >= maxAttempts ? "Rhythm Heaven Remix Editor Refresh update failed. Please try again, or consider updating manually from https://github.com/RHREfresh/RhythmHeavenRemixEditorRefresh/releases/latest." : "Rhythm Heaven Remix Editor Refresh updated successfully! You can relaunch the program now."), "RHREfresh Auto-Update Information", attemptNum >= maxAttempts ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
     }
 }

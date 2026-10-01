@@ -1,6 +1,5 @@
 package io.github.chrislo27.rhrefresh.screen.info
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -10,12 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.PreferenceKeys.LANGUAGE
-import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.VersionHistory
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
-import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.soundsystem.*
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.rhrefresh.util.JsonHandler
@@ -23,14 +20,12 @@ import io.github.chrislo27.rhrefresh.util.Semitones
 import io.github.chrislo27.rhrefresh.util.TinyFDWrapper
 import io.github.chrislo27.rhrefresh.util.attemptRememberDirectory
 import io.github.chrislo27.rhrefresh.util.getDefaultDirectory
-import io.github.chrislo27.rhrefresh.util.persistDirectory
 import io.github.chrislo27.toolboks.i18n.Localization
 import io.github.chrislo27.toolboks.registry.AssetRegistry
 import io.github.chrislo27.toolboks.ui.*
 import io.github.chrislo27.toolboks.version.Version
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.awt.Desktop
 import java.io.File
 import java.util.Locale
 import kotlin.math.sign
@@ -56,6 +51,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             this.infoScreen.stage.backButton.enabled = !isChooserOpen
         }
 
+
     init {
         val palette = infoScreen.stage.palette
         val padding = 0.025f
@@ -68,7 +64,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         settings.elements += object : Button<InfoScreen>(palette, settings, settings) {
 
             private fun updateText() {
-                textLabel.text = "${Localization["editor.language"]}${Localization.currentBundle.locale.name}"
+                textLabel.text = "${Localization["editor.language"]} ${Localization.currentBundle.locale.name}"
             }
 
             private fun persist() {
@@ -251,76 +247,11 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             })
 
             this.location.set(screenX = padding,
-                screenY = padding * 5 + buttonHeight * 4,
+                screenY = padding * 6 + buttonHeight * 5,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
         settings.elements += pitchStyleButton
-
-        // Disable time stretching
-        settings.elements += TrueCheckbox(palette, settings, settings).apply {
-            this.checked = main.settings.disableTimeStretching
-
-            this.textLabel.apply {
-                this.fontScaleMultiplier = fontScale * 0.9f
-                this.isLocalizationKey = true
-                this.textWrapping = false
-                this.textAlign = Align.left
-                this.text = "screen.info.disableTimeStretching"
-            }
-
-            this.tooltipTextIsLocalizationKey = true
-            this.tooltipText = if (Ffmpeg.isSupported) "screen.info.disableTimeStretching.tooltip" else "screen.info.disableTimeStretching.notSupported.tooltip"
-
-            this.checkedStateChanged = {
-                if (!main.settings.disableTimeStretching && it) {
-                    SoundCache.unloadAllDerivatives()
-                }
-                main.settings.disableTimeStretching = it
-                main.settings.persist()
-                didChangeSettings = true
-            }
-
-            this.location.set(screenX = padding,
-                              screenY = padding * 7 + buttonHeight * 6,
-                              screenWidth = buttonWidth-padding-(buttonWidth * 0.085f),
-                              screenHeight = buttonHeight)
-            this.enabled = Ffmpeg.isSupported
-        }
-        // Select executable FFMPEG
-        ffmpegExecutableButton = Button(palette, settings, settings).apply {
-
-            this.location.set(screenX = buttonWidth-(buttonWidth * 0.085f)+padding,
-                screenY = padding * 7 + buttonHeight * 6,
-                screenWidth = buttonWidth * 0.085f,
-                screenHeight = buttonHeight)
-
-            val clipboardLabel = ImageLabel(palette, this, this.stage).apply {
-                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
-                if (preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()) {
-                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
-                } else {
-                    image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
-                }
-            }
-            this.addLabel(clipboardLabel)
-            this.leftClickAction = { _, _ ->
-                openFfmpegPicker()
-            }
-            this.rightClickAction = { _, _ ->
-                preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
-                clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard"))
-                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
-            }
-            this.tooltipTextIsLocalizationKey = false
-            val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-            this.tooltipText = if (ffmpegLocation.isNotEmpty()) {
-                Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
-            } else {
-                Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
-            }
-        }
-        settings.elements += ffmpegExecutableButton
 
         // Exploding entities
         settings.elements += TrueCheckbox(palette, settings, settings).apply {
@@ -337,10 +268,12 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
             this.checked = main.settings.advExplodingEntities
             this.location.set(screenX = padding,
-                screenY = padding * 6 + buttonHeight * 5,
+                screenY = padding * 7 + buttonHeight * 6,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
+
+        // Ignore pitch restrictions
         settings.elements += TrueCheckbox(palette, settings, settings).apply {
             this.leftClickAction = { _, _ ->
                 main.settings.advIgnorePitchRestrictions = this@apply.checked
@@ -355,7 +288,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
             this.checked = main.settings.advIgnorePitchRestrictions
             this.location.set(screenX = padding,
-                screenY = padding * 4 + buttonHeight * 3,
+                screenY = padding * 5 + buttonHeight * 4,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
@@ -500,7 +433,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
 
             this.location.set(screenX = padding,
-                screenY = padding * 3 + buttonHeight * 2,
+                screenY = padding * 4 + buttonHeight * 3,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
@@ -523,7 +456,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
             }
 
             this.location.set(screenX = padding,
-                screenY = padding * 2 + buttonHeight * 1,
+                screenY = padding * 3 + buttonHeight * 2,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)
         }
@@ -549,16 +482,72 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
         }
         settings.elements += clearRecentsButton
 
+
+        // Select executable FFMPEG
+        ffmpegExecutableButton = object : Button<InfoScreen>(palette, settings, settings){
+
+            private val textLabel: TextLabel<InfoScreen>
+                get() = labels.first() as TextLabel<InfoScreen>
+
+            private val clipboardLabel: ImageLabel<InfoScreen>
+                get() = labels[1] as ImageLabel<InfoScreen>
+
+            override fun onLeftClick(xPercent: Float, yPercent: Float) {
+                super.onLeftClick(xPercent, yPercent)
+                openFfmpegPicker()
+            }
+            override fun onRightClick(xPercent: Float, yPercent: Float) {
+                preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").flush()
+                clipboardLabel.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_warn"))
+                this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg"]
+            }
+
+            override fun onResize(width: Float, height: Float, pixelUnitX: Float, pixelUnitY: Float) {
+                super.onResize(width, height, pixelUnitX, pixelUnitY)
+                clipboardLabel.location.set(screenX = 0f, screenY = 0f, screenWidth = 0.1f, screenHeight = 1f)
+                clipboardLabel.onResize(this.location.realWidth, this.location.realHeight, pixelUnitX, pixelUnitY)
+            }
+
+            override fun render(screen: InfoScreen, batch: SpriteBatch, shapeRenderer: ShapeRenderer) {
+                super.render(screen, batch, shapeRenderer)
+                val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
+                if (ffmpegLocation.isNotEmpty()) {
+                    textLabel.text = "screen.info.timeStretching.change"
+                    this.tooltipText = Localization["screen.info.timeStretching.changeFfmpeg","[PINK]$ffmpegLocation"]
+                } else {
+                    textLabel.text = "screen.info.timeStretching.select"
+                    this.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg"]
+                }
+            }
+        }.apply {
+            this.addLabel(TextLabel(palette, this, this.stage).apply {
+                this.isLocalizationKey = true
+                this.text = ""
+                this.textWrapping = false
+                this.fontScaleMultiplier = fontScale
+            })
+            this.addLabel(ImageLabel(palette, this, this.stage).apply {
+                renderType = ImageLabel.ImageRendering.ASPECT_RATIO
+                image = if (preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "").isNotEmpty()) {
+                    TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                } else {
+                    TextureRegion(AssetRegistry.get<Texture>("ui_icon_warn"))
+                }
+            })
+
+            this.location.set(screenX = padding,
+                screenY = padding,
+                screenWidth = buttonWidth,
+                screenHeight = buttonHeight)
+            this.tooltipTextIsLocalizationKey = false
+            this.visible = FFmpeg.forceUnsupported && !FFmpeg.currentARCH_OS.supported
+        }
+        settings.elements += ffmpegExecutableButton
+
         updateLabels()
     }
 
     private fun updateLabels() {
-        val ffmpegLocation = preferences.getString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, "")
-        ffmpegExecutableButton.tooltipText = if (ffmpegLocation.isNotEmpty()) {
-            Localization["screen.info.timeStretching.selectFfmpeg", "[PINK]$ffmpegLocation"]
-        } else {
-            Localization["screen.info.timeStretching.selectFfmpeg","[CYAN]${Localization["screen.info.timeStretching.bundledFfmpeg"]}"]
-        }
         (pitchStyleButton.labels.first() as TextLabel).text =
             Localization["screen.info.pitchNoteStyle", Localization[Semitones.pitchStyle.displayName], Semitones.pitchStyle.example]
     }
@@ -589,7 +578,7 @@ class ProgramSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicC
                 TinyFDWrapper.openFile(Localization["screen.open.fileChooserTitle"], initialDirectory, fileFilter) { file ->
                     isChooserOpen = false
                     if (file != null) {
-                        (ffmpegExecutableButton.labels.first() as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
+                        (ffmpegExecutableButton.labels[1] as ImageLabel).image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_clipboard_pen"))
                         ffmpegExecutableButton.tooltipText = Localization["screen.info.timeStretching.selectFfmpeg","[PINK]${file.absolutePath}"]
                         preferences.putString(PreferenceKeys.SETTINGS_FFMPEG_LOCATION, file.absolutePath).flush()
                     }

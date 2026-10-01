@@ -29,7 +29,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsMusic
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
-import io.github.chrislo27.rhrefresh.soundsystem.Ffmpeg
+import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.track.PlayState
 import io.github.chrislo27.rhrefresh.track.Remix
@@ -49,7 +49,6 @@ import net.beadsproject.beads.ugens.Clock
 import net.beadsproject.beads.ugens.DelayTrigger
 import net.beadsproject.beads.ugens.RangeLimiter
 import net.beadsproject.beads.ugens.RecordToFile
-import ws.schild.jave.Encoder
 import ws.schild.jave.EncoderException
 import ws.schild.jave.progress.EncoderProgressListener
 import ws.schild.jave.encode.AudioAttributes
@@ -370,8 +369,8 @@ class ExportRemixScreen(main: RHREfreshApplication)
                         attrs.setAudioAttributes(audio)
 
 
-                        val encoder = Ffmpeg.createEncoder()
-                        val multimediaFile = Ffmpeg.createMultimediaObject(recorderFile)
+                        val encoder = FFmpeg.createEncoder()
+                        val multimediaFile = FFmpeg.createMultimediaObject(recorderFile)
                         multimediaFile.info.metadata = mapOf("Comments" to commentTag)
                         try {
                             encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
@@ -550,7 +549,11 @@ class ExportRemixScreen(main: RHREfreshApplication)
                 Gdx.app.postRunnable {
                     mainLabel.text = ""
                 }
-                val filter = TinyFDWrapper.FileExtFilter(Localization["screen.export.fileFilter", "MP3, OGG, FLAC, WAV, AAC"], "*.mp3", "*.ogg", "*.flac", "*.wav", "*.aac")
+                val filter = if (FFmpeg.isSupported){
+                    TinyFDWrapper.FileExtFilter(Localization["screen.export.fileFilter", "MP3, OGG, FLAC, WAV, AAC"], "*.mp3", "*.ogg", "*.flac", "*.wav", "*.aac")
+                } else {
+                    TinyFDWrapper.FileExtFilter(Localization["screen.export.fileFilter", "MP3, WAV"], "*.mp3", "*.wav")
+                }
                 TinyFDWrapper.saveFile(Localization["screen.export.fileChooserTitle"], attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_EXPORT) ?: getDefaultDirectory(), filter) { file ->
                     isChooserOpen = false
                     Gdx.app.postRunnable {
