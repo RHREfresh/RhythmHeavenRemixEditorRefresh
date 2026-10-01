@@ -69,8 +69,8 @@ class AssetRegistryLoadingScreen(main: RHREfreshApplication)
         val playYanWidth = width - 26f + 2f
         batch.draw(AssetRegistry.get<Texture>("playyan_walking"), viewportWidth * 0.5f - width * 0.5f + playYanWidth * progress,
                    viewportHeight * 0.5f + height * 0.5f + line * 2 + offsetY,
-                   26f, 35f,
-                   step * 26, 0, 26, 35, false, false)
+                   34f, 38f,
+                   step * 32, 0, 32, 38, false, false)
 
         batch.end()
         batch.projectionMatrix = main.defaultCamera.combined
