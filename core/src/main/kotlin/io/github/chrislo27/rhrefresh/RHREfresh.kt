@@ -25,7 +25,7 @@ object RHREfresh {
     }
 
     const val TITLE = "Rhythm Heaven Remix Editor Refresh"
-    val VERSION: Version = Version(4, 0, 0, "")
+    val VERSION: Version = Version(4, 0, 1, "")
     val EXPERIMENTAL: Boolean = VERSION.suffix.matches("DEVELOPMENT|SNAPSHOT.*|RC\\d+".toRegex())
     val enableEarlyAccessMessage: Boolean = EXPERIMENTAL && VERSION.suffix != "DEVELOPMENT"
     const val WIDTH = 1280
