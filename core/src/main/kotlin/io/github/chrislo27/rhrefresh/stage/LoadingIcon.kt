@@ -47,11 +47,11 @@ open class LoadingIcon<S : ToolboksScreen<*, *>>(private val palette: UIPalette,
         Variation(13), // Hoop Trundler
         Variation(14), // Warping Alien
         Variation(15), // Thunder cloud
-        Variation(16,50), // Cannery
-        Variation(17,50), // Mountain Maneuver
-        Variation(18,20), // RHRE2 clown
-        Variation(19,20), // Glass Tapper
-        Variation(20,50), // Happy Face
+        Variation(16,25), // Cannery
+        Variation(17,25), // Mountain Maneuver
+        Variation(18,10), // RHRE2 clown
+        Variation(19,10), // Glass Tapper
+        Variation(20,10), // Happy Face
     )
     private var totalVariationWeight = 0
 
