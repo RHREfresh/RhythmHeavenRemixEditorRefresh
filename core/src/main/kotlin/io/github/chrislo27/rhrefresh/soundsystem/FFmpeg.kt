@@ -140,6 +140,34 @@ object FFmpeg {
         }
     }
 
+    fun encodeToWav(input: File, output: File) {
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+
+        ffmpegExecutor.addArgument("-y")
+        ffmpegExecutor.addArgument("-hide_banner")
+        ffmpegExecutor.addArgument("-i")
+        ffmpegExecutor.addArgument(input.absolutePath)
+        ffmpegExecutor.addArgument("-c:a")
+        ffmpegExecutor.addArgument("pcm_s16le")
+        ffmpegExecutor.addArgument(output.absolutePath)
+
+        try {
+            ffmpegExecutor.execute()
+
+            val reader = RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                Toolboks.LOGGER.info(line!!)
+            }
+
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
+                Toolboks.LOGGER.error("Failed to convert FLAC to WAV")
+            }
+        } finally {
+            ffmpegExecutor.destroy()
+        }
+    }
+
     fun testFFmpeg(){
         val ffmpegExecutor = createProcessLocator().createExecutor()
         ffmpegExecutor.addArgument("-version")
