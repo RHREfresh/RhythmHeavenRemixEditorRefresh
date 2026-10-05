@@ -20,7 +20,27 @@ allprojects {
         appName = "rhythm-heaven-remix-editor-refresh"
         gdxVersion = '1.14.0'
         gdxControllerVersion = '2.2.4'
-        lwjglVersion = '3.3.3'
+        lwjglVersion = '3.3.4'
+
+        lwjglModules = [
+                "lwjgl",
+                "lwjgl-glfw",
+                "lwjgl-opengl",
+                "lwjgl-openal",
+                "lwjgl-stb",
+                "lwjgl-tinyfd",
+        ]
+        lwjglNatives = [
+                "natives-windows",
+                "natives-windows-x86",
+                "natives-windows-arm64",
+                "natives-macos",
+                "natives-macos-arm64",
+                "natives-linux",
+                "natives-linux-arm32",
+                "natives-linux-arm64",
+                "natives-freebsd",
+        ]
     }
 
     repositories {
@@ -46,7 +66,7 @@ project(":desktop") {
 
     dependencies {
         implementation project(":core")
-        
+
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
@@ -67,18 +87,15 @@ project(":desktop") {
         implementation "org.eclipse.jgit:org.eclipse.jgit:5.8.1.202007141445-r"
         implementation "org.slf4j:slf4j-nop:1.7.25"
         implementation "de.sciss:jump3r:1.0.5"
-        // implementation "club.minnced:java-discord-rpc:2.0.2"
         implementation "net.lingala.zip4j:zip4j:2.6.2"
-        implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows-x86"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows-arm64"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos-arm64"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux-arm32"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux-arm64"
+
+        implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+        lwjglModules.each { module ->
+            implementation "org.lwjgl:$module"
+            lwjglNatives.each { natives ->
+                runtimeOnly "org.lwjgl:$module::$natives"
+            }
+        }
 
         implementation "ws.schild:jave-core:4.2.0"
 
@@ -91,7 +108,7 @@ project(":desktop") {
 
 project(":core") {
     apply plugin: "java"
-    
+
     dependencies {
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
@@ -115,11 +132,13 @@ project(":core") {
         implementation "com.github.chrislo27:musique-barebones:3807b60"
         // implementation "club.minnced:java-discord-rpc:2.0.2"
         implementation "net.lingala.zip4j:zip4j:2.6.2"
-        implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-        implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
+
+        implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+        implementation "org.lwjgl:lwjgl-glfw"
+        implementation "org.lwjgl:lwjgl-tinyfd"
 
         implementation "ws.schild:jave-core:4.2.0"
-        
+
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 
         implementation fileTree(dir: 'libs', include: ['*.jar'])
