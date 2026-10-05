@@ -34,6 +34,7 @@ class Playalong(val remix: Remix) {
             private set
 
         fun loadFromPrefs(preferences: Preferences) {
+            if (System.getProperty("os.name").contains("freebsd", ignoreCase = true)) return
             playalongControls = try {
                 JsonHandler.fromJson(preferences.getString(PreferenceKeys.PLAYALONG_CONTROLS, "{}"), PlayalongControls::class.java)
             } catch (ignored: Exception) {

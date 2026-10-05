@@ -27,8 +27,14 @@ object DesktopLauncher {
         RHREfresh.launchArguments = args.toList()
         
         val osName: String = System.getProperty("os.name", "???")?.lowercase(Locale.ROOT) ?: "???"
+        val jarPath = File(object {}.javaClass.protectionDomain.codeSource.location.toURI())
         println("Running on \"$osName\"")
-        
+
+        if (osName.contains("freebsd")) {
+            System.load("${jarPath.parent}/freebsd_natives/libgdx.so")
+            System.load("${jarPath.parent}/freebsd_natives/libgdx-freetype.so")
+        }
+
 		val refreshFolder: String = if (osName.startsWith("linux")) {
 			".config/RHREfresh"
 		} else if (osName.contains("win")) {
