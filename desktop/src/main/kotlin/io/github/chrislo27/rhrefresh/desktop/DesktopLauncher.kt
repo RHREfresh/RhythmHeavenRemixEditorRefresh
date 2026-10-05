@@ -35,7 +35,7 @@ object DesktopLauncher {
             System.load("${jarPath.parent}/freebsd_natives/libgdx-freetype.so")
         }
 
-		val refreshFolder: String = if (osName.startsWith("linux")) {
+		val refreshFolder: String = if (osName.startsWith("linux") || osName.contains("freebsd")) {
 			".config/RHREfresh"
 		} else if (osName.contains("win")) {
 			"AppData/Roaming/RHREfresh/"
