@@ -12,7 +12,7 @@
 * Completely remade UI and minigame icons
 * Boxes to type in the starting tempo & music start offset
 * A new settings menu with new options
-* An EXE version, and MacOS support
+* An EXE version, and macOS and FreeBSD support
 * And of course, bugfixes!
 
 Also check out the [RHREfresh SFX Database](https://github.com/RHREfresh/RHRE-database).
