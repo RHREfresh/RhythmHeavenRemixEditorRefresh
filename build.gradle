@@ -29,6 +29,7 @@ allprojects {
                 "lwjgl-openal",
                 "lwjgl-stb",
                 "lwjgl-tinyfd",
+                "lwjgl-jemalloc",
         ]
         lwjglNatives = [
                 "natives-windows",
