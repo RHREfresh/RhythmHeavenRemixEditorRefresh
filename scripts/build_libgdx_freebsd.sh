@@ -11,7 +11,12 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="${BASH_SOURCE[0]}"
+SCRIPT_DIR=${SCRIPT_DIR%%"${SCRIPT_DIR##*[!/]}"}
+[[ ${SCRIPT_DIR##*/*} ]] && SCRIPT_DIR=.
+SCRIPT_DIR=${SCRIPT_DIR%/*}
+SCRIPT_DIR=${SCRIPT_DIR%%"${SCRIPT_DIR##*[!/]}"}
+SCRIPT_DIR="${PWD}/${SCRIPT_DIR}"
 PROJECT_BUILD_GRADLE="$SCRIPT_DIR/../build.gradle"
 
 GDX_DIR="${GDX_DIR:-$HOME/libgdx}"
