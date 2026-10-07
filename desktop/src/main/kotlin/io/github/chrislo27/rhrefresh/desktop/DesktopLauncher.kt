@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhrefresh.desktop
 
 import com.badlogic.gdx.Files
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.beust.jcommander.JCommander
@@ -35,14 +36,15 @@ object DesktopLauncher {
             System.load("${jarPath.parent}/freebsd_natives/libgdx-freetype.so")
         }
 
-		val refreshFolder: String = if (osName.startsWith("linux") || osName.contains("freebsd")) {
-			".config/RHREfresh"
-		} else if (osName.contains("win")) {
-			"AppData/Roaming/RHREfresh/"
+        val home = System.getProperty("user.home")
+		val refreshFolder: String = if (osName.contains("win")) {
+            val appData = System.getenv("APPDATA") ?: "$home\\AppData\\Roaming"
+            "$appData\\RHREfresh"
 		} else if (osName.contains("mac")) {
-			"Library/Application Support/RHREfresh/"
+			"Library/Application Support/RHREfresh"
 		} else {
-			".rhrefresh"
+            val xdgConfigHome = System.getenv("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() } ?: "$home/.config"
+            "$xdgConfigHome/RHREfresh"
 		}
         //val refreshExternalFolder: String = System.getProperty("user.home") +"/"+ refreshFolder
 
@@ -74,7 +76,7 @@ object DesktopLauncher {
             source.deleteRecursively()
         }
 
-        val app = RHREfreshApplication(logger, File(if (portable) "$refreshFolder/logs/" else System.getProperty("user.home") + "/$refreshFolder/logs/"))
+        val app = RHREfreshApplication(logger, File(if (portable) "$refreshFolder/logs/" else "$refreshFolder/logs/"))
         ToolboksDesktopLauncher3(app)
                 .editConfig {
                     this.setAutoIconify(true)
@@ -91,16 +93,16 @@ object DesktopLauncher {
                     if (portable) {
                         this.setPreferencesConfig("$refreshFolder/.prefs/", Files.FileType.Local)
                     } else {
-                        logger.info("Setting preference folder to "+System.getProperty("user.home")+"/$refreshFolder/prefs")
-                        val newPrefFolder = File(System.getProperty("user.home")+"/$refreshFolder/prefs")
+                        logger.info("Setting preference folder to $refreshFolder/prefs")
+                        val newPrefFolder = File("$refreshFolder/prefs")
                         if (!newPrefFolder.exists()) {
                             val prefFolder = File(System.getProperty("user.home")+"/.prefs")
                             if (prefFolder.exists() && prefFolder.isDirectory()) {
-                                prefFolder.copyRecursively(File(System.getProperty("user.home") + "/$refreshFolder/prefs"))
+                                prefFolder.copyRecursively(File("$refreshFolder/prefs"))
                                 logger.info("Copied older preference folder")
                             }
                         }
-                        this.setPreferencesConfig(System.getProperty("user.home") + "/$refreshFolder/prefs/", Files.FileType.Absolute)
+                        this.setPreferencesConfig("$refreshFolder/prefs/", Files.FileType.Absolute)
                     }
                     
                     RHREfresh.portableMode = portable

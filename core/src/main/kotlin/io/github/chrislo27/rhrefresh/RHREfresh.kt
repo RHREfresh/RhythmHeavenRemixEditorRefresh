@@ -55,14 +55,15 @@ object RHREfresh {
                 if (portableMode) {
                     Gdx.files.local(".rhrefresh/")
                 } else {
-                    if (CURRENT_OS == OS.LINUX) {
-                        Gdx.files.external(".config/RHREfresh/")
-                    } else if (CURRENT_OS == OS.WINDOWS) {
-                        Gdx.files.external("AppData/Roaming/RHREfresh/")
+                    val home = System.getProperty("user.home")
+                    if (CURRENT_OS == OS.WINDOWS) {
+                        val appData = System.getenv("APPDATA") ?: "$home\\AppData\\Roaming"
+                        Gdx.files.absolute("$appData\\RHREfresh")
                     } else if (CURRENT_OS == OS.MACOS) {
-                        Gdx.files.external("Library/Application Support/RHREfresh/")
+                        Gdx.files.external("Library/Application Support/RHREfresh")
                     } else {
-                        Gdx.files.external(".rhrefresh/")
+                        val xdgConfigHome = System.getenv("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() } ?: "$home/.config"
+                        Gdx.files.absolute("$xdgConfigHome/RHREfresh")
                     }
                 }).apply(FileHandle::mkdirs)
     }
