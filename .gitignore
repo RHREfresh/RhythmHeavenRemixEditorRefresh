@@ -88,3 +88,11 @@ Thumbs.db
 /core/assets/test.pcm
 /assets/
 /core/assets/articles
+
+## FFmpeg build dependencies (macOS)
+/scripts/build_mac_deps
+/scripts/ffmpeg
+/scripts/ogg
+/scripts/rb_*.txt
+/scripts/rubberband
+/scripts/vorbis

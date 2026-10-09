@@ -23,7 +23,7 @@ object FFmpeg {
     enum class ARCH_OS(val supported: Boolean, val executableName: String) {
         UNSUPPORTED(false, "unsupported"),
         WINDOWS_X64(true, "ffmpeg_win_x64.exe"),
-        MACOS_ARM64(true, "ffmpeg_macOS_arm64"),
+        MACOS_UNIVERSAL(true, "ffmpeg_macOS_universal"),
         LINUX_X64(true, "ffmpeg_linux_x64");
 
         companion object {
@@ -37,7 +37,7 @@ object FFmpeg {
         val archName: String = System.getProperty("os.arch", "???")?.lowercase(Locale.ROOT) ?: "???"
         when {
             "win" in osName && archName == "amd64" -> ARCH_OS.WINDOWS_X64
-            "mac" in osName && archName == "aarch64" -> ARCH_OS.MACOS_ARM64
+            "mac" in osName -> ARCH_OS.MACOS_UNIVERSAL
             osName.startsWith("linux") && archName == "amd64" -> ARCH_OS.LINUX_X64
             else -> ARCH_OS.UNSUPPORTED
         }
