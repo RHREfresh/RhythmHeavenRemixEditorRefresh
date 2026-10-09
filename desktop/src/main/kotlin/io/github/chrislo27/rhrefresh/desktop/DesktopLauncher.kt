@@ -41,7 +41,7 @@ object DesktopLauncher {
             val appData = System.getenv("APPDATA") ?: "$home\\AppData\\Roaming"
             "$appData\\RHREfresh"
 		} else if (osName.contains("mac")) {
-			"Library/Application Support/RHREfresh"
+			"$home/Library/Application Support/RHREfresh"
 		} else {
             val xdgConfigHome = System.getenv("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() } ?: "$home/.config"
             "$xdgConfigHome/RHREfresh"
