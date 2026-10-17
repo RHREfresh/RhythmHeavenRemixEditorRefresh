@@ -30,6 +30,7 @@ object RemixRecovery {
     private val recoveryPrefs: Preferences by lazy { Gdx.app.getPreferences("RHREFRESH-recovery") }
     private val messageDigest = MessageDigest.getInstance("SHA-1")
     private var lastChecksum: String = ""
+    var dontSave: Boolean = false
 
     @Synchronized
     fun addSelfToShutdownHooks() {
@@ -95,6 +96,11 @@ object RemixRecovery {
     fun saveRemixInRecovery() {
         if (lastChecksum.isEmpty()) {
             Toolboks.LOGGER.info("Skipping saving recovery remix because last checksum is empty")
+            return
+        }
+
+        if (dontSave) {
+            dontSave = false
             return
         }
 

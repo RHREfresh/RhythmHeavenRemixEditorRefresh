@@ -8,13 +8,14 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
+import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.editor.Editor
+import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.undoredo.ReversibleAction
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.stage.LoadingIcon
 import io.github.chrislo27.rhrefresh.track.MusicData
-import io.github.chrislo27.rhrefresh.track.PlayState
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.track.tracker.TrackerValueChange
 import io.github.chrislo27.rhrefresh.track.tracker.tempo.TempoChange
@@ -27,6 +28,7 @@ import io.github.chrislo27.toolboks.registry.ScreenRegistry
 import io.github.chrislo27.toolboks.ui.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.math.absoluteValue
 
 
@@ -230,7 +232,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
         if (!isChooserOpen) {
             GlobalScope.launch {
                 isChooserOpen = true
-                val filter = TinyFDWrapper.FileExtFilter(Localization["screen.music.fileFilter"] + "(.ogg, .mp3, .wav)", "*.ogg", "*.mp3", "*.wav")
+                val filter = TinyFDWrapper.FileExtFilter(Localization["screen.music.fileFilter"] + "(.ogg, .mp3, .wav, .flac)", "*.ogg", "*.mp3", "*.wav", "*.flac")
                 TinyFDWrapper.openFile(Localization["screen.music.fileChooserTitle"], attemptRememberDirectory(main, PreferenceKeys.FILE_CHOOSER_MUSIC) ?: getDefaultDirectory(), filter) { file ->
                     isChooserOpen = false
                     if (file != null) {
@@ -239,7 +241,23 @@ class MusicSelectScreen(main: RHREfreshApplication)
                         persistDirectory(main, PreferenceKeys.FILE_CHOOSER_MUSIC, newInitialDirectory)
                         try {
                             updateLabels(null)
-                            val handle = FileHandle(file)
+
+                            val handle: FileHandle = when (file.extension) {
+                                "ogg", "mp3", "wav" -> {
+                                    FileHandle(file)
+                                }
+
+                                "flac" -> {
+                                    val wav = File(RHREfresh.tmpMusic.file(), "${file.name}.wav")
+                                    FFmpeg.encodeToWav(file, wav)
+                                    FileHandle(wav)
+                                }
+
+                                else -> {
+                                    throw Exception("Unsupported file extension ${file.extension}")
+                                }
+                            }
+
                             val musicData = MusicData(handle, editor.remix)
                             editor.remix.music = musicData
                             isLoading = false
