@@ -27,7 +27,7 @@ object FFmpeg {
         LINUX_X64(true, "ffmpeg_linux_x64");
 
         companion object {
-            val ALL_VALUES: List<ARCH_OS> = values().toList()
+            val ALL_VALUES: List<ARCH_OS> = entries
             val SUPPORTED: List<ARCH_OS> = ALL_VALUES - UNSUPPORTED
         }
     }
@@ -132,8 +132,36 @@ object FFmpeg {
             while (((reader.readLine().also { line = it } )) != null) {
                 Toolboks.LOGGER.info(line!!)
             }
-            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
                 // it failed, and the lines above say why
+            }
+        } finally {
+            ffmpegExecutor.destroy()
+        }
+    }
+
+    fun encodeToWav(input: File, output: File) {
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+
+        ffmpegExecutor.addArgument("-y")
+        ffmpegExecutor.addArgument("-hide_banner")
+        ffmpegExecutor.addArgument("-i")
+        ffmpegExecutor.addArgument(input.absolutePath)
+        ffmpegExecutor.addArgument("-c:a")
+        ffmpegExecutor.addArgument("pcm_s16le")
+        ffmpegExecutor.addArgument(output.absolutePath)
+
+        try {
+            ffmpegExecutor.execute()
+
+            val reader = RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                Toolboks.LOGGER.info(line!!)
+            }
+
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
+                Toolboks.LOGGER.error("Failed to convert FLAC to WAV")
             }
         } finally {
             ffmpegExecutor.destroy()
@@ -151,7 +179,7 @@ object FFmpeg {
             while (((reader.readLine().also { line = it } )) != null) {
                 Toolboks.LOGGER.info(line!!)
             }
-            if (ffmpegExecutor.getProcessExitCode() !== 0) {
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
                 Toolboks.LOGGER.info("Bundled FFmpeg sadly unsupported")
                 forceUnsupported = true
             }
