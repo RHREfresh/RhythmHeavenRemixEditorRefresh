@@ -752,15 +752,18 @@ object SFXDatabase : Disposable {
                 builder.append("Game ${game.id} has a missing texture\n")
             }
             if (game.series != Series.SIDE) {
-                if ((game.name.contains("(Fever)") && game.series != Series.FEVER) ||
+                if ((game.name.contains("(Wii)") && game.series != Series.FEVER) ||
                         (game.name.contains("(DS)") && game.series != Series.DS) ||
-                        (game.name.contains("(Megamix)") && game.series != Series.MEGAMIX) ||
+                        (game.name.contains("(3DS)") && game.series != Series.MEGAMIX) ||
                         (game.name.contains("(GBA)") && game.series != Series.TENGOKU)) {
                     builder.append("Game ${game.id} has the name \"${game.name}\" but is in series ${game.series}\n")
                 }
 
-                if (game.name.contains("(Wii)")) {
-                    builder.append("Game ${game.id} has (Wii) in its name, should be (Fever): ${game.name}\n")
+                if (game.name.contains("(Fever)")) {
+                    builder.append("Game ${game.id} has (Fever) in its name, should be (Wii): ${game.name}\n")
+                }
+                if (game.name.contains("(Megamix)")) {
+                    builder.append("Game ${game.id} has (Megamix) in its name, should be (3DS): ${game.name}\n")
                 }
             }
 

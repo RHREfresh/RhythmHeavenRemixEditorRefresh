@@ -95,7 +95,7 @@ class PatternPreviewButton(val editor: Editor, palette: UIPalette, parent: UIEle
 
                 ownRemix.recomputeCachedData()
 
-                ownRemix.playbackStart = 0f
+                ownRemix.playbackStart = minOf(0f, entity.getLowerUpdateableBound())
                 ownRemix.playState = STOPPED
                 ownRemix.playState = PLAYING
                 playState = PAUSED // Used as buffer

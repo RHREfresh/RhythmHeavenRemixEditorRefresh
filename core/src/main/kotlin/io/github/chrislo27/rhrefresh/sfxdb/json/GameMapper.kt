@@ -42,6 +42,9 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
         is PatternObject ->
             Pattern(game, objID, obj.deprecatedIDs,
                     obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable)
+        is MultiCueObject ->
+            MultiCue(game, objID, obj.deprecatedIDs,
+                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.width, obj.canSplit)
         is RandomCueObject ->
             RandomCue(game, objID, obj.deprecatedIDs,
                       obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.responseIDs.starSubstitution(), obj.stretchable)
@@ -138,6 +141,18 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
             }
             is Pattern -> {
                 PatternObject().also {
+                    it.id = datamodel.id.starSubstitute()
+                    it.deprecatedIDs = datamodel.deprecatedIDs
+                    it.name = datamodel.name
+                    it.subtext = datamodel.subtext
+
+                    it.stretchable = datamodel.stretchable
+
+                    it.cues = datamodel.cues.starSubstituteAndMapToJson()
+                }
+            }
+            is MultiCue -> {
+                MultiCueObject().also {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name

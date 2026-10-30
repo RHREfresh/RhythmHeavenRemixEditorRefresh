@@ -115,6 +115,8 @@ open class Theme : Disposable {
         @HexColor
         var pattern: Color = Color(0.85f, 0.85f, 1f, 1f)
         @HexColor
+        var multiCue: Color = Color(0.85f, 1f, 0.85f, 1f)
+        @HexColor
         var special: Color = Color(1f, 212f / 255f, 186f / 255f, 1f)
         @HexColor
         var keepTheBeat: Color = Color(1f, 226f / 255f, 124f / 255f, 1f)
