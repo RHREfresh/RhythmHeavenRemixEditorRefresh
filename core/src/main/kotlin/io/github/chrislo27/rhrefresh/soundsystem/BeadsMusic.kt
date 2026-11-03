@@ -35,6 +35,18 @@ class BeadsMusic(val audio: BeadsAudio) : Disposable {
         player.player.start()
     }
 
+    /**
+     * Starts the music so that at remix second [atSeconds] it is at position [musicSeconds]
+     * (negative = still before the music begins). Returns false if no playback is running.
+     */
+    fun playAt(atSeconds: Double, musicSeconds: Double): Boolean {
+        return AudioScheduler.schedule(atSeconds) { delayMs ->
+            player.addToContext()
+            player.player.start()      // start() may rewind, so set the position afterwards
+            player.player.position = musicSeconds * 1000 - delayMs * player.pitch.currentValue
+        }
+    }
+
     fun stop() {
         player.player.pause(true)
         player.player.reset()

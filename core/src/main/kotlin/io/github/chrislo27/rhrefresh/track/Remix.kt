@@ -709,6 +709,7 @@ open class Remix(val main: RHREfreshApplication)
         playStateListeners.forEach { it.invoke(old, new) }
         when (new) {
             PlayState.STOPPED -> {
+                io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.end()
                 AssetRegistry.stopAllSounds()
                 music?.music?.pause()
                 BeadsSoundSystem.stop()
@@ -716,11 +717,16 @@ open class Remix(val main: RHREfreshApplication)
                 currentShakeEntities.clear()
             }
             PlayState.PAUSED -> {
+                io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.end()
+                // Sounds handed to the scheduler but whose cue has not begun yet are dropped; they are
+                // scheduled again after resuming.
+                forEachCue(entities) { it.cancelScheduledSound() }
                 AssetRegistry.pauseAllSounds()
                 music?.music?.pause()
                 BeadsSoundSystem.pause()
             }
             PlayState.PLAYING -> {
+                io.github.chrislo27.rhrefresh.soundsystem.TimingProbe.attach()
                 lastMusicPosition = -1f
                 scheduleMusicPlaying = true
                 AssetRegistry.resumeAllSounds()
@@ -733,6 +739,7 @@ open class Remix(val main: RHREfreshApplication)
                         } else {
                             it.playbackCompletion = PlaybackCompletion.WAITING
                         }
+                        if (it is io.github.chrislo27.rhrefresh.entity.model.MultipartEntity<*>) it.resetEarlyPreparation()
                         if (it is ISoundDependent) {
                             it.preloadSounds()
                         }
@@ -745,8 +752,20 @@ open class Remix(val main: RHREfreshApplication)
                     currentShakeEntities.clear()
                 }
                 BeadsSoundSystem.resume()
+                val exact = !isExporting && io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.enabled && BeadsSoundSystem.isRealtime
+                if (exact) {
+                    io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.begin(seconds.toDouble(), speedMultiplier)
+                }
                 if (music != null) {
-                    if (seconds >= musicStartSec) {
+                    if (exact) {
+                        // Start the music on the same clock as the sounds (negative position = not yet)
+                        scheduleMusicPlaying = false
+                        music.music.pause()
+                        setMusicVolume()
+                        music.music.setPitch(speedMultiplier)
+                        music.music.playAt(seconds.toDouble(), (seconds - musicStartSec).toDouble())
+                        io.github.chrislo27.rhrefresh.soundsystem.TimingProbe.event("MUSICSCHED", seconds)
+                    } else if (seconds >= musicStartSec) {
                         music.music.play()
                         setMusicVolume()
                         seekMusic()
@@ -948,6 +967,18 @@ open class Remix(val main: RHREfreshApplication)
                 "Entity playbackCompletion state was modified in such a way that it escaped all update logic branches")
     }
 
+    private var lastAudioClock: Double = Double.NaN
+
+    /** Every cue entity, including the ones inside patterns and other multipart entities. */
+    private fun forEachCue(list: List<Entity>, action: (io.github.chrislo27.rhrefresh.entity.model.cue.CueEntity) -> Unit) {
+        list.forEach {
+            when (it) {
+                is io.github.chrislo27.rhrefresh.entity.model.cue.CueEntity -> action(it)
+                is io.github.chrislo27.rhrefresh.entity.model.MultipartEntity<*> -> forEachCue(it.getInternalEntities(), action)
+            }
+        }
+    }
+
     fun timeUpdate(delta: Float) {
         val music: MusicData? = music
 
@@ -957,8 +988,13 @@ open class Remix(val main: RHREfreshApplication)
             return
 
         seconds += delta * speedMultiplier
+        if (io.github.chrislo27.rhrefresh.soundsystem.TimingProbe.enabled) {
+            io.github.chrislo27.rhrefresh.soundsystem.TimingProbe.event("F", delta, seconds,
+                    music?.music?.takeIf { it.isPlaying() }?.getPosition())
+        }
         if (music != null) {
             if (scheduleMusicPlaying && seconds >= musicStartSec) {
+                io.github.chrislo27.rhrefresh.soundsystem.TimingProbe.event("MUSICPLAY", seconds)
                 music.music.play()
                 music.music.setPitch(speedMultiplier)
                 scheduleMusicPlaying = false
@@ -988,6 +1024,35 @@ open class Remix(val main: RHREfreshApplication)
                     }
                 }
             }
+        }
+
+        if (io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.active) {
+            // Without music, follow the audio clock too, so what the program thinks is playing is
+            // what is actually heard
+            if (music?.music?.isPlaying() != true) {
+                val clock = io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.clockSeconds()
+                if (clock != null && clock != lastAudioClock) {
+                    lastAudioClock = clock
+                    seconds = clock.toFloat()
+                }
+            }
+            // Hand the sounds that start soon to the audio scheduler, so they begin on the exact sample
+            val horizon = seconds + io.github.chrislo27.rhrefresh.soundsystem.AudioScheduler.LOOKAHEAD_SECONDS
+            val horizonBeat = tempos.secondsToBeats(horizon)
+            fun schedule(entity: Entity) {
+                when (entity) {
+                    is io.github.chrislo27.rhrefresh.entity.model.cue.CueEntity -> if (entity.playbackCompletion == PlaybackCompletion.WAITING && !entity.soundScheduled) {
+                        entity.scheduleSoundIfDue(horizon)
+                    }
+                    // Patterns, random cues etc. play their internal cues themselves: schedule those too
+                    is io.github.chrislo27.rhrefresh.entity.model.MultipartEntity<*> -> if (entity.playbackCompletion != PlaybackCompletion.FINISHED &&
+                            entity.getLowerUpdateableBound() <= horizonBeat) {
+                        if (entity.playbackCompletion == PlaybackCompletion.WAITING) entity.prepareInternalsEarly()
+                        entity.getInternalEntities().forEach { schedule(it) }
+                    }
+                }
+            }
+            entities.forEach { schedule(it) }
         }
 
         entities.forEach { entity ->

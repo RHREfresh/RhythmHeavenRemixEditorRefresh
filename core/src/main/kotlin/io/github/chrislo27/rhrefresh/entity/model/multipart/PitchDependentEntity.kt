@@ -90,8 +90,22 @@ class PitchDependentEntity(remix: Remix, datamodel: PitchDependent)
             pickSound()
     }
 
+    private var chosenEarly = false
+
+    override fun prepareInternalsEarly() {
+        if (!chosenEarly) {
+            pickSound()
+            chosenEarly = true
+        }
+    }
+
+    override fun resetEarlyPreparation() {
+        chosenEarly = false
+    }
+
     override fun onStart() {
-        pickSound()
+        // If the sounds were already chosen (and scheduled) ahead of time, keep that choice
+        if (chosenEarly) chosenEarly = false else pickSound()
         super.onStart()
     }
 

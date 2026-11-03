@@ -58,6 +58,38 @@ class BeadsSound(val audio: BeadsAudio) {
         return id
     }
 
+    /**
+     * Like [playWithLoop], but the sound starts exactly at remix second [atSeconds] (see [AudioScheduler]).
+     * Returns -1 if no playback is running to schedule into.
+     */
+    fun playWithLoopAt(atSeconds: Double, pitch: Float, rate: Float, volume: Float, loopParams: LoopParams): Long {
+        if (disposed || !AudioScheduler.active)
+            return -1L
+
+        val (id, player) = obtainPlayer()
+        player.player.loopType = loopParams.loopType
+        player.player.rateUGen.value = rate
+        player.gain.gain = volume
+        player.pitch.value = pitch
+        player.rate.value = rate
+        if (loopParams.startPoint > 0) {
+            player.player.setLoopStart(Static(player.player.context, loopParams.startPoint.toFloat() * 1000))
+        }
+        if (loopParams.endPoint > 0) {
+            player.player.setLoopEnd(Static(player.player.context, loopParams.endPoint.toFloat() * 1000))
+        }
+        AudioScheduler.schedule(atSeconds) { delayMs ->
+            if (players.containsKey(id)) {   // not stopped in the meantime
+                // A negative position is silence before the sample: that many ms of lead-in at this speed
+                // (getValue() of an envelope is 0 until it has run once, so use the current values)
+                player.player.position = -delayMs * player.pitch.currentValue * player.rate.currentValue
+                AudioScheduler.killOnEndAfterLeadIn(player.player)
+                player.addToContext()
+            }
+        }
+        return id
+    }
+
     fun setPitch(id: Long, pitch: Float) {
         val player = players[id] ?: return
         player.pitch.value = pitch

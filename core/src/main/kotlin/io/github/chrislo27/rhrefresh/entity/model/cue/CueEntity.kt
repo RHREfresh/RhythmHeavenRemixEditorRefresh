@@ -12,6 +12,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.soundsystem.*
 import io.github.chrislo27.rhrefresh.theme.Theme
+import io.github.chrislo27.rhrefresh.track.PlaybackCompletion
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.util.Semitones
 import io.github.chrislo27.toolboks.util.gdxutils.maxX
@@ -233,6 +234,59 @@ class CueEntity(remix: Remix, datamodel: Cue)
                                  position = (introSoundPos.toDouble()) * apparentRate) ?: -1L
     }
     
+    /** True when this cue's sound was handed to the [AudioScheduler] ahead of its start. */
+    @Volatile
+    var soundScheduled: Boolean = false
+
+    override var playbackCompletion: PlaybackCompletion = PlaybackCompletion.WAITING
+        set(value) {
+            if (value == PlaybackCompletion.WAITING) soundScheduled = false
+            field = value
+        }
+
+    /**
+     * Schedules the sound (and intro sound) to start on their exact sample if they begin before
+     * [horizonSeconds]. Cues that were already sounding when playback began are left to [onStart],
+     * which starts them in the middle.
+     */
+    fun scheduleSoundIfDue(horizonSeconds: Float) {
+        val start = remix.tempos.beatsToSeconds(bounds.x)
+        // Earliness is in real seconds; the remix clock runs speedMultiplier times as fast
+        val mainAt = start - cue.earliness * remix.speedMultiplier
+        val introSoundCue = cue.introSoundCue
+        val introAt = if (introSoundCue != null) start - introSoundCue.earliness * remix.speedMultiplier else mainAt
+        val earliest = min(mainAt, introAt)
+        if (earliest > horizonSeconds) return
+        if (earliest < remix.tempos.beatsToSeconds(remix.playbackStart)) return
+        if (isSkillStar && remix.doUpdatePlayalong && remix.main.screen is EditorScreen) return
+
+        val randomPitchVariation = ThreadLocalRandom.current().nextInt(cue.randomPitchLowCents, cue.randomPitchHighCents + 1)
+        val randomPitch = getSemitonePitch(randomPitchVariation / 100f) * getPitchMultiplierFromRemixSpeed()
+        val pitch = getSemitonePitch(0f) * getPitchMultiplierFromRemixSpeed()
+        val rate = if (!rulesAllowBaseBpm) 1f else cue.getBaseBpmRate(bounds.x)
+        val loopParams = if (cue.loops) LoopParams(SamplePlayer.LoopType.LOOP_FORWARDS, cue.loopStart.toDouble(), cue.loopEnd.toDouble()) else LoopParams.NO_LOOP_FORWARDS
+        val id = beadsSound.playWithLoopAt(mainAt.toDouble(), randomPitch, rate, volume, loopParams)
+        if (id == -1L) return
+        soundId = id
+        introSoundId = if (introSoundCue != null) {
+            introCueBeadsSound?.playWithLoopAt(introAt.toDouble(), pitch, introSoundCue.getBaseBpmRate(bounds.x),
+                                               volume, LoopParams.NO_LOOP_FORWARDS) ?: -1L
+        } else -1L
+        soundScheduled = true
+        if (TimingProbe.enabled) TimingProbe.event("CUESCHED", mainAt, remix.seconds, datamodel.id)
+    }
+
+    /** Playback paused before this cue began: drop its scheduled sound so it is scheduled again. */
+    fun cancelScheduledSound() {
+        if (soundScheduled && playbackCompletion == PlaybackCompletion.WAITING) {
+            beadsSound.stop(soundId)
+            if (introSoundId != -1L) introCueBeadsSound?.stop(introSoundId)
+            soundId = -1L
+            introSoundId = -1L
+            soundScheduled = false
+        }
+    }
+
     override fun getLowerUpdateableBound(): Float {
         return min(bounds.x, remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - min(cue.earliness * remix.speedMultiplier,
             (cue.introSoundCue?.earliness?.times(remix.speedMultiplier)) ?: Float.POSITIVE_INFINITY
@@ -242,6 +296,17 @@ class CueEntity(remix: Remix, datamodel: Cue)
     override fun onStart() {
         if (isSkillStar && remix.doUpdatePlayalong && remix.main.screen is EditorScreen) {
             return // Do not play if in playalong mode
+        }
+        if (TimingProbe.enabled) {
+            TimingProbe.event("CUE", remix.seconds,
+                    remix.tempos.beatsToSeconds(this.bounds.x) - cue.earliness * remix.speedMultiplier, datamodel.id, soundScheduled)
+        }
+        if (soundScheduled) {
+            // The sound is already on its way and starts on its exact sample
+            if (cue.pitchBending)
+                currentPitchBendingSemitone.update(0)
+            endingSoundId = -1L
+            return
         }
         val startPos = if (remix.playbackStart > remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - cue.earliness * remix.speedMultiplier)) {
             remix.seconds - remix.tempos.beatsToSeconds(this.bounds.x) + cue.earliness * remix.speedMultiplier

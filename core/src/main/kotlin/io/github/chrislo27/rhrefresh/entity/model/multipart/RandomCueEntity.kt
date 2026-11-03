@@ -101,8 +101,22 @@ class RandomCueEntity(remix: Remix, datamodel: RandomCue)
             reroll()
     }
 
+    private var chosenEarly = false
+
+    override fun prepareInternalsEarly() {
+        if (!chosenEarly) {
+            reroll()
+            chosenEarly = true
+        }
+    }
+
+    override fun resetEarlyPreparation() {
+        chosenEarly = false
+    }
+
     override fun onStart() {
-        reroll()
+        // If the sounds were already chosen (and scheduled) ahead of time, keep that choice
+        if (chosenEarly) chosenEarly = false else reroll()
         super.onStart()
     }
 

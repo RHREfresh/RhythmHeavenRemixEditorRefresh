@@ -186,6 +186,18 @@ abstract class MultipartEntity<out M>(remix: Remix, datamodel: M)
         return internal.all(Entity::isFinished)
     }
 
+    /**
+     * The audio scheduler needs to know which internal sounds will play before this entity starts.
+     * Entities that choose their internals when they start (random cues, pitch dependent cues)
+     * make that choice here instead, once per playback.
+     */
+    open fun prepareInternalsEarly() {
+    }
+
+    /** Playback is starting again: forget a choice made by [prepareInternalsEarly]. */
+    open fun resetEarlyPreparation() {
+    }
+
     override fun onStart() {
         internal.filter {
             it.bounds.x + it.bounds.width < remix.beat

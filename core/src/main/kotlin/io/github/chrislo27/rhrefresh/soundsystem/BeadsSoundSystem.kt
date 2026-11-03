@@ -142,7 +142,10 @@ object BeadsSoundSystem {
 //                throw MusicWayTooLargeException(length)
                 error("Audio is too large (${length} bytes)")
 
-            val nFrames = length / (2 * music.channels)
+            // MP3 decodes with extra samples in front (see Mp3Gapless); drop them so the music is on time
+            val skipFrames: Long = if (AudioScheduler.enabled && handle.extension().equals("mp3", ignoreCase = true))
+                Mp3Gapless.leadingSamples(handle.readBytes()).toLong() else 0L
+            val nFrames = (length / (2 * music.channels) - skipFrames).coerceAtLeast(0L)
 //            try {
             sample.resize(nFrames)
 //            } catch (oome: OutOfMemoryError) {
@@ -154,6 +157,7 @@ object BeadsSoundSystem {
             val sampleData = Array(music.channels) { FloatArray(interleaved.size / music.channels) }
 
             var currentFrame = 0
+            var toSkip = skipFrames
             while (true) {
                 val len = bufStream.read(audioBytes)
                 if (len <= 0)
@@ -164,9 +168,13 @@ object BeadsSoundSystem {
                 AudioUtils.byteToFloat(interleaved, audioBytes, false, len / 2) // 2 bytes per 16 bit float
                 AudioUtils.deinterleave(interleaved, music.channels, framesOfDataRead, sampleData)
 
-                sample.putFrames(currentFrame, sampleData, 0, framesOfDataRead)
-
-                currentFrame += framesOfDataRead
+                val skipHere = minOf(toSkip, framesOfDataRead.toLong()).toInt()
+                toSkip -= skipHere
+                val keep = framesOfDataRead - skipHere
+                if (keep > 0 && currentFrame < nFrames) {
+                    sample.putFrames(currentFrame, sampleData, skipHere, minOf(keep.toLong(), nFrames - currentFrame).toInt())
+                    currentFrame += keep
+                }
             }
             StreamUtils.closeQuietly(bufStream)
 
