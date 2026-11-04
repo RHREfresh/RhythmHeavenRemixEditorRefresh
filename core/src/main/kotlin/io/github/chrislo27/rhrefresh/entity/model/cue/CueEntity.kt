@@ -234,19 +234,21 @@ class CueEntity(remix: Remix, datamodel: Cue)
     }
     
     override fun getLowerUpdateableBound(): Float {
-        return min(bounds.x, remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - min(cue.earliness, cue.introSoundCue?.earliness ?: Float.POSITIVE_INFINITY)))
+        return min(bounds.x, remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - min(cue.earliness * remix.speedMultiplier,
+            (cue.introSoundCue?.earliness?.times(remix.speedMultiplier)) ?: Float.POSITIVE_INFINITY
+        )))
     }
     
     override fun onStart() {
         if (isSkillStar && remix.doUpdatePlayalong && remix.main.screen is EditorScreen) {
             return // Do not play if in playalong mode
         }
-        val startPos = if (remix.playbackStart > remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - cue.earliness)) {
-            remix.seconds - remix.tempos.beatsToSeconds(this.bounds.x) + cue.earliness
+        val startPos = if (remix.playbackStart > remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - cue.earliness * remix.speedMultiplier)) {
+            remix.seconds - remix.tempos.beatsToSeconds(this.bounds.x) + cue.earliness * remix.speedMultiplier
         } else 0f
         val introSoundCue = cue.introSoundCue
-        val introPos = if (introSoundCue != null && remix.playbackStart > remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - introSoundCue.earliness)) {
-            remix.seconds - remix.tempos.beatsToSeconds(this.bounds.x) + introSoundCue.earliness
+        val introPos = if (introSoundCue != null && remix.playbackStart > remix.tempos.secondsToBeats(remix.tempos.beatsToSeconds(bounds.x) - introSoundCue.earliness * remix.speedMultiplier)) {
+            remix.seconds - remix.tempos.beatsToSeconds(this.bounds.x) + introSoundCue.earliness * remix.speedMultiplier
         } else 0f
         if (cue.pitchBending)
             currentPitchBendingSemitone.update(0)
@@ -293,7 +295,7 @@ class CueEntity(remix: Remix, datamodel: Cue)
         val endingSoundCue = cue.endingSoundCue
         if (endingSoundCue != null && endingSoundId == -1L) {
             val endingCueBeadsSound = endingCueBeadsSound
-            if (endingCueBeadsSound != null && remix.seconds >= remix.tempos.beatsToSeconds(bounds.maxX) - endingSoundCue.earliness) {
+            if (endingCueBeadsSound != null && remix.seconds >= remix.tempos.beatsToSeconds(bounds.maxX) - endingSoundCue.earliness * remix.speedMultiplier) {
                 endingSoundId = endingCueBeadsSound.play(loop = false, volume = volume,
                                                          rate = if (rulesAllowBaseBpm) endingSoundCue.getBaseBpmRate(remix.beat) else 1f,
                                                          pitch = (if (!cue.pitchBending)
@@ -305,7 +307,7 @@ class CueEntity(remix: Remix, datamodel: Cue)
     
     override fun onEnd() {
         // If the sound needs to be stopped, stop it (and its intro sound if any)
-        if (cue.loops || rulesAllowBaseBpm || isFillbotsFill || stopAtEnd) {
+        if (cue.loops || isFillbotsFill || stopAtEnd || cue.stopAtEnd) {
             beadsSound.stop(soundId)
             if (introSoundId != -1L) {
                 introCueBeadsSound?.stop(introSoundId)

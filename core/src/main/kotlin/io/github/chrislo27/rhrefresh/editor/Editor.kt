@@ -34,6 +34,7 @@ import io.github.chrislo27.rhrefresh.entity.areAnyResponseCopyable
 import io.github.chrislo27.rhrefresh.entity.model.*
 import io.github.chrislo27.rhrefresh.entity.model.cue.CueEntity
 import io.github.chrislo27.rhrefresh.entity.model.multipart.EquidistantEntity
+import io.github.chrislo27.rhrefresh.entity.model.multipart.MultiCueEntity
 import io.github.chrislo27.rhrefresh.entity.model.multipart.KeepTheBeatEntity
 import io.github.chrislo27.rhrefresh.entity.model.multipart.RandomCueEntity
 import io.github.chrislo27.rhrefresh.entity.model.special.PlayalongEntity
@@ -1652,7 +1653,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
             } else if (tool == Tool.MULTIPART_SPLIT) {
                 if (isDraggingButtonDown) {
                     val firstMultipart: MultipartEntity<*>? = getMultipartOnMouse()
-                    if (firstMultipart != null) {
+                    if (firstMultipart != null && firstMultipart !is MultiCueEntity || firstMultipart?.canSplit == true) {
                         if (firstMultipart.canSplitWithoutColliding()) {
                             remix.mutate(firstMultipart.createSplittingAction())
                         }

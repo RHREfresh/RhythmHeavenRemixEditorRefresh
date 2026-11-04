@@ -8,14 +8,14 @@ import java.util.*
 
 object Credits {
 
-    private val sfxCreditsLegacyFallback: String = listOf("Lvl100Feraligatr", "GenericArrangements", "Draster", "NP", "Eggman199", "Huebird", "oofie", "Miracle22", "MF5K", "The Golden Station", "GuardedLolz", "GlitchyPSIX", "sp00pster", "Maxanum").sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ")
+    private val sfxCreditsLegacyFallback: String = listOf("Lvl100Feraligatr", "GenericArrangements", "Draster", "NP", "Eggman199", "Huebird", "oofie", "Miracle22", "MF5K", "The Golden Station", "GuardedLolz", "GlitchyPSIX", "sp00pster", "Maxanum", "ControlFrosty", "Kievit").sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ")
     private val sfxCreditsFallback: String = listOf("Dracobot", "dexiedoo_octo", "viviancherry", "Katie1118").sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ")
 
     fun generateList(): List<Credit> {
         return listOf(
                 "title" crediting RHREfresh.GITHUB,
                 "refresh" crediting "",
-                "programming" crediting "TheAlternateDoctor\n${Localization["credits.title.programming.contributions", "ThatZeoGal, iestyn129"]}",
+                "programming" crediting "TheAlternateDoctor\n${Localization["credits.title.programming.contributions", "ThatZeoGal, iestyn129, Kievit"]}",
                 "sfx" crediting (SFXDatabase.let { if (!it.isDataLoading()) it.data.sfxCredits.sortedBy { it.lowercase(Locale.ROOT) }.joinToString(separator = ", ") else null } ?: sfxCreditsLegacyFallback),
                 "gfx" crediting "dexiedoo_octo, Katie1118, viviancherry",
                 "consulting" crediting "chrislo27, Kievit",

@@ -86,7 +86,7 @@ object RHREfresh {
     var DATABASE_BRANCH: String = MASTER_DATABASE_BRANCH
     var DATABASE_CURRENT_COMMIT: String = ""
     val DATABASE_CURRENT_VERSION: String = "https://raw.githubusercontent.com/TheAlternateDoctor/RHRE-database/$DATABASE_BRANCH/current.json"
-    const val DATABASE_RELEASES = "https://github.com/RHREfresh/RHRE-database/releases"
+    const val DATABASE_RELEASES = "https://github.com/RHREfresh/RHRE-database/blob/master/changelog.md"
     const val RELEASE_API_URL = "https://api.github.com/repos/TheAlternateDoctor/RhythmHeavenRemixEditorRefresh/releases/latest"
     const val OUT_OF_MEMORY_DOC_LINK: String = "https://docs.rhre.dev/Out-of-memory-on-music/"
     const val DOCS_URL: String = "https://rhre.readthedocs.io/en/latest/"

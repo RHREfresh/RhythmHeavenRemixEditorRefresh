@@ -82,7 +82,7 @@ class AutoUpdaterScreen(main: RHREfreshApplication)
             this.text = "screen.autoUpdater.title"
         }
         stage.titleIcon.apply {
-            this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_updatesfx"))
+            this.image = TextureRegion(AssetRegistry.get<Texture>("ui_icon_refresh"))
         }
         stage.backButton.apply {
             this.visible = false
