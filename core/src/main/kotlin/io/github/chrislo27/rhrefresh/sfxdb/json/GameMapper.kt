@@ -44,7 +44,7 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
                     obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable)
         is MultiCueObject ->
             MultiCue(game, objID, obj.deprecatedIDs,
-                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.width, obj.canSplit)
+                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.duration, obj.canSplit)
         is RandomCueObject ->
             RandomCue(game, objID, obj.deprecatedIDs,
                       obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.responseIDs.starSubstitution(), obj.stretchable)
@@ -157,7 +157,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
                     it.subtext = datamodel.subtext
-
+                    it.duration = datamodel.duration
                     it.stretchable = datamodel.stretchable
 
                     it.cues = datamodel.cues.starSubstituteAndMapToJson()
