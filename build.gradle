@@ -15,7 +15,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = "4.0.0"
+    version = "4.0.1"
     ext {
         appName = "rhythm-heaven-remix-editor-refresh"
         gdxVersion = '1.14.0'
