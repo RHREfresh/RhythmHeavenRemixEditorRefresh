@@ -27,8 +27,8 @@ import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.AAC
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
-import io.github.chrislo27.rhrefresh.soundsystem.BeadsMusic
-import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsMusic
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.track.PlayState
@@ -435,29 +435,29 @@ class ExportRemixScreen(main: RHREfreshApplication)
             remix.speedMultiplier = 1f
             
             // music trigger
-            if (remix.music != null) {
-                val music = BeadsMusic((remix.music!!.music as BeadsMusic).audio)
-                music.stop()
-
-                val musicStartMs = (remix.musicStartSec * 1000) - startMs
-                
-                context.out.addDependent(DelayTrigger(context, musicStartMs, addBead {
-                    music.also(BeadsMusic::play)
-                }))
-                
-                // volumes
-                context.out.addDependent(Clock(context, 10f).apply {
-                    addMessageListener(addBead {
-                        music.setVolume(remix.musicVolumes.volumeAt(remix.beat))
-                        // Music distort
-                        val inDistortion = remix.entities.any { it is MusicDistortEntity && remix.beat in it.bounds.x..it.bounds.maxX }
-                        val currentlyDistorted = music.player.doBandpass
-                        if (inDistortion != currentlyDistorted) {
-                            music.player.doBandpass = inDistortion
-                        }
-                    })
-                })
-            }
+//            if (remix.music != null) {
+//                val music = BeadsMusic((remix.music!!.music as BeadsMusic).audio)
+//                music.stop()
+//
+//                val musicStartMs = (remix.musicStartSec * 1000) - startMs
+//
+//                context.out.addDependent(DelayTrigger(context, musicStartMs, addBead {
+//                    music.also(BeadsMusic::play)
+//                }))
+//
+//                // volumes
+//                context.out.addDependent(Clock(context, 10f).apply {
+//                    addMessageListener(addBead {
+//                        music.setVolume(remix.musicVolumes.volumeAt(remix.beat))
+//                        // Music distort
+//                        val inDistortion = remix.entities.any { it is MusicDistortEntity && remix.beat in it.bounds.x..it.bounds.maxX }
+//                        val currentlyDistorted = music.player.doBandpass
+//                        if (inDistortion != currentlyDistorted) {
+//                            music.player.doBandpass = inDistortion
+//                        }
+//                    })
+//                })
+//            }
             
             if (startSeconds * 1000 <= startMs) {
                 context.out.addDependent(recorder)

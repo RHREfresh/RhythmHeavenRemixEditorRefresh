@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhrefresh.soundsystem
 
+import com.badlogic.gdx.files.FileHandle
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.toolboks.Toolboks
@@ -96,7 +97,7 @@ object FFmpeg {
      * @param ratePercent Changes the sound rate by this amount of percents. See [RATE_CHANGE_RANGE]
      * @param quick Enables the -quick parameter. Gains speed but will probably lose quality.
      */
-    fun processStreams(input: File, output: File, tempoPercent: Float, pitchSemitones: Float, ratePercent: Float, quick: Boolean) {
+    fun processStreams(input: File, output: File, tempoPercent: Float, pitchSemitones: Float) {
 
         val ffmpegExecutor = createProcessLocator().createExecutor()
         ffmpegExecutor.addArgument("-y")
@@ -161,5 +162,83 @@ object FFmpeg {
         finally {
             ffmpegExecutor.destroy()
         }
+    }
+    /**
+     * "Detects" the start of the song using silencedetect. Not entirely accurate, but close enough.
+     */
+    fun detectMusicStart(handle: FileHandle): Float{
+        val ffmpegExecutor = createProcessLocator().createExecutor()
+        ffmpegExecutor.addArgument("-y")
+        ffmpegExecutor.addArgument("-hide_banner")
+        ffmpegExecutor.addArgument("-i")
+        ffmpegExecutor.addArgument(handle.file().absolutePath)
+        ffmpegExecutor.addArgument("-vn")
+        ffmpegExecutor.addArgument("-af")
+        ffmpegExecutor.addArgument("silencedetect=n=0.0005:d=1ms")
+        ffmpegExecutor.addArgument("-f")
+        ffmpegExecutor.addArgument("null")
+        ffmpegExecutor.addArgument("-")
+
+        var musicStart = 0f
+        var silenceStart = -1f
+        var silenceEnd = -1f
+        var fileFormat = ""
+
+        try {
+            ffmpegExecutor.execute()
+            val reader =
+                RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+            var line: String?
+            while (((reader.readLine().also { line = it } )) != null) {
+                // Detecting the format first!
+                if(line!!.startsWith("Input #0,")){
+                    val formatEnd = line.substring(10).indexOf(',')
+                    fileFormat = line.substring(10, 10+formatEnd)
+                }
+                // Detecting the start of the song
+                if(line.trimStart().startsWith("Duration") && line.contains("start:")){
+                    val startStart = line.indexOf("start:")
+                    val startEnd = line.indexOf(',', startStart)
+                    val startString = line.substring(startStart+7, startEnd)
+                    musicStart = line.substring(startStart+7, startEnd).toFloat()
+                    Toolboks.LOGGER.info(line)
+                }
+                // Getting the first silence start
+                if(line.contains("silencedetect") && line.contains("silence_start") && silenceStart == -1f){
+                    val silenceStartStart = line.indexOf("silence_start:")
+                    silenceStart = line.substring(silenceStartStart+15).toFloat()
+                    Toolboks.LOGGER.info(line)
+                }
+                // Getting the first silence end
+                if(line.contains("silencedetect") && line.contains("silence_end") && silenceEnd == -1f){
+                    val silenceEndStart = line.indexOf("silence_end:")
+                    val silenceEndEnd = line.indexOf('|', silenceEndStart)
+                    silenceEnd = line.substring(silenceEndStart+14, silenceEndEnd).toFloat()
+                    Toolboks.LOGGER.info(line)
+                }
+            }
+            if (ffmpegExecutor.getProcessExitCode() != 0) {
+                //What the fuck happened
+                Toolboks.LOGGER.info("Detecting music start failed!")
+            }
+        }
+        finally {
+            ffmpegExecutor.destroy()
+        }
+
+        if(fileFormat == "ogg" && silenceStart+musicStart < 0.0001){
+            return silenceEnd-silenceStart
+        }
+        if(silenceStart == 0f){
+            if(fileFormat == "mp3"){
+                return silenceEnd+musicStart*2
+            }
+            return silenceEnd
+        }
+        if(fileFormat == "mp3"){
+            return musicStart*2
+        }
+
+        return 0f
     }
 }
