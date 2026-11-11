@@ -29,6 +29,8 @@ import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.special.Subtitle
 import io.github.chrislo27.rhrefresh.soundsystem.*
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsMusic
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.track.timesignature.TimeSignature
 import io.github.chrislo27.rhrefresh.track.timesignature.TimeSignatures
 import io.github.chrislo27.rhrefresh.track.tracker.TrackerContainer
@@ -951,7 +953,7 @@ open class Remix(val main: RHREfreshApplication)
     fun timeUpdate(delta: Float) {
         val music: MusicData? = music
 
-        music?.music?.update(speedMultiplier * if (playState == PlayState.PLAYING) (delta * 0.75f) else delta)
+//        music?.music?.update(speedMultiplier * if (playState == PlayState.PLAYING) (delta * 0.75f) else delta)
 
         if (playState != PlayState.PLAYING)
             return
@@ -979,14 +981,22 @@ open class Remix(val main: RHREfreshApplication)
                 music.music.setPitch(speedMultiplier)
 
                 // Music distort
-                val beadsMusic: BeadsMusic? = music.music
-                if (beadsMusic != null) {
+                val miniAudioMusic = music.music
+                if(miniAudioMusic != null){
                     val inDistortion = entities.any { it is MusicDistortEntity && beat in it.bounds.x..it.bounds.maxX }
-                    val currentlyDistorted = beadsMusic.player.doBandpass
-                    if (inDistortion != currentlyDistorted) {
-                        beadsMusic.player.doBandpass = inDistortion
+                    if(miniAudioMusic.isDistorted != inDistortion){
+                        miniAudioMusic.distortAudio(inDistortion)
                     }
                 }
+
+//                val beadsMusic: BeadsMusic? = music.music
+//                if (beadsMusic != null) {
+//                    val inDistortion = entities.any { it is MusicDistortEntity && beat in it.bounds.x..it.bounds.maxX }
+//                    val currentlyDistorted = beadsMusic.player.doBandpass
+//                    if (inDistortion != currentlyDistorted) {
+//                        beadsMusic.player.doBandpass = inDistortion
+//                    }
+//                }
             }
         }
 

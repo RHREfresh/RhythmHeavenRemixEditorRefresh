@@ -78,7 +78,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
             override fun onLeftClick(xPercent: Float, yPercent: Float) {
                 super.onLeftClick(xPercent, yPercent)
                 val remix = editor.remix
-                val start = remix.music?.music?.getStartOfSound() ?: -1f
+                val start = remix.music?.music?.startOfSound ?: -1f
                 if (start >= 0f && remix.musicStartSec != -start.absoluteValue) {
 
                     musicStartField.text = (-(start.absoluteValue)*1000).toInt().toString()
@@ -98,7 +98,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
 
             override fun frameUpdate(screen: MusicSelectScreen) {
                 super.frameUpdate(screen)
-                val start = editor.remix.music?.music?.getStartOfSound() ?: -1f
+                val start = editor.remix.music?.music?.startOfSound ?: -1f
                 this.visible = start >= 0f
                 this.enabled = editor.remix.musicStartSec != -start
             }
@@ -272,7 +272,7 @@ class MusicSelectScreen(main: RHREfreshApplication)
                 label.text = Localization["screen.music.currentMusic",
                         if (music == null) Localization["screen.music.noMusic"] else music.handle.name()]
                 if (music != null) {
-                    val start = music.music.getStartOfSound()
+                    val start = music.music.startOfSound
                     if (start >= 0f) {
                         label.text += "\n\n${Localization["screen.music.estimatedMusicStart", (Editor.TRACKER_MINUTES_FORMATTER.format((start / 60).toLong()) + ":" + Editor.TRACKER_TIME_FORMATTER.format(start % 60.0))]}"
                     }

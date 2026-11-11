@@ -56,7 +56,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.ResponseModel
-import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.SoundCache
 import io.github.chrislo27.rhrefresh.theme.LoadedThemes
 import io.github.chrislo27.rhrefresh.theme.Theme

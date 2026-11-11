@@ -11,7 +11,9 @@ import io.github.chrislo27.rhrefresh.VersionHistory
 import io.github.chrislo27.rhrefresh.editor.DefaultMidiNotes
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.editor.view.ViewType
-import io.github.chrislo27.rhrefresh.soundsystem.*
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsAudio
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSound
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
 import io.github.chrislo27.toolboks.Toolboks
 import io.github.chrislo27.toolboks.i18n.Localization

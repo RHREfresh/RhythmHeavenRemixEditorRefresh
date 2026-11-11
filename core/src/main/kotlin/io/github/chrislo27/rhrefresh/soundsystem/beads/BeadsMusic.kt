@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhrefresh.soundsystem
+package io.github.chrislo27.rhrefresh.soundsystem.beads
 
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Disposable

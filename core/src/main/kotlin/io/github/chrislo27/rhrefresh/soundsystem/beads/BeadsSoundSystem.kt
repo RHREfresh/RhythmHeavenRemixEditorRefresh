@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhrefresh.soundsystem
+package io.github.chrislo27.rhrefresh.soundsystem.beads
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic

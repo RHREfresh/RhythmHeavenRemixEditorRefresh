@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhrefresh.soundsystem
+package io.github.chrislo27.rhrefresh.soundsystem.beads
 
 import net.beadsproject.beads.core.Bead
 import net.beadsproject.beads.ugens.*

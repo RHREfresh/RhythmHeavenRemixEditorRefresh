@@ -11,6 +11,8 @@ import io.github.chrislo27.rhrefresh.sfxdb.BaseBpmRules
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.soundsystem.*
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSound
+import io.github.chrislo27.rhrefresh.soundsystem.beads.LoopParams
 import io.github.chrislo27.rhrefresh.theme.Theme
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.util.Semitones
@@ -34,7 +36,7 @@ class CueEntity(remix: Remix, datamodel: Cue)
             // medium: 0.6f - 1.2f
             // big:    0.5f - 1.1f
             // f(x, z) = (0.6/z)x + (z <= 3 ? -0.2z + 1.2 : -0.025z + 0.675)
-            
+
             return (0.6f / duration) * beat +
                     if (duration <= 3)
                         (-0.2f * duration + 1.2f)
@@ -184,8 +186,8 @@ class CueEntity(remix: Remix, datamodel: Cue)
     override fun getRenderColor(editor: Editor, theme: Theme): Color {
         return theme.entities.cue
     }
-    
-    private fun getSemitonePitch(offset:Float): Float {
+
+    fun getSemitonePitch(offset:Float): Float {
         return Semitones.getALPitch(semitone+offset)
     }
     
@@ -223,7 +225,11 @@ class CueEntity(remix: Remix, datamodel: Cue)
             1f
         } else cue.getBaseBpmRate(remix.beat)
         val apparentRate = (pitch * rate)
-        val loopParams = if (cue.loops) LoopParams(SamplePlayer.LoopType.LOOP_FORWARDS, cue.loopStart.toDouble(), cue.loopEnd.toDouble()) else LoopParams.NO_LOOP_FORWARDS
+        val loopParams = if (cue.loops) LoopParams(
+            SamplePlayer.LoopType.LOOP_FORWARDS,
+            cue.loopStart.toDouble(),
+            cue.loopEnd.toDouble()
+        ) else LoopParams.NO_LOOP_FORWARDS
         soundId = beadsSound.playWithLoop(pitch = randomPitch, rate = rate, volume = volume,
                                           position = (position.toDouble()) * apparentRate,
                                           loopParams = loopParams)

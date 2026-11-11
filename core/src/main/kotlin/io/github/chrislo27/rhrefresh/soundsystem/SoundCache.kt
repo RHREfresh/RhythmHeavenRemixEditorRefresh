@@ -1,6 +1,8 @@
 package io.github.chrislo27.rhrefresh.soundsystem
 
 import com.badlogic.gdx.files.FileHandle
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsAudio
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -42,7 +44,7 @@ object SoundCache {
                     deleteOnExit()
                 }
                 FFmpeg.processStreams(originalWav, tmpFile,
-                                            derivative.tempoPercent, derivative.pitchSemitones, derivative.ratePercent, false)
+                                            derivative.tempoPercent, derivative.pitchSemitones)
                 val moddedAudio: BeadsAudio = BeadsSoundSystem.newAudio(FileHandle(tmpFile))
                 tmpFile.delete()
                 

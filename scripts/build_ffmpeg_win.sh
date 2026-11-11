@@ -56,7 +56,13 @@ PATH="build_win/bin:$PATH" PKG_CONFIG_PATH="build_win/ffmpeg_build/lib/pkgconfig
     --enable-librubberband \
     --enable-gpl \
     --enable-decoder=pcm_s16le \
+    --enable-decoder=flac \
+    --enable-decoder=mp3 \
+    --enable-decoder=libvorbis \
     --enable-demuxer=wav \
+    --enable-demuxer=flac \
+    --enable-demuxer=mp3 \
+    --enable-demuxer=ogg \
     --enable-encoder=aac \
     --enable-encoder=flac \
     --enable-encoder=libvorbis \
@@ -65,9 +71,11 @@ PATH="build_win/bin:$PATH" PKG_CONFIG_PATH="build_win/ffmpeg_build/lib/pkgconfig
     --enable-muxer=flac \
     --enable-muxer=adts \
     --enable-muxer=wav \
+    --enable-muxer=null \
     --enable-filter=aresample \
     --enable-filter=rubberband \
-    --enable-filter=atempo
+    --enable-filter=atempo \
+    --enable-filter=silencedetect
 PATH="build_win/bin:$PATH" make -j6 && \
 make install && \
 hash -r

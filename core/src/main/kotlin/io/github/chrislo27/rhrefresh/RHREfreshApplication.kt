@@ -27,7 +27,7 @@ import io.github.chrislo27.rhrefresh.screen.info.InfoScreen
 import io.github.chrislo27.rhrefresh.screen.info.ProgramSettingsStage
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
-import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
+import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.soundsystem.SoundCache
 import io.github.chrislo27.rhrefresh.stage.GenericStage
@@ -269,9 +269,9 @@ class RHREfreshApplication(logger: Logger, logToFile: File?)
 
         val jsonStr: String = preferences.getString(LANGUAGE, "").takeUnless(String::isEmpty) ?: "{}"
         val langObj: ProgramSettingsStage.LangObj = JsonHandler.fromJson(jsonStr, ProgramSettingsStage.LangObj::class.java)
-        val language: String = langObj.language?.toLowerCase(Locale.ROOT) ?: ""
-        val country: String = langObj.country?.toLowerCase(Locale.ROOT) ?: ""
-        val variant: String = langObj.variant?.toLowerCase(Locale.ROOT) ?: ""
+        val language: String = langObj.language?.lowercase(Locale.ROOT) ?: ""
+        val country: String = langObj.country?.lowercase(Locale.ROOT) ?: ""
+        val variant: String = langObj.variant?.lowercase(Locale.ROOT) ?: ""
 
         Localization.currentBundle = Localization.bundles.find {
             it.locale.locale.language == language && it.locale.locale.country == country && it.locale.locale.variant == variant
