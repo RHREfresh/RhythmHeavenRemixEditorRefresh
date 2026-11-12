@@ -582,6 +582,7 @@ class ThemeEditorStage(val editor: Editor, val palette: UIPalette, parent: Theme
                     ThemeField("entities.nameColor", { entities.nameColor.set(it) }, { entities.nameColor }),
                     ThemeField("entities.cue", { entities.cue.set(it) }, { entities.cue }),
                     ThemeField("entities.pattern", { entities.pattern.set(it) }, { entities.pattern }),
+                    ThemeField("entities.multiCue", { entities.multiCue.set(it) }, { entities.multiCue }),
                     ThemeField("entities.special", { entities.special.set(it) }, { entities.special }),
                     ThemeField("entities.keepTheBeat", { entities.keepTheBeat.set(it) }, { entities.keepTheBeat }),
                     ThemeField("entities.equidistant", { entities.equidistant.set(it) }, { entities.equidistant })

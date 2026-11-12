@@ -209,7 +209,7 @@ class PatternObject : NamedIDObject() {
 @JsonTypeName("multiCue")
 class MultiCueObject : NamedIDObject() {
 
-    var width: Float = 0f
+    var duration: Float = -1f
 
     lateinit var cues: List<CuePointerObject>
 
