@@ -76,7 +76,7 @@ class Settings(private val main: RHREfreshApplication) {
             cameraBehaviour = CameraBehaviour.MAP.getOrDefault(preferences.getString(PreferenceKeys.SETTINGS_CAMERA_BEHAVIOUR), Editor.DEFAULT_CAMERA_BEHAVIOUR)
         }
 
-        val oldWaveform = "settings_waveform"
+        val oldWaveform = "settings_liveWaveform"
         if (oldWaveform in preferences) {
             val oldSetting = preferences.getBoolean(oldWaveform, false)
             waveformType = if (oldSetting) WaveformType.WAVEFORM_LIVE else WaveformType.WAVEFORM_NONE
