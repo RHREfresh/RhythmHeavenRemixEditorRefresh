@@ -143,6 +143,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
         val TEMPO_DECIMAL_PLACES_FORMATTER = DecimalFormat("0.0#", DecimalFormatSymbols())
 
         val DEFAULT_CAMERA_BEHAVIOUR: CameraBehaviour = FOLLOW_PLAYBACK
+        val DEFAULT_WAVEFORM_TYPE: WaveformType = WaveformType.WAVEFORM_NONE
     }
 
     data class TimedString(val str: String, var time: Float, var out: Boolean) {
@@ -318,7 +319,7 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
     val glassEffect: GlassEffect = GlassEffect(main, this)
 
     init{
-        if (main.preferences.getBoolean(PreferenceKeys.SETTINGS_LIVE_WAVEFORM)) {
+        if ((WaveformType.MAP.getOrDefault(PreferenceKeys.SETTINGS_WAVEFORM_TYPE, Editor.DEFAULT_WAVEFORM_TYPE)) != WaveformType.WAVEFORM_NONE ) {
             views.add(ViewType.WAVEFORM)
         }
         if (main.preferences.getBoolean(PreferenceKeys.SETTINGS_CHORUS_KIDS)) {
@@ -585,6 +586,18 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
 //            }
 //            main.shapeRenderer.projectionMatrix = main.defaultCamera.combined
 //        }
+
+        // waveform
+        if (ViewType.WAVEFORM in views && otherUI)
+        {
+            if (main.settings.waveformType == WaveformType.WAVEFORM_STATIC)
+            {
+                this.renderWaveform(batch)
+            } else if (remix.playState == PLAYING) {
+                this.renderLiveWaveform(batch, oldCameraX, oldCameraY, adjustedCameraX, adjustedCameraY)
+            }
+        }
+
         remix.entities.forEach {
             if (!it.renderOnTop) {
                 if (it is ModelEntity<*> && isPresentationMode && it.datamodel.hideInPresentationMode)
@@ -627,11 +640,6 @@ class Editor(val main: RHREfreshApplication, stageCamera: OrthographicCamera, at
         if (stage.playalongStage.visible) {
             val alpha = if (stage.playalongStage.hideIndicators) (if (remix.playState == STOPPED) 0.5f else 0f) else 1f
             this.renderPlayalong(batch, beatRange, alpha)
-        }
-
-        // waveform
-        if (remix.playState == PLAYING && ViewType.WAVEFORM in views && otherUI) {
-            this.renderWaveform(batch, oldCameraX, oldCameraY, adjustedCameraX, adjustedCameraY)
         }
 
         this.renderTopTrackers(batch, beatRange, trackYOffset)

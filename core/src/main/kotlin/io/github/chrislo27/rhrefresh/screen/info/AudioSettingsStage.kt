@@ -8,8 +8,10 @@ import com.badlogic.gdx.utils.Align
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.VersionHistory
+import io.github.chrislo27.rhrefresh.editor.CameraBehaviour
 import io.github.chrislo27.rhrefresh.editor.DefaultMidiNotes
 import io.github.chrislo27.rhrefresh.editor.Editor
+import io.github.chrislo27.rhrefresh.editor.WaveformType
 import io.github.chrislo27.rhrefresh.editor.view.ViewType
 import io.github.chrislo27.rhrefresh.soundsystem.*
 import io.github.chrislo27.rhrefresh.stage.TrueCheckbox
@@ -46,31 +48,59 @@ class AudioSettingsStage(parent: UIElement<InfoScreen>?, camera: OrthographicCam
         val buttonWidth = 0.45f
         // Settings
 
-        // Live Waveform
-        settings.elements += object : TrueCheckbox<InfoScreen>(palette, settings, settings) {
-            override fun onLeftClick(xPercent: Float, yPercent: Float) {
-                super.onLeftClick(xPercent, yPercent)
-                if (checked) {
+        // Waveform type
+        settings.elements += object : Button<InfoScreen>(palette, settings, settings) {
+            private val label: TextLabel<InfoScreen> = TextLabel(palette, this, this.stage).apply {
+                this.isLocalizationKey = false
+                this.text = ""
+                this.textWrapping = false
+                this.fontScaleMultiplier = fontScale
+                this.location.set(pixelX = 2f, pixelWidth = -4f)
+                addLabel(this)
+            }
+
+            private fun updateText() {
+                label.text =
+                    Localization["screen.info.waveformType", Localization[main.settings.waveformType.localizationKey]]
+            }
+
+            private fun cycle(dir: Int) {
+                val values = WaveformType.VALUES
+                val index = values.indexOf(main.settings.waveformType) + dir
+                val normalized = if (index < 0) values.size - 1 else if (index >= values.size) 0 else index
+                main.settings.waveformType = values[normalized]
+                if (dir != 0) {
+                    main.settings.persist()
+                    didChangeSettings = true
+                }
+                if (main.settings.waveformType != WaveformType.WAVEFORM_NONE) {
                     editor.views.add(ViewType.WAVEFORM)
                 } else {
                     editor.views.remove(ViewType.WAVEFORM)
                 }
-                main.settings.liveWaveform = checked
-                main.settings.persist()
-                didChangeSettings = true
+                updateText()
+            }
+
+            override fun onLeftClick(xPercent: Float, yPercent: Float) {
+                super.onLeftClick(xPercent, yPercent)
+                cycle(1)
+            }
+
+            override fun onRightClick(xPercent: Float, yPercent: Float) {
+                super.onRightClick(xPercent, yPercent)
+                cycle(-1)
+            }
+
+            init {
+                if (main.settings.waveformType != WaveformType.WAVEFORM_NONE) {
+                    editor.views.add(ViewType.WAVEFORM)
+                }
+                Localization.addListener { updateText() }
+                updateText()
             }
         }.apply {
-            this.checked = main.settings.liveWaveform
-
-            this.textLabel.apply {
-                this.fontScaleMultiplier = fontScale * 0.9f
-                this.isLocalizationKey = true
-                this.textWrapping = false
-                this.textAlign = Align.left
-                this.text = "editor.view.waveform"
-            }
-
-            this.location.set(screenX = padding,
+            this.location.set(
+                screenX = padding,
                 screenY = padding * 7 + buttonHeight * 6,
                 screenWidth = buttonWidth,
                 screenHeight = buttonHeight)

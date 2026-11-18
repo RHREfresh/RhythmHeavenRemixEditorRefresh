@@ -5,21 +5,23 @@ import io.github.chrislo27.rhrefresh.PreferenceKeys.ADVOPT_EXPLODING_ENTITIES
 import io.github.chrislo27.rhrefresh.PreferenceKeys.ADVOPT_IGNORE_PITCH_RESTRICTIONS
 import io.github.chrislo27.rhrefresh.PreferenceKeys.MIDI_NOTE
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_ADVANCED_OPTIONS
+import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_CAMERA_BEHAVIOUR
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_CHORUS_KIDS
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_DISABLE_MINIMAP
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_DISABLE_TIME_STRETCHING
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_GAME_BOUNDARIES
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_GLASS_ENTITIES
-import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_LIVE_WAVEFORM
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_MINIMAP_PREVIEW
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_SMOOTH_DRAGGING
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_SUBTITLE_ORDER
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_NEW_TRACKS_ON_TOP
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_ORDER_BY_GAME_ORDER
 import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_ENABLE_ANALYTICS
+import io.github.chrislo27.rhrefresh.PreferenceKeys.SETTINGS_WAVEFORM_TYPE
 import io.github.chrislo27.rhrefresh.PreferenceKeys.THEME_USES_MENU
 import io.github.chrislo27.rhrefresh.editor.CameraBehaviour
 import io.github.chrislo27.rhrefresh.editor.Editor
+import io.github.chrislo27.rhrefresh.editor.WaveformType
 
 
 class Settings(private val main: RHREfreshApplication) {
@@ -43,7 +45,7 @@ class Settings(private val main: RHREfreshApplication) {
     var advExplodingEntities: Boolean = false
     var advIgnorePitchRestrictions: Boolean = false
 
-    var liveWaveform: Boolean = false
+    var waveformType: WaveformType = Editor.DEFAULT_WAVEFORM_TYPE
     var chorusKids: Boolean = false
     var midiNote: String = "gleeClubEn/singLoop"
 
@@ -56,7 +58,6 @@ class Settings(private val main: RHREfreshApplication) {
         minimapPreview = preferences.getBoolean(SETTINGS_MINIMAP_PREVIEW, minimapPreview)
         subtitlesBelow = preferences.getBoolean(SETTINGS_SUBTITLE_ORDER, subtitlesBelow)
         smoothDragging = preferences.getBoolean(SETTINGS_SMOOTH_DRAGGING, smoothDragging)
-        liveWaveform = preferences.getBoolean(SETTINGS_LIVE_WAVEFORM, liveWaveform)
         chorusKids = preferences.getBoolean(SETTINGS_CHORUS_KIDS, chorusKids)
         gameBoundaries = preferences.getBoolean(SETTINGS_GAME_BOUNDARIES, gameBoundaries)
         newTracksOnTop = preferences.getBoolean(SETTINGS_NEW_TRACKS_ON_TOP, newTracksOnTop)
@@ -75,6 +76,17 @@ class Settings(private val main: RHREfreshApplication) {
             cameraBehaviour = CameraBehaviour.MAP.getOrDefault(preferences.getString(PreferenceKeys.SETTINGS_CAMERA_BEHAVIOUR), Editor.DEFAULT_CAMERA_BEHAVIOUR)
         }
 
+        val oldWaveform = "settings_waveform"
+        if (oldWaveform in preferences) {
+            val oldSetting = preferences.getBoolean(oldWaveform, false)
+            waveformType = if (oldSetting) WaveformType.WAVEFORM_LIVE else WaveformType.WAVEFORM_NONE
+            preferences.remove(oldWaveform)
+            preferences.flush()
+        } else {
+            waveformType = WaveformType.MAP.getOrDefault(preferences.getString(PreferenceKeys.SETTINGS_WAVEFORM_TYPE), Editor.DEFAULT_WAVEFORM_TYPE)
+        }
+
+
         advExplodingEntities = preferences.getBoolean(ADVOPT_EXPLODING_ENTITIES, advExplodingEntities)
         advIgnorePitchRestrictions = preferences.getBoolean(ADVOPT_IGNORE_PITCH_RESTRICTIONS, advIgnorePitchRestrictions)
     }
@@ -85,18 +97,18 @@ class Settings(private val main: RHREfreshApplication) {
                 .putBoolean(SETTINGS_DISABLE_TIME_STRETCHING, disableTimeStretching)
                 .putBoolean(THEME_USES_MENU, themeUsesMenu)
                 .putBoolean(SETTINGS_GLASS_ENTITIES, glassEntities)
-                .putBoolean(SETTINGS_DISABLE_MINIMAP, disableTimeStretching)
+                .putBoolean(SETTINGS_DISABLE_MINIMAP, disableMinimap)
                 .putBoolean(SETTINGS_MINIMAP_PREVIEW, minimapPreview)
                 .putBoolean(SETTINGS_SUBTITLE_ORDER, subtitlesBelow)
                 .putBoolean(SETTINGS_SMOOTH_DRAGGING, smoothDragging)
-                .putBoolean(SETTINGS_LIVE_WAVEFORM, liveWaveform)
                 .putBoolean(SETTINGS_CHORUS_KIDS, chorusKids)
                 .putBoolean(SETTINGS_GAME_BOUNDARIES, gameBoundaries)
                 .putString(MIDI_NOTE, midiNote)
                 .putBoolean(SETTINGS_NEW_TRACKS_ON_TOP, newTracksOnTop)
                 .putBoolean(SETTINGS_ORDER_BY_GAME_ORDER, orderByGameOrder)
                 .putBoolean(SETTINGS_ENABLE_ANALYTICS, enableAnalytics)
-
+                .putString(SETTINGS_CAMERA_BEHAVIOUR, cameraBehaviour.name)
+                .putString(SETTINGS_WAVEFORM_TYPE, waveformType.name)
                 .putBoolean(ADVOPT_EXPLODING_ENTITIES, advExplodingEntities)
                 .putBoolean(ADVOPT_IGNORE_PITCH_RESTRICTIONS, advIgnorePitchRestrictions)
                 .flush()
