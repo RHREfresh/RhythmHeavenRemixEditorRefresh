@@ -10,28 +10,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
-import de.sciss.jump3r.Main
 import io.github.chrislo27.rhrefresh.PreferenceKeys
 import io.github.chrislo27.rhrefresh.RHREfresh
 import io.github.chrislo27.rhrefresh.RHREfreshApplication
 import io.github.chrislo27.rhrefresh.analytics.AnalyticsHandler
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.editor.stage.advopt.ExportImageButton
-import io.github.chrislo27.rhrefresh.entity.model.ISoundDependent
-import io.github.chrislo27.rhrefresh.entity.model.special.MusicDistortEntity
-import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.FLAC
 import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.MP3
-import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.OGG_VORBIS
-import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.WAV
-import io.github.chrislo27.rhrefresh.screen.ExportRemixScreen.ExportFileType.AAC
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
-import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsMusic
 import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
 import io.github.chrislo27.rhrefresh.stage.GenericStage
-import io.github.chrislo27.rhrefresh.track.PlayState
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.util.*
 import io.github.chrislo27.toolboks.Toolboks
@@ -43,21 +34,12 @@ import io.github.chrislo27.toolboks.ui.*
 import io.github.chrislo27.toolboks.util.gdxutils.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.beadsproject.beads.core.Bead
-import net.beadsproject.beads.core.UGen
-import net.beadsproject.beads.ugens.Clock
-import net.beadsproject.beads.ugens.DelayTrigger
-import net.beadsproject.beads.ugens.RangeLimiter
-import net.beadsproject.beads.ugens.RecordToFile
-import ws.schild.jave.EncoderException
-import ws.schild.jave.progress.EncoderProgressListener
-import ws.schild.jave.encode.AudioAttributes
-import ws.schild.jave.encode.EncodingAttributes
-import ws.schild.jave.info.MultimediaInfo
+import ws.schild.jave.utils.RBufferedReader
 import java.awt.Desktop
 import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
 import java.util.*
-import javax.sound.sampled.AudioFileFormat
 import kotlin.math.*
 
 
@@ -267,31 +249,16 @@ class ExportRemixScreen(main: RHREfreshApplication)
     }
     
     @Synchronized
-    private fun export(file: File, fileType: ExportFileType, playSuccessDing: Boolean,
+    private fun export(file: File, playSuccessDing: Boolean,
                        startSeconds: Float = selectionStage.percentToSeconds(selectionStage.startPercent),
                        endSeconds: Float = selectionStage.percentToSeconds(selectionStage.endPercent),
                        exportOptions: ExportOptions = RHREfresh.exportOptions) {
         if (isExporting || !hasEndRemix)
             return
         isExporting = true
-        BeadsSoundSystem.isRealtime = false
         remix.isExporting = true
         
-        fun addBead(function: () -> Unit): Bead {
-            return object : Bead() {
-                override fun messageReceived(message: Bead?) {
-                    function()
-                }
-            }
-        }
-        
-        val maxProgressStages: Int = when (fileType) {
-            WAV -> 1
-            MP3 -> 2
-            OGG_VORBIS -> 2
-            FLAC -> 2
-            AAC -> 2
-        }
+        var maxProgressStages: Int = -1
         
         fun updateProgress(localization: String, localPercent: Int, stage: Int) {
             mainLabel.text = Localization["screen.export.progress",
@@ -301,244 +268,244 @@ class ExportRemixScreen(main: RHREfreshApplication)
                     maxProgressStages,
                     "${((localPercent + (stage - 1) * 100f) / (maxProgressStages * 100f) * 100).roundToLong()}"]
         }
-        
-        // prepare
-        val context = BeadsSoundSystem.audioContext
-        BeadsSoundSystem.stop()
-        context.stop()
-        context.out.pause(true)
-        context.out.clearDependents()
-        remix.entities.filterIsInstance<ISoundDependent>().forEach { it.preloadSounds() }
-        
-        // prep recorder
-        val recorderFile = if (fileType != WAV)
-            File.createTempFile("rhre3-export-tmp-${System.currentTimeMillis()}", ".wav").apply {
-                this.deleteOnExit()
-            } else file
-        val deleteAfterFile: File? = if (fileType != WAV) recorderFile else null
-        val recorder = RecordToFile(context, 2, recorderFile, AudioFileFormat.Type.WAVE)
-        val limiter = RangeLimiter(context, 2)
-        recorder.addInput(limiter)
-        limiter.addInput(context.out)
-        
-        val oldStart = remix.playbackStart
-        
-        @Synchronized
-        fun finalize(success: Boolean) {
-            recorder.kill()
-            limiter.kill()
-            BeadsSoundSystem.stop()
-            synchronized(context.out) {
-                context.out.clearInputConnections()
-                context.out.clearDependents()
-                context.out.gain = 1f
-                context.out.removeDependent(limiter)
-            }
-            remix.playbackStart = oldStart
-            remix.playState = PlayState.STOPPED
-            
-            if (success) {
-                val commentTag = "Made with Rhythm Heaven Remix Editor Refresh ${RHREfresh.VERSION}"
-                when (fileType) {
-                    WAV -> {
-                        // nothing
-                    }
-                    MP3 -> {
-                        val preArgs = listOf("--ignore-tag-errors", "-b", exportOptions.bitrateKbps.toString(), "--resample", (exportOptions.sampleRate / 1000f).toString())
-                        val args = (preArgs + (if (exportOptions.madeWithComment) listOf("--tc", commentTag) else listOf()) + listOf(recorderFile.path, file.path)).toTypedArray()
-                        val main = Main()
-                        main.support.addPropertyChangeListener("progress") { event ->
-                            val percent: Int = (event.newValue as? Int) ?: 0
-                            updateProgress("mp3", percent, 2)
-                        }
-                        main.run(args)
-                    }
-                    OGG_VORBIS, FLAC, AAC -> {
-                        val outputFormat = when (fileType) {
-                            OGG_VORBIS -> "ogg"
-                            FLAC -> "flac"
-                            AAC -> "adts"
-                            else -> error("Unsupported encoder for file type $fileType")
-                        }
-                        val audio = AudioAttributes();
-                        audio.setSamplingRate(context.sampleRate.toInt())
-                        audio.setChannels(2)
 
-                        val attrs = EncodingAttributes()
-                        attrs.setOutputFormat(outputFormat)
-                        attrs.setAudioAttributes(audio)
+        var success = true
+        val exportStartTime = System.currentTimeMillis()
+        mainLabel.text = Localization["screen.export.progress.start"]
+        // First we prepare the remix part bits
+        val remixPartsCues = FFmpeg.generateParts(remix, startSeconds, endSeconds)
+        maxProgressStages = remixPartsCues.size+1
+        updateProgress("ffmpeg.part",0,1)
 
-
-                        val encoder = FFmpeg.createEncoder()
-                        val multimediaFile = FFmpeg.createMultimediaObject(recorderFile)
-                        multimediaFile.info.metadata = mapOf("Comments" to commentTag)
-                        try {
-                            encoder.encode(multimediaFile, file, attrs, object: EncoderProgressListener {
-                                override fun sourceInfo(info: MultimediaInfo?) {
-                                }
-                                override fun progress(permil: Int){
-                                    updateProgress(outputFormat, permil / 10, 2)
-                                }
-                                override fun message(message: String?) {
-                                }
-                            })
-                        } catch (e: EncoderException) {
-                            for (line in encoder.unhandledMessages) {
-                                Toolboks.LOGGER.error(line)
-                            }
-
-                            throw e
-                        }
+        // Then, we export them to files
+        val remixPartFiles: MutableList<FFmpeg.RemixPartFile> = mutableListOf()
+        for((i, remixPartCues) in remixPartsCues.withIndex()) {
+            updateProgress("ffmpeg.part", 0, i + 1)
+            val part = FFmpeg.exportPart(remixPartCues, exportOptions.sampleRate)
+            try {
+                part.ffmpegExecutor.execute()
+                val reader =
+                    RBufferedReader(InputStreamReader(part.ffmpegExecutor.errorStream))
+                var line: String?
+                while (((reader.readLine().also { line = it })) != null) {
+                    val currentTime = FFmpeg.getCurrentTime(line!!)
+                    // currentTime would be -1 if the line doesn't include any sort of time indicator, which might happen sometimes
+                    if(currentTime!=-1f){
+                        var percent = ((currentTime / remixPartCues.durationMs) * 100).toInt()
+                        if(percent>100) percent = 100 // Cheating for the lack of precision I have in determining duration :)
+                        updateProgress("ffmpeg.part", percent, i + 1)
                     }
                 }
-                
-                deleteAfterFile?.delete()
+                if (part.ffmpegExecutor.getProcessExitCode() != 0) {
+                    Toolboks.LOGGER.info("Error on the export.")
+                    success = false
+                    break
+                } else {
+                    remixPartFiles += part
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toolboks.LOGGER.info("Error on the export.")
+                success = false
+                break
+            } finally {
+                part.ffmpegExecutor.destroy()
             }
-            
-            BeadsSoundSystem.isRealtime = true
-            BeadsSoundSystem.resume()
-            
-            val indicatorCue: Cue? = if (success) {
-                (SFXDatabase.data.objectMap["mrUpbeatWii/applause"] as? Cue)?.takeIf { playSuccessDing }
-            } else {
-                (SFXDatabase.data.objectMap["mountainManeuver/toot"] as? Cue)
+        }
+
+        // If it succeeded, we merge them all together!
+        if(success){
+            // First we get the approximate final duration of the export
+            var maxDuration = 0f
+            for(file in remixPartFiles){
+                val fileDuration = FFmpeg.createMultimediaObject(file.file).info.duration + file.initialDelay
+                if(fileDuration > maxDuration){
+                    maxDuration = fileDuration
+                }
             }
-            if (indicatorCue != null) {
-                BeadsSoundSystem.newSound(indicatorCue.soundHandle).play(loop = false, pitch = 1f, rate = 1f, volume = 1f, position = 0.0)
-            } else {
-                Toolboks.LOGGER.warn("Export SFX (success=$success) not found")
+            if(remix.music != null){
+                val musicDuration = (remix.musicStartSec*1000)+FFmpeg.createMultimediaObject(remix.music!!.handle.file()).info.duration
+                if(musicDuration > maxDuration){
+                    maxDuration = musicDuration
+                }
             }
-            
+
+            // Then we start the FFmpeg export
+            updateProgress("ffmpeg.full",0,maxProgressStages)
+            val ffmpegExecutor = FFmpeg.createFinalRemixExecutor(remix, file, startSeconds, endSeconds, exportOptions.sampleRate, remixPartFiles)
+            try {
+                ffmpegExecutor.execute()
+                val reader =
+                    RBufferedReader(InputStreamReader(ffmpegExecutor.errorStream))
+                var line: String?
+                while (((reader.readLine().also { line = it })) != null) {
+                    val currentTime = FFmpeg.getCurrentTime(line!!)
+                    // currentTime would be -1 if the line doesn't include any sort of time indicator, which might happen sometimes
+                    if(currentTime!=-1f){
+                        updateProgress("ffmpeg.full", ((currentTime / maxDuration) * 100).toInt(), maxProgressStages)
+                    }
+                }
+                if (ffmpegExecutor.getProcessExitCode() != 0) {
+                    Toolboks.LOGGER.info("Error on the export.")
+                }
+            } catch (e: IOException){
+                Toolboks.LOGGER.info("Error on the export.")
+            }
+            finally {
+                ffmpegExecutor.destroy()
+                for(part in remixPartFiles){
+                    part.file.delete()
+                }
+            }
+            Toolboks.LOGGER.info("Remix exported in ${(System.currentTimeMillis()-exportStartTime)/1000}s")
+        } else{
+            mainLabel.text = Localization["screen.export.failed"]
+            Toolboks.LOGGER.info("Remix not exported in ${(System.currentTimeMillis()-exportStartTime)/1000}s")
+        }
+
+        isExporting = false
+        remix.isExporting = false
+
+        BeadsSoundSystem.isRealtime = true
+        BeadsSoundSystem.resume()
+        val indicatorCue: Cue? = if (success) {
+            (SFXDatabase.data.objectMap["mrUpbeatWii/applause"] as? Cue)?.takeIf { playSuccessDing }
+        } else {
+            (SFXDatabase.data.objectMap["extraSFX/audience/Wii/disappointed"] as? Cue)
+        }
+        if (indicatorCue != null) {
+            BeadsSoundSystem.newSound(indicatorCue.soundHandle).play(loop = false, pitch = 1f, rate = 1f, volume = 1f, position = 0.0)
+        } else {
+            Toolboks.LOGGER.warn("Export SFX (success=$success) not found")
+        }
             if (playSuccessDing) {
                 folderFile = file
                 folderButton.visible = true
             }
-            
-            isExporting = false
-            remix.isExporting = false
-            
+
+
             if (!playSuccessDing) {
                 stage.backButton.enabled = false
             }
-        }
-        
-        try {
-            // prep triggers
-            val startMs = min(remix.musicStartSec.toDouble(), remix.tempos.beatsToSeconds(remix.entities.minByOrNull { it.getLowerUpdateableBound() }?.getLowerUpdateableBound() ?: 0.0f).toDouble()).toFloat() * 1000.0
-            val endMs = endSeconds * 1000.0
-            val durationMs = endMs - startMs
-            
-            // reset things
-            remix.playbackStart = remix.tempos.secondsToBeats(startMs.toFloat() / 1000f)
-            remix.playState = PlayState.PLAYING
-            remix.playState = PlayState.STOPPED
-            remix.speedMultiplier = 1f
-            
-            // music trigger
+//        }
+//
+//        try {
+//            // prep triggers
+//            val startMs = min(remix.musicStartSec.toDouble(), remix.tempos.beatsToSeconds(remix.entities.minByOrNull { it.getLowerUpdateableBound() }?.getLowerUpdateableBound() ?: 0.0f).toDouble()).toFloat() * 1000.0
+//            val endMs = endSeconds * 1000.0
+//            val durationMs = endMs - startMs
+//
+//            // reset things
+//            remix.playbackStart = remix.tempos.secondsToBeats(startMs.toFloat() / 1000f)
+//            remix.playState = PlayState.PLAYING
+//            remix.playState = PlayState.STOPPED
+//            remix.speedMultiplier = 1f
+//
+//            // music trigger
 //            if (remix.music != null) {
-//                val music = BeadsMusic((remix.music!!.music as BeadsMusic).audio)
+//                val music = MiniAudioMusic((remix.music!!.music as MiniAudioMusic).audio)
 //                music.stop()
 //
 //                val musicStartMs = (remix.musicStartSec * 1000) - startMs
 //
-//                context.out.addDependent(DelayTrigger(context, musicStartMs, addBead {
-//                    music.also(BeadsMusic::play)
-//                }))
+////                context.out.addDependent(DelayTrigger(context, musicStartMs, addBead {
+////                    music.also(MiniAudioMusic::play)
+////                }))
 //
 //                // volumes
 //                context.out.addDependent(Clock(context, 10f).apply {
 //                    addMessageListener(addBead {
 //                        music.setVolume(remix.musicVolumes.volumeAt(remix.beat))
 //                        // Music distort
-//                        val inDistortion = remix.entities.any { it is MusicDistortEntity && remix.beat in it.bounds.x..it.bounds.maxX }
-//                        val currentlyDistorted = music.player.doBandpass
-//                        if (inDistortion != currentlyDistorted) {
-//                            music.player.doBandpass = inDistortion
-//                        }
+////                        val inDistortion = remix.entities.any { it is MusicDistortEntity && remix.beat in it.bounds.x..it.bounds.maxX }
+////                        val currentlyDistorted = music.player.doBandpass
+////                        if (inDistortion != currentlyDistorted) {
+////                            music.player.doBandpass = inDistortion
+////                        }
 //                    })
 //                })
 //            }
-            
-            if (startSeconds * 1000 <= startMs) {
-                context.out.addDependent(recorder)
-            } else {
-                // Start recording at a certain time
-                context.out.addDependent(DelayTrigger(context, startSeconds * 1000 - startMs, addBead {
-                    context.out.addDependent(recorder)
-                }))
-            }
-            
-            // SFX timing
-            // The clock resolution will change depending on the tempo in the remix at any point in time
-            // The theoretical coarsest resolution should be 1/32 beats per clock cycle (0.03125) (based on snap divisions)
-            // But, to be safe, the coarsest ideal resolution will be 1/50 beats per clock cycle
-            // The computed ms interval value should be between 0.1 and 10 ms to ensure precision
-            val clockTimerControl: UGen = object : UGen(context, 1) {
-                override fun calculateBuffer() {
-                    // NO-OP
-                }
-                
-                override fun setValue(value: Float) {
-                    // NO-OP, always computed
-                }
-                
-                override fun getValueDouble(): Double {
-                    // To compute:
-                    // Find out how many ms are in a beat, based on the tempo.
-                    val tempo = remix.tempos.tempoAtSeconds(remix.seconds)
-                    val msPerBeat = (1.0 / tempo) * 60_000
-                    // Target resolution is 1/50 beats per cycle, so divide by 50
-                    return (msPerBeat / 50.0).coerceIn(0.1, 10.0)
-                    // In theory, the 0.1 ms threshold will not be met. The maximum BPM is 600, which results in a timing of 2 ms.
-                }
-                
-                override fun getValue(i: Int, j: Int): Float {
-                    return getValueDouble(i, j).toFloat()
-                }
-                
-                override fun getValue(): Float {
-                    return valueDouble.toFloat()
-                }
-                
-                override fun getValueDouble(i: Int, j: Int): Double {
-                    return valueDouble
-                }
-            }
-            context.out.addDependent(Clock(context, clockTimerControl).apply {
-                addMessageListener(addBead {
-                    remix.seconds = (context.time + startMs).toFloat() / 1000.0f
-                    remix.entities.forEach {
-                        remix.entityUpdate(it)
-                    }
-                })
-            })
-            // Update labels at 60 fps
-            context.out.addDependent(Clock(context, 1000f / 60).apply {
-                addMessageListener(addBead {
-                    val percent = (context.time / (endMs - startMs) * 100).roundToLong().coerceIn(0, 100).toInt()
-                    updateProgress("pcm", percent, 1)
-                })
-            })
-            
-            // scale gain
-            context.out.gain = 0.5f
-            
-            // run!
-            context.out.pause(false)
-            context.runForNMillisecondsNonRealTime(durationMs.coerceAtLeast(1.0))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            finalize(false)
-            throw e
-        }
-        
-        try {
-            finalize(true)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            finalize(false)
-            throw e
-        }
+//
+//            if (startSeconds * 1000 <= startMs) {
+//                context.out.addDependent(recorder)
+//            } else {
+//                // Start recording at a certain time
+//                context.out.addDependent(DelayTrigger(context, startSeconds * 1000 - startMs, addBead {
+//                    context.out.addDependent(recorder)
+//                }))
+//            }
+//
+//            // SFX timing
+//            // The clock resolution will change depending on the tempo in the remix at any point in time
+//            // The theoretical coarsest resolution should be 1/32 beats per clock cycle (0.03125) (based on snap divisions)
+//            // But, to be safe, the coarsest ideal resolution will be 1/50 beats per clock cycle
+//            // The computed ms interval value should be between 0.1 and 10 ms to ensure precision
+//            val clockTimerControl: UGen = object : UGen(context, 1) {
+//                override fun calculateBuffer() {
+//                    // NO-OP
+//                }
+//
+//                override fun setValue(value: Float) {
+//                    // NO-OP, always computed
+//                }
+//
+//                override fun getValueDouble(): Double {
+//                    // To compute:
+//                    // Find out how many ms are in a beat, based on the tempo.
+//                    val tempo = remix.tempos.tempoAtSeconds(remix.seconds)
+//                    val msPerBeat = (1.0 / tempo) * 60_000
+//                    // Target resolution is 1/50 beats per cycle, so divide by 50
+//                    return (msPerBeat / 50.0).coerceIn(0.1, 10.0)
+//                    // In theory, the 0.1 ms threshold will not be met. The maximum BPM is 600, which results in a timing of 2 ms.
+//                }
+//
+//                override fun getValue(i: Int, j: Int): Float {
+//                    return getValueDouble(i, j).toFloat()
+//                }
+//
+//                override fun getValue(): Float {
+//                    return valueDouble.toFloat()
+//                }
+//
+//                override fun getValueDouble(i: Int, j: Int): Double {
+//                    return valueDouble
+//                }
+//            }
+//            context.out.addDependent(Clock(context, clockTimerControl).apply {
+//                addMessageListener(addBead {
+//                    remix.seconds = (context.time + startMs).toFloat() / 1000.0f
+//                    remix.entities.forEach {
+//                        remix.entityUpdate(it)
+//                    }
+//                })
+//            })
+//            // Update labels at 60 fps
+//            context.out.addDependent(Clock(context, 1000f / 60).apply {
+//                addMessageListener(addBead {
+//                    val percent = (context.time / (endMs - startMs) * 100).roundToLong().coerceIn(0, 100).toInt()
+//                    updateProgress("pcm", percent, 1)
+//                })
+//            })
+//
+//            // scale gain
+//            context.out.gain = 0.5f
+//
+//            // run!
+//            context.out.pause(false)
+//            context.runForNMillisecondsNonRealTime(durationMs.coerceAtLeast(1.0))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            finalize(false)
+//            throw e
+//        }
+//
+//        try {
+//            finalize(true)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            finalize(false)
+//            throw e
+//        }
     }
     
     @Synchronized
@@ -572,7 +539,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
                                     it.extension == file.extension.lowercase(Locale.ROOT)
                                 } ?: MP3
                                 
-                                export(correctFile, fileType, true)
+                                export(correctFile, true)
                                 
                                 Gdx.app.postRunnable {
                                     mainLabel.text = Localization["screen.export.success"]
