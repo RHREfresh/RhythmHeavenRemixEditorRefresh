@@ -34,6 +34,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
+import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.MultiCue
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.track.PlayState
 import io.github.chrislo27.rhrefresh.util.OSUtils
@@ -391,7 +392,9 @@ class EditorStage(parent: UIElement<EditorScreen>?,
                     val label: PickerDisplay.Label = pickerDisplay.labels.getOrAdd(index) {
                         PickerDisplay.Label("", "", Color.WHITE)
                     }
-                    if (index != currentDatamodelList.currentIndex && datamodel is Cue) {
+                    if (index != currentDatamodelList.currentIndex &&
+                        (datamodel is Cue || (datamodel is MultiCue && !datamodel.canSplit)) //TODO figure out a better way to handle cases like this
+                        ) {
                         color = Editor.CUE_PATTERN_COLOR
                     }
                     label.main = pickerName.main

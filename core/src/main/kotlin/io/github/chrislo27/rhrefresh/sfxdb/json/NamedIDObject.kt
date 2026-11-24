@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.chrislo27.rhrefresh.entity.model.IVolumetric
 import io.github.chrislo27.rhrefresh.sfxdb.BaseBpmRules
+import io.github.chrislo27.rhrefresh.sfxdb.StretchBehavior
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
@@ -63,6 +64,11 @@ class CuePointerObject {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     var metadata: Map<String, Any?>? = null
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var ignorePitching: Boolean = false
+    @JsonInclude(JsonInclude.Include.CUSTOM)
+    var stretchBehavior: StretchBehavior = StretchBehavior.stay
+
 }
 
 class GameObject {
@@ -94,6 +100,9 @@ class GameObject {
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     var noDisplay: Boolean = false
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var cuesAtBottom: Boolean = true
 
     lateinit var objects: List<NamedIDObject>
 
@@ -209,7 +218,9 @@ class PatternObject : NamedIDObject() {
 @JsonTypeName("multiCue")
 class MultiCueObject : NamedIDObject() {
 
-    var width: Float = 0f
+    var duration: Float = -1f
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var height: Float = 1f
 
     lateinit var cues: List<CuePointerObject>
 
@@ -217,6 +228,12 @@ class MultiCueObject : NamedIDObject() {
     var stretchable: Boolean = false
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     var canSplit: Boolean = false
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var shouldCrop: Boolean = false
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var minLength: Float = 0.125f
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    var maxLength: Float = 0f
 
 }
 

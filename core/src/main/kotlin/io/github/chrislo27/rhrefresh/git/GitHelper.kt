@@ -73,42 +73,64 @@ object GitHelper {
     }
 
     fun fetchOrClone(progressMonitor: ProgressMonitor = NullProgressMonitor.INSTANCE) {
-        if (doesGitFolderExist()) {
-            Toolboks.LOGGER.info("Fetching...")
-            if (progressMonitor is GitUpdateScreen.GitScreenProgressMonitor)
-                progressMonitor.currentSpecialState = GitUpdateScreen.GitScreenProgressMonitor.SpecialState.FETCHING
-            ensureRemoteExists()
-            temporarilyUseRepo(true) {
-                val git = Git(this)
-                this.directory.resolve("index.lock").delete() // mega naughty
-                val result = git.fetch()
-                        .setRemote("origin")
-                        .setProgressMonitor(progressMonitor)
-                        .setRefSpecs(
-                                RefSpec("refs/heads/${RHREfresh.DATABASE_BRANCH}:refs/remotes/origin/${RHREfresh.DATABASE_BRANCH}"))
-                        .setCheckFetchedObjects(true)
-                        .call()
-                if (!result.messages.isNullOrEmpty()) {
-                    Toolboks.LOGGER.info("Fetch result has messages: ${result.messages}")
-                }
-            }
-            if (progressMonitor is GitUpdateScreen.GitScreenProgressMonitor)
-                progressMonitor.currentSpecialState = GitUpdateScreen.GitScreenProgressMonitor.SpecialState.RESETTING
-            reset()
-        } else {
+        if (!doesGitFolderExist())
+        {
             Toolboks.LOGGER.info("Cloning...")
             if (progressMonitor is GitUpdateScreen.GitScreenProgressMonitor)
                 progressMonitor.currentSpecialState = GitUpdateScreen.GitScreenProgressMonitor.SpecialState.CLONING
             val file = SOUNDS_DIR.file()
             file.deleteRecursively()
             Git.cloneRepository()
-                    .setBranch(RHREfresh.DATABASE_BRANCH)
-                    .setProgressMonitor(progressMonitor)
+                .setBranch(RHREfresh.DATABASE_BRANCH)
+                .setProgressMonitor(progressMonitor)
+                .setRemote("origin")
+                .setURI(RHREfresh.DATABASE_URL)
+                .setDirectory(file)
+                .setDepth(1)
+                .call()
+
+            return // stop early
+        }
+
+        Toolboks.LOGGER.info("Fetching...")
+
+        if (progressMonitor is GitUpdateScreen.GitScreenProgressMonitor)
+            progressMonitor.currentSpecialState = GitUpdateScreen.GitScreenProgressMonitor.SpecialState.FETCHING
+        ensureRemoteExists()
+
+        temporarilyUseRepo(true) {
+            val git = Git(this)
+            this.directory.resolve("index.lock").delete() // mega naughty
+            val result = git.fetch()
                     .setRemote("origin")
-                    .setURI(RHREfresh.DATABASE_URL)
-                    .setDirectory(file)
-                    .setDepth(1)
+                    .setProgressMonitor(progressMonitor)
+                    .setRefSpecs(
+                            RefSpec("refs/heads/${RHREfresh.DATABASE_BRANCH}:refs/remotes/origin/${RHREfresh.DATABASE_BRANCH}"))
+                    .setCheckFetchedObjects(true)
                     .call()
+            if (!result.messages.isNullOrEmpty()) {
+                Toolboks.LOGGER.info("Fetch result has messages: ${result.messages}")
+            }
+        }
+
+        if (!isUpdateAvailable()) {
+            Toolboks.LOGGER.info("Already up to date!")
+            return // stop early
+        }
+
+        Toolboks.LOGGER.info("Update available! Resetting...")
+
+        if (progressMonitor is GitUpdateScreen.GitScreenProgressMonitor)
+            progressMonitor.currentSpecialState = GitUpdateScreen.GitScreenProgressMonitor.SpecialState.RESETTING
+        reset()
+    }
+
+    fun isUpdateAvailable(): Boolean {
+        return temporarilyUseRepo {
+            val localCommit = resolve("HEAD")?.name
+            val remoteCommit = resolve("refs/remotes/origin/${RHREfresh.DATABASE_BRANCH}")?.name
+
+            localCommit != remoteCommit
         }
     }
 

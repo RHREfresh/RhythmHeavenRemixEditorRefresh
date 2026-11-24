@@ -18,6 +18,7 @@ object PreferenceKeys {
     val SETTINGS_MINIMAP_PREVIEW = "settings_minimapPreview"
     val SETTINGS_AUTOSAVE = "settings_autosave"
     val SETTINGS_CAMERA_BEHAVIOUR = "settings_cameraBehaviour"
+    val SETTINGS_WAVEFORM_TYPE = "settings_waveformType"
     val SETTINGS_SUBTITLE_ORDER = "settings_subtitleOrder"
     val SETTINGS_SMOOTH_DRAGGING = "settings_smoothDragging"
     val SETTINGS_DISCORD_RPC_ENABLED = "settings_discordRPCEnabled"
@@ -32,7 +33,7 @@ object PreferenceKeys {
     val SETTINGS_ENABLE_ANALYTICS = "settings_enableAnalytics"
     val SETTINGS_FFMPEG_LOCATION = "settings_ffmpegLocation"
 
-    val SETTINGS_LIVE_WAVEFORM = "settings_liveWaveform"
+    //val SETTINGS_LIVE_WAVEFORM = "settings_liveWaveform"
     val SETTINGS_CHORUS_KIDS = "settings_chorusKids"
     val SETTINGS_GAME_BOUNDARIES = "settings_gameBoundaries"
 
@@ -42,7 +43,7 @@ object PreferenceKeys {
                SETTINGS_DISCORD_RPC_ENABLED, SETTINGS_ADVANCED_OPTIONS, SETTINGS_GLASS_ENTITIES, SETTINGS_CLOSE_WARNING,
                SETTINGS_DISABLE_TIME_STRETCHING, SETTINGS_AUDIO_MIXER, SETTINGS_AUDIO_VOLUME, SETTINGS_NEW_TRACKS_ON_TOP,
                SETTINGS_ORDER_BY_GAME_ORDER, SETTINGS_ENABLE_ANALYTICS, SETTINGS_FFMPEG_LOCATION,
-               SETTINGS_LIVE_WAVEFORM, SETTINGS_CHORUS_KIDS, SETTINGS_GAME_BOUNDARIES)
+               SETTINGS_WAVEFORM_TYPE, SETTINGS_CHORUS_KIDS, SETTINGS_GAME_BOUNDARIES)
 
     val ADVOPT_REF_RH_GAME = "advOpt_referenceRHGame"
     val ADVOPT_PITCH_STYLE = "advOpt_pitchStyle"

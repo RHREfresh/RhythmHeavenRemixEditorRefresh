@@ -449,7 +449,8 @@ object SFXDatabase : Disposable {
                             gameObject.group ?: gameObject.name,
                             gameObject.groupDefault,
                             gameObject.priority, gameObject.gameOrder, directive.isCustom, gameObject.noDisplay, gameObject.searchHints ?: listOf(),
-                            jsonless = false, isSpecial = gameObject.id in SPECIAL_IDS)
+                            jsonless = false, isSpecial = gameObject.id in SPECIAL_IDS,
+                            gameObject.cuesAtBottom)
                 val baseFileHandle = directive.folder.parent()
 
                 gameObject.objects.mapTo(game.objects as MutableList) { obj ->
@@ -474,7 +475,14 @@ object SFXDatabase : Disposable {
                             null,
                             nameWithoutExt,
                             true,
-                            0, -1, true, false, listOf(), jsonless = true, isSpecial = id in SPECIAL_IDS)
+                            0,
+                            -1,
+                            true,
+                            false,
+                            listOf(),
+                            jsonless = true,
+                            isSpecial = id in SPECIAL_IDS,
+                            true)
 
                 val sfxList = directive.folder.list { fh ->
                     fh.isFile && fh.extension in RHREfresh.SUPPORTED_DECODING_SOUND_TYPES
@@ -568,7 +576,7 @@ object SFXDatabase : Disposable {
             val playalongGame = Game(PLAYALONG_GAME_ID, "Playalong Input Entities", specialGame.series,
                                      playalongObjs, Gdx.files.internal("images/gameicon/playable_entities.png"),
                                      null, "Playalong", false, specialGame.priority, -4,
-                                     false, specialGame.noDisplay, listOf("playable", "playing", "play-along"), false, true)
+                                     false, specialGame.noDisplay, listOf("playable", "playing", "play-along"), false, true, true)
             checkGameDoesNotExist(PLAYALONG_GAME_ID)
             // Press
             playalongObjs += PlayalongModel(playalongGame, "${playalongGame.id}_press_A", listOf(),
