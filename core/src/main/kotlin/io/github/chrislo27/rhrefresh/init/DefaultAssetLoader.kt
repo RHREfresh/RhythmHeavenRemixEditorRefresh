@@ -59,7 +59,7 @@ class DefaultAssetLoader : AssetRegistry.IAssetLoader {
 
 //        AssetRegistry.loadAsset<Texture>("entity_stretchable_line", "images/entity/stretchable/line.png")
         AssetRegistry.loadAsset<Texture>("entity_stretchable_arrow", "images/entity/stretchable/arrow.png", linearTexture())
-        
+        AssetRegistry.loadAsset<Texture>("entity_stretchable_croparrow", "images/entity/stretchable/crop_arrow.png", linearTexture())
         AssetRegistry.loadAsset<Texture>("ui_icon_update", "images/ui/icons/update.png", linearTexture())
         AssetRegistry.loadAsset<Texture>("ui_icon_credits", "images/ui/icons/credits.png", linearTexture())
         AssetRegistry.loadAsset<Texture>("ui_icon_updatesfx", "images/ui/icons/update_sfx.png", linearTexture())

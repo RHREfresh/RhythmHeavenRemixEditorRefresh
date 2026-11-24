@@ -44,7 +44,7 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
                     obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable)
         is MultiCueObject ->
             MultiCue(game, objID, obj.deprecatedIDs,
-                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.duration, obj.canSplit)
+                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.duration, obj.height, obj.canSplit, obj.shouldCrop, obj.minLength, obj.maxLength)
         is RandomCueObject ->
             RandomCue(game, objID, obj.deprecatedIDs,
                       obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.responseIDs.starSubstitution(), obj.stretchable)

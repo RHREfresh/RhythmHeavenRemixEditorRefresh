@@ -1,18 +1,20 @@
 package io.github.chrislo27.rhrefresh.sfxdb.datamodel
 
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
-
+import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.MultiCue
 
 object DatamodelComparator : Comparator<Datamodel> {
 
-    override fun compare(o1: Datamodel, o2: Datamodel): Int {
-        if (o1 is Cue && o2 !is Cue) {
-            return 1
-        } else if (o1 !is Cue && o2 is Cue) {
-            return -1
-        }
-
-        return 0
+    private fun Datamodel.shouldBeLower(): Boolean
+    {
+        return this is Cue || (this is MultiCue && !canSplit)
     }
 
+    override fun compare(o1: Datamodel, o2: Datamodel): Int {
+        return when {
+            o1.shouldBeLower() && !o2.shouldBeLower() -> 1
+            !o1.shouldBeLower() && o2.shouldBeLower() -> -1
+            else -> 0
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl
 
 import io.github.chrislo27.rhrefresh.entity.model.IVolumetric
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
+import io.github.chrislo27.rhrefresh.sfxdb.StretchBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.json.CuePointerObject
 
 fun CuePointerObject.toDatamodel(): CuePointer = CuePointer(this)
@@ -37,6 +38,9 @@ class CuePointer {
 
     val metadata: Map<String, Any?>
 
+    val ignorePitching: Boolean
+    val stretchBehavior: StretchBehavior
+
     constructor(obj: CuePointerObject, starSubstitution: String?) {
         id = if (starSubstitution == null) obj.id else obj.id.replace("*", starSubstitution)
         beat = obj.beat
@@ -45,13 +49,16 @@ class CuePointer {
         volume = obj.volume.coerceAtLeast(0)
         track = obj.track
         metadata = obj.metadata ?: mapOf()
+        ignorePitching = obj.ignorePitching
+        stretchBehavior = obj.stretchBehavior
     }
 
     constructor(obj: CuePointerObject) : this(obj, null)
 
     constructor(id: String, beat: Float, duration: Float = 0f, semitone: Int = 0, track: Int = 0,
                 volume: Int = IVolumetric.DEFAULT_VOLUME,
-                metadata: Map<String, Any?> = mapOf()) {
+                metadata: Map<String, Any?> = mapOf(),
+                ignorePitching: Boolean = false, stretchBehavior: StretchBehavior = StretchBehavior.stay) {
         this.id = id
         this.beat = beat
         this.backingDuration = duration
@@ -59,6 +66,8 @@ class CuePointer {
         this.track = track
         this.volume = volume.coerceAtLeast(0)
         this.metadata = metadata
+        this.ignorePitching = ignorePitching
+        this.stretchBehavior = stretchBehavior
     }
     
     fun toJsonObject(): CuePointerObject {
@@ -70,11 +79,13 @@ class CuePointer {
             it.volume = this.volume
             it.track = this.track
             it.metadata = this.metadata
+            it.ignorePitching = this.ignorePitching
+            it.stretchBehavior = this.stretchBehavior
         }
     }
 
     fun copy(id: String = this.id, beat: Float = this.beat, duration: Float = this.duration, semitone: Int = this.semitone, track: Int = this.track,
              volume: Int = this.volume,
-             metadata: Map<String, Any?> = this.metadata): CuePointer = CuePointer(id, beat, duration, semitone, track, volume, metadata)
+             metadata: Map<String, Any?> = this.metadata): CuePointer = CuePointer(id, beat, duration, semitone, track, volume, metadata, ignorePitching, stretchBehavior)
 
 }

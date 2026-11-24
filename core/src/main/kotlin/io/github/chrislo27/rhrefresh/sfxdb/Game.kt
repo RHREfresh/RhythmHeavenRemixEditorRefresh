@@ -17,7 +17,7 @@ data class Game(val id: String, val rawName: String, val series: Series,
                 val objects: List<Datamodel>,
                 val iconFh: FileHandle, val language: Language?, val group: String, val groupDefault: Boolean,
                 val priority: Int, val gameOrder: Int, val isCustom: Boolean, val noDisplay: Boolean, val searchHints: List<String>,
-                val jsonless: Boolean, val isSpecial: Boolean)
+                val jsonless: Boolean, val isSpecial: Boolean, val cuesAtBottom: Boolean)
     : Disposable, Comparable<Game> {
 
 
@@ -30,9 +30,12 @@ data class Game(val id: String, val rawName: String, val series: Series,
             set += "3ds"
         }
     }
-
     val placeableObjects: List<Datamodel> by lazy {
-        objects.filter { !it.hidden }.sortedWith(DatamodelComparator)
+        if (cuesAtBottom) {
+            objects.filter { !it.hidden }.sortedWith(DatamodelComparator)
+        } else {
+            objects.filter { !it.hidden }
+        }
     }
     val hasCallAndResponse: Boolean by lazy {
         placeableObjects.any { it is ResponseModel && it.responseIDs.isNotEmpty() }

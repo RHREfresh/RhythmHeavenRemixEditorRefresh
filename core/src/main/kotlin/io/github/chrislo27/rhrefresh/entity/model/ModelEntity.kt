@@ -12,6 +12,7 @@ import io.github.chrislo27.rhrefresh.entity.Entity
 import io.github.chrislo27.rhrefresh.modding.ModdingUtils
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
+import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.MultiCue
 import io.github.chrislo27.rhrefresh.theme.Theme
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.util.Semitones
@@ -101,38 +102,139 @@ abstract class ModelEntity<out M : Datamodel>(remix: Remix, val datamodel: M)
         // filled rect + border
         batch.setColorWithTintIfNecessary(selectionTint, color.r, color.g, color.b, color.a * (if (glass) 0.5f else 1f), necessary = showSelection)
         batch.fillRect(x, y,
-                       width, height)
+            width, height)
 
         batch.setColorWithTintIfNecessary(selectionTint, (color.r - 0.25f).coerceIn(0f, 1f),
-                                          (color.g - 0.25f).coerceIn(0f, 1f),
-                                          (color.b - 0.25f).coerceIn(0f, 1f),
-                                          color.a, necessary = showSelection)
+            (color.g - 0.25f).coerceIn(0f, 1f),
+            (color.b - 0.25f).coerceIn(0f, 1f),
+            color.a, necessary = showSelection)
 
         if (this is IStretchable && this.isStretchable) {
             val oldColor = batch.packedColor
+
+            val arrowTex = AssetRegistry.get<Texture>("entity_stretchable_arrow")
+            val cropArrowTex = AssetRegistry.get<Texture>("entity_stretchable_croparrow")
+
             val arrowWidth: Float = min(width / 2f, Editor.ENTITY_HEIGHT / Editor.ENTITY_WIDTH)
             val y = y + height / 2 - 0.5f
-            val arrowTex = AssetRegistry.get<Texture>("entity_stretchable_arrow")
 
             batch.setColorWithTintIfNecessary(selectionTint, (color.r - 0.25f).coerceIn(0f, 1f),
-                                              (color.g - 0.25f).coerceIn(0f, 1f),
-                                              (color.b - 0.25f).coerceIn(0f, 1f),
-                                              color.a * 0.5f, necessary = showSelection)
+                (color.g - 0.25f).coerceIn(0f, 1f),
+                (color.b - 0.25f).coerceIn(0f, 1f),
+                color.a * 0.5f, necessary = showSelection)
 
-            batch.draw(arrowTex, x + arrowWidth, y, width - arrowWidth * 2, 1f,
-                       arrowTex.width / 2, 0, arrowTex.width / 2,
-                       arrowTex.height, false, false)
-            batch.draw(arrowTex, x, y, arrowWidth, 1f,
-                       0, 0, arrowTex.width / 2, arrowTex.height, false, false)
-            batch.draw(arrowTex, x + width, y, -arrowWidth, 1f,
-                       0, 0, arrowTex.width / 2, arrowTex.height, false, false)
+            val minLength = (datamodel as? MultiCue)?.minLength ?: 0f
+
+            if (minLength <= 0.125f) { // Normal or multicue with non-notable minLength
+                batch.draw(arrowTex,
+                    x + arrowWidth, y,
+                    width - arrowWidth * 2, 1f,
+                    arrowTex.width / 2, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                batch.draw(arrowTex,
+                    x, y,
+                    arrowWidth, 1f,
+                    0, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                batch.draw(arrowTex,
+                    x + width, y,
+                    -arrowWidth, 1f,
+                    0, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+            }
+            else { // multiCue with a crop section
+                val cropSectionWidth = width - minLength
+                val cropArrowWidth: Float = min(cropSectionWidth / 2f, Editor.ENTITY_HEIGHT / Editor.ENTITY_WIDTH)
+                val minLengthArrowWidth: Float = min(minLength / 2f, Editor.ENTITY_HEIGHT / Editor.ENTITY_WIDTH)
+
+
+                batch.draw(arrowTex,
+                    x + minLength + cropArrowWidth, y,
+                    cropSectionWidth - cropArrowWidth * 2, 1f,
+                    arrowTex.width / 2, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                // left arrow
+                batch.draw(arrowTex,
+                    x + minLength, y,
+                    cropArrowWidth, 1f,
+                    arrowTex.width / 2, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                // right arrow
+                batch.draw(arrowTex,
+                    x + minLength + cropSectionWidth, y,
+                    -cropArrowWidth, 1f,
+                    0, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                // right cropped arrow
+                batch.draw(cropArrowTex,
+                    x + minLength - minLengthArrowWidth, y,
+                    minLengthArrowWidth, 1f,
+                    0, 0,
+                    cropArrowTex.width, cropArrowTex.height,
+                    true, false)
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+            if (width > minLength || minLength <= 0.125f) {
+                batch.draw(arrowTex,
+                    x + minLength + arrowWidth, y,
+                    widthOfCropSection - arrowWidth * 2, 1f,
+                    arrowTex.width / 2, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                // left arrow
+                batch.draw(arrowTex,
+                    x + minLength, y,
+                    arrowWidth, 1f,
+                    0, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+                // right arrow
+                batch.draw(arrowTex,
+                    x + minLength + widthOfCropSection, y,
+                    -arrowWidth, 1f,
+                    0, 0,
+                    arrowTex.width / 2, arrowTex.height,
+                    false, false)
+            } else {
+                // right cropped arrow
+                batch.draw(cropArrowTex,
+                    x + minLength + widthOfCropSection, y,
+                    -cropArrowWidth + arrowWidth * 3, 1f,
+                    0, 0,
+                    cropArrowTex.width, cropArrowTex.height,
+                    false, false)
+            }
+*/
+
+
 
             batch.packedColor = oldColor
         }
 
         batch.drawRect(x, y,
-                       width, height,
-                       editor.toScaleX(BORDER), editor.toScaleY(BORDER))
+            width, height,
+            editor.toScaleX(BORDER), editor.toScaleY(BORDER))
 
         renderBeforeText(editor, batch)
 
@@ -141,10 +243,10 @@ abstract class ModelEntity<out M : Datamodel>(remix: Remix, val datamodel: M)
         val iconSizeX = editor.toScaleX(iconSizeY * Editor.ENTITY_HEIGHT)
 
         batch.draw(game.icon,
-                   x + 2 * (editor.toScaleX(BORDER)),
-                   y + 2 * editor.toScaleY(BORDER) + ((height - 4 * editor.toScaleY(
-                           BORDER)) - iconSizeY) / 2,
-                   iconSizeX, iconSizeY)
+            x + 2 * (editor.toScaleX(BORDER)),
+            y + 2 * editor.toScaleY(BORDER) + ((height - 4 * editor.toScaleY(
+                BORDER)) - iconSizeY) / 2,
+            iconSizeX, iconSizeY)
 
         batch.packedColor = oldColor
         val oldFontColor = font.color
@@ -206,8 +308,8 @@ abstract class ModelEntity<out M : Datamodel>(remix: Remix, val datamodel: M)
             borderedFont.setColor(1f, 1f, 1f, 1f)
         }
         borderedFont.draw(batch, text,
-                          x + 2 * editor.toScaleX(BORDER),
-                          y + 2 * editor.toScaleY(BORDER) + borderedFont.capHeight)
+            x + 2 * editor.toScaleX(BORDER),
+            y + 2 * editor.toScaleY(BORDER) + borderedFont.capHeight)
         editor.apply {
             borderedFont.unscaleFont()
         }

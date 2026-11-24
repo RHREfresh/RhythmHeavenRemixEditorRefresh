@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.chrislo27.rhrefresh.editor.Editor
 import io.github.chrislo27.rhrefresh.entity.model.IRepitchable
 import io.github.chrislo27.rhrefresh.entity.model.IStretchable
+import io.github.chrislo27.rhrefresh.entity.model.IVolumetric
 import io.github.chrislo27.rhrefresh.entity.model.MultipartEntity
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.MultiCue
@@ -18,32 +19,93 @@ class MultiCueEntity(remix: Remix, datamodel: MultiCue)
 
     override val canBeRepitched: Boolean by IRepitchable.anyInModel(datamodel)
     override val isStretchable: Boolean = datamodel.stretchable
-    override val shouldRenderInternal = datamodel.canSplit
     val canSplit = datamodel.canSplit
+    override val shouldRenderInternal = canSplit
+
+
+    val shouldCrop = datamodel.shouldCrop
+    val minLength = datamodel.minLength
+    val maxLength = datamodel.maxLength
 
     init {
-        datamodel.cues.mapTo(internal) { pointer ->
-            SFXDatabase.data.objectMap[pointer.id]?.createEntity(remix, pointer)?.apply {
-                this.updateBounds {
-                    this.bounds.x = this@MultiCueEntity.bounds.x + pointer.beat
-                    this.bounds.y = this@MultiCueEntity.bounds.y + pointer.track
-                    this.bounds.width = pointer.duration
-                }
-            } ?: error("Object with id ${pointer.id} not found")
-        }
-
-        this.bounds.width = datamodel.duration
-            //internal .maxByOrNull { it.bounds.x + it.bounds.width }?.run { this.bounds.x + this.bounds.width - this@MultiCueEntity.bounds.x } ?: error("Nothing in internal cache")
-        this.bounds.height = 1f
-            //internal.maxByOrNull { it.bounds.y + it.bounds.height }?.run { this.bounds.y + this.bounds.height - this@MultiCueEntity.bounds.y } ?: error("Nothing in internal cache")
+        bounds.width = datamodel.duration
+        bounds.height = datamodel.height
+        populate()
     }
 
     override fun getRenderColor(editor: Editor, theme: Theme): Color {
-        return if(datamodel.canSplit) {theme.entities.multiCue} else {theme.entities.cue}
+        return if(canSplit) {theme.entities.multiCue} else {theme.entities.cue}
+    }
+
+    override fun onBoundsChange(old: Rectangle) {
+        bounds.width = bounds.width.coerceAtLeast(minLength)
+
+        if (maxLength != 0f) {
+            bounds.width = bounds.width.coerceAtMost(maxLength)
+        }
+
+        super.onBoundsChange(old)
     }
 
     override fun updateInternalCache(oldBounds: Rectangle) {
-        translateInternal(oldBounds, changeWidths = false, scaleBeats = false)
+        translateInternal(oldBounds)
+        val widthChanged = oldBounds.width != bounds.width
+
+        if (widthChanged) {
+            populate()
+        }
+    }
+
+
+    fun populate() {
+
+        val thisSemitone = semitone
+        val thisVolume = volumePercent
+
+        // Set semitone and volume to zero, repopulate, and reset it so the setters in MultipartEntity take effect
+        semitone = 0
+        volumePercent = IVolumetric.DEFAULT_VOLUME
+
+        internal.clear()
+
+        datamodel.cues.forEach { pointer ->
+            val originalStart = pointer.beat
+            val originalEnd = pointer.beat + pointer.duration
+
+            val currentStart = if (pointer.stretchBehavior.stretchEnd == true) {
+                originalStart + (bounds.width - datamodel.duration)
+            } else {
+                originalStart
+            }
+
+            val currentEnd = if (pointer.stretchBehavior.stretchStart == true) {
+                bounds.width + (originalEnd - datamodel.duration)
+            } else {
+                originalEnd
+            }
+
+            val childStart = bounds.x + currentStart
+            val parentEnd = bounds.x + bounds.width
+
+            // crop out children that exceed parents end (or for invalid lengths)
+            if ((shouldCrop && (childStart >= parentEnd || currentStart < 0f)) ||
+                currentEnd <= currentStart) {
+                return@forEach
+            }
+
+            val entity = SFXDatabase.data.objectMap[pointer.id]?.createEntity(remix, pointer)
+                ?: error("Object with id ${pointer.id} not found")
+
+            entity.updateBounds {
+                entity.bounds.x = childStart
+                entity.bounds.y = bounds.y + pointer.track
+                entity.bounds.width = currentEnd - currentStart
+            }
+            internal.add(entity)
+        }
+        // Re-set semitone and volume so it takes effect in the internals
+        semitone = thisSemitone
+        volumePercent = thisVolume
     }
 
     override fun readData(objectNode: ObjectNode) {
