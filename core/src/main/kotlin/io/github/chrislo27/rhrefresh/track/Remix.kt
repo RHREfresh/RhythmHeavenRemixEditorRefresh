@@ -29,7 +29,6 @@ import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.special.Subtitle
 import io.github.chrislo27.rhrefresh.soundsystem.*
-import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsMusic
 import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.track.timesignature.TimeSignature
 import io.github.chrislo27.rhrefresh.track.timesignature.TimeSignatures

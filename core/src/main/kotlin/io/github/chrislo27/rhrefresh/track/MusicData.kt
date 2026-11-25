@@ -3,8 +3,6 @@ package io.github.chrislo27.rhrefresh.track
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.StreamUtils
-import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsMusic
-import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.miniaudio.MiniAudioMusic
 import io.github.chrislo27.rhrefresh.soundsystem.miniaudio.MiniAudioSoundSystem
 import java.io.InputStream

@@ -18,10 +18,10 @@ allprojects {
     version = "4.1.0"
     ext {
         appName = "rhythm-heaven-remix-editor-refresh"
-        gdxVersion = '1.14.0'
+        gdxVersion = '1.14.2'
         gdxControllerVersion = '2.2.4'
         lwjglVersion = '3.3.3'
-        miniAudioVersion = '0.7'
+        miniAudioVersion = '0.10-LOCAL'
     }
 
     repositories {
@@ -81,7 +81,7 @@ project(":desktop") {
         implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux-arm32"
         implementation "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux-arm64"
 
-        implementation "games.rednblack.miniaudio:gdx-miniaudio-platform:$miniAudioVersion:natives-desktop"
+//        implementation "games.rednblack.miniaudio:gdx-miniaudio-platform:$miniAudioVersion:natives-desktop"
 
         implementation "ws.schild:jave-core:4.2.0"
 

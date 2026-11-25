@@ -185,16 +185,4 @@ object BeadsSoundSystem {
     fun newSound(audio: BeadsAudio): BeadsSound {
         return BeadsSound(audio)
     }
-
-    fun newMusic(audio: BeadsAudio): BeadsMusic {
-        return BeadsMusic(audio)
-    }
-
-    fun newSound(handle: FileHandle): BeadsSound {
-        return newSound(newAudio(handle))
-    }
-
-    fun newMusic(handle: FileHandle): BeadsMusic {
-        return newMusic(newAudio(handle))
-    }
 }

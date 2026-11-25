@@ -1,9 +1,7 @@
 package io.github.chrislo27.rhrefresh.soundsystem.miniaudio
 
-import com.badlogic.gdx.ApplicationListener
+import com.badlogic.gdx.math.MathUtils
 import games.rednblack.miniaudio.MASound
-import games.rednblack.miniaudio.MiniAudio
-import games.rednblack.miniaudio.filter.MABandPassFilter
 
 class MiniAudioMusic(val audio: MASound, val startOfSound:Float = 0f){
 

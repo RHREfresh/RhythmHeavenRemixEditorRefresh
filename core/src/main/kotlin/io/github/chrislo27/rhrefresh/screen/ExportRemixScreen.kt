@@ -22,6 +22,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.soundsystem.beads.BeadsSoundSystem
 import io.github.chrislo27.rhrefresh.soundsystem.FFmpeg
+import io.github.chrislo27.rhrefresh.soundsystem.miniaudio.MiniAudioSoundSystem
 import io.github.chrislo27.rhrefresh.stage.GenericStage
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.rhrefresh.util.*
@@ -374,7 +375,7 @@ class ExportRemixScreen(main: RHREfreshApplication)
             (SFXDatabase.data.objectMap["extraSFX/audience/Wii/disappointed"] as? Cue)
         }
         if (indicatorCue != null) {
-            BeadsSoundSystem.newSound(indicatorCue.soundHandle).play(loop = false, pitch = 1f, rate = 1f, volume = 1f, position = 0.0)
+            MiniAudioSoundSystem.newSound(indicatorCue.soundHandle).play()
         } else {
             Toolboks.LOGGER.warn("Export SFX (success=$success) not found")
         }
