@@ -28,11 +28,13 @@ import io.github.chrislo27.rhrefresh.modding.ModdingUtils
 import io.github.chrislo27.rhrefresh.patternstorage.FileStoredPattern
 import io.github.chrislo27.rhrefresh.patternstorage.StoredPattern
 import io.github.chrislo27.rhrefresh.screen.EditorScreen
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.Game
 import io.github.chrislo27.rhrefresh.sfxdb.GameMetadata
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.Series
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
+import io.github.chrislo27.rhrefresh.sfxdb.datamodel.PreviewableModel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.MultiCue
 import io.github.chrislo27.rhrefresh.soundsystem.BeadsSoundSystem
@@ -392,10 +394,8 @@ class EditorStage(parent: UIElement<EditorScreen>?,
                     val label: PickerDisplay.Label = pickerDisplay.labels.getOrAdd(index) {
                         PickerDisplay.Label("", "", Color.WHITE)
                     }
-                    if (index != currentDatamodelList.currentIndex &&
-                        (datamodel is Cue || (datamodel is MultiCue && !datamodel.canSplit)) //TODO figure out a better way to handle cases like this
-                        ) {
-                        color = Editor.CUE_PATTERN_COLOR
+                    if (index != currentDatamodelList.currentIndex) {
+                        color = setCueColor(datamodel)
                     }
                     label.main = pickerName.main
                     label.sub = pickerName.sub
@@ -478,6 +478,18 @@ class EditorStage(parent: UIElement<EditorScreen>?,
         val filter = editor.pickerSelection.filter
         if (filter is StoredPatternsFilter) {
             gameStageText.text = Localization[if (editor.clickOccupation is ClickOccupation.SelectionDrag && pickerStage.isMouseOver() && !patternAreaStage.isMouseOver()) "editor.msg.storingSelection" else "editor.storedPatterns.add"]
+        }
+    }
+
+    private fun setCueColor(datamodel: Datamodel): Color {
+        return when(datamodel.cuePickerBehavior){
+            CuePickerBehavior.above -> Color.WHITE
+            CuePickerBehavior.below -> Editor.CUE_PATTERN_COLOR
+            else -> if (datamodel is Cue || (datamodel is MultiCue && !datamodel.canSplit)) {
+                Editor.CUE_PATTERN_COLOR
+            } else{
+                Color.WHITE
+            }
         }
     }
 

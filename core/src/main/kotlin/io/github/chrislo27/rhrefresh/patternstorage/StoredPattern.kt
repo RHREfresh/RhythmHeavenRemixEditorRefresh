@@ -8,6 +8,7 @@ import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.PickerName
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.CuePointer
 import io.github.chrislo27.rhrefresh.screen.PatternStoreScreen
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.track.Remix
 import io.github.chrislo27.toolboks.i18n.Localization
 import java.util.*
@@ -26,7 +27,7 @@ object ClipboardStoredPattern : StoredPattern {
     override val data: String
         get() = Gdx.app.clipboard.contents
     override val datamodel: Datamodel by lazy {
-        object : Datamodel(SFXDatabase.data.specialGame, uuid.toString(), listOf(), "ClipboardPattern", "") {
+        object : Datamodel(SFXDatabase.data.specialGame, uuid.toString(), listOf(), "ClipboardPattern", CuePickerBehavior.default, "") {
             private var internalName: PickerName = PickerName(this@ClipboardStoredPattern.name, Localization["editor.storedPattern.clipboard.sub"])
             override val pickerName: PickerName get() = internalName
             
@@ -55,7 +56,7 @@ data class FileStoredPattern(override val uuid: UUID, override val name: String,
 
     @delegate:Transient
     override val datamodel: Datamodel by lazy {
-        object : Datamodel(SFXDatabase.data.specialGame, uuid.toString(), listOf(), name, "") {
+        object : Datamodel(SFXDatabase.data.specialGame, uuid.toString(), listOf(), name, CuePickerBehavior.default, "") {
             override fun createEntity(remix: Remix, cuePointer: CuePointer?): ModelEntity<*> {
                 error("NO-OP")
             }

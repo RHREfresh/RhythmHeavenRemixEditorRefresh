@@ -21,7 +21,7 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
     return when (val obj = this) {
         // Note: if this is updated, remember to update the Game.toJsonObject func below
         is CueObject ->
-            Cue(game, objID, obj.deprecatedIDs, obj.name, obj.subtext,
+            Cue(game, objID, obj.deprecatedIDs, obj.name, obj.cuePickerBehavior, obj.subtext,
                 obj.duration,
                 obj.stretchable, obj.repitchable,
                 baseFileHandle.child("$objID.${obj.fileExtension}"),
@@ -32,22 +32,22 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
                 obj.loops, obj.earliness, obj.loopStart, obj.loopEnd, obj.pitchBending, obj.writtenPitch, obj.randomPitchLowCents, obj.randomPitchHighCents, obj.stopAtEnd)
         is EquidistantObject ->
             Equidistant(game, objID, obj.deprecatedIDs,
-                        obj.name, obj.subtext, obj.distance,
+                        obj.name, obj.cuePickerBehavior, obj.subtext, obj.distance,
                         obj.stretchable,
                         obj.cues.mapToDatamodel(game.id))
         is KeepTheBeatObject ->
             KeepTheBeat(game, objID, obj.deprecatedIDs,
-                        obj.name, obj.subtext, obj.defaultDuration,
+                        obj.name, obj.cuePickerBehavior, obj.subtext, obj.defaultDuration,
                         obj.cues.mapToDatamodel(game.id))
         is PatternObject ->
             Pattern(game, objID, obj.deprecatedIDs,
-                    obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable)
+                    obj.name, obj.cuePickerBehavior, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable)
         is MultiCueObject ->
             MultiCue(game, objID, obj.deprecatedIDs,
-                obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.duration, obj.height, obj.canSplit, obj.shouldCrop, obj.minLength, obj.maxLength)
+                obj.name, obj.cuePickerBehavior, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.stretchable, obj.duration, obj.height, obj.canSplit, obj.shouldCrop, obj.minLength, obj.maxLength)
         is RandomCueObject ->
             RandomCue(game, objID, obj.deprecatedIDs,
-                      obj.name, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.responseIDs.starSubstitution(), obj.stretchable)
+                      obj.name, obj.cuePickerBehavior, obj.subtext, obj.cues.mapToDatamodel(game.id), obj.responseIDs.starSubstitution(), obj.stretchable)
         is EndRemixObject ->
             EndRemix(game, objID, obj.deprecatedIDs, obj.name)
         is SubtitleEntityObject ->
@@ -66,7 +66,7 @@ fun NamedIDObject.mapToDatamodel(baseFileHandle: FileHandle, game: Game, objID: 
         is PitchBenderEntityObject ->
             PitchBenderModel(game, objID, obj.deprecatedIDs, obj.name)
         is PitchDependentObject ->
-            PitchDependent(game, objID, obj.deprecatedIDs, obj.name, obj.subtext, obj.intervals.toIntervalFormat(),
+            PitchDependent(game, objID, obj.deprecatedIDs, obj.name, obj.cuePickerBehavior, obj.subtext, obj.intervals.toIntervalFormat(),
                            obj.responseIDs.starSubstitution())
     }
 }
@@ -94,6 +94,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
 
                     it.baseBpm = datamodel.baseBpm
@@ -119,6 +120,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
 
                     it.stretchable = datamodel.stretchable
@@ -132,6 +134,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
 
                     it.defaultDuration = datamodel.duration
@@ -144,6 +147,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
 
                     it.stretchable = datamodel.stretchable
@@ -156,6 +160,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
                     it.duration = datamodel.duration
                     it.stretchable = datamodel.stretchable
@@ -168,6 +173,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id.starSubstitute()
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
 
                     it.responseIDs = datamodel.responseIDs.map(String::starSubstitute)
@@ -234,6 +240,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
                 }
             }
@@ -250,6 +257,7 @@ fun Game.toJsonObject(starSubstitution: Boolean): GameObject {
                     it.id = datamodel.id
                     it.deprecatedIDs = datamodel.deprecatedIDs
                     it.name = datamodel.name
+                    it.cuePickerBehavior = datamodel.cuePickerBehavior
                     it.subtext = datamodel.subtext
                     
                     it.intervals = datamodel.intervals.entries.sortedBy { it.key }.associate { (k, v) -> k.toString() to v.id.starSubstitute() }.toMutableMap()

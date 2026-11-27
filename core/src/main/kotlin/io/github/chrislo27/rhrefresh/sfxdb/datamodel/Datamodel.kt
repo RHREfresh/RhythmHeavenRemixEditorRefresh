@@ -2,6 +2,7 @@ package io.github.chrislo27.rhrefresh.sfxdb.datamodel
 
 import com.badlogic.gdx.utils.Disposable
 import io.github.chrislo27.rhrefresh.entity.model.ModelEntity
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.Game
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl.Cue
@@ -11,7 +12,7 @@ import io.github.chrislo27.rhrefresh.track.Remix
 
 
 abstract class Datamodel(val game: Game, val id: String, val deprecatedIDs: List<String>, val name: String,
-                         open val duration: Float, val subtext: String = "")
+                         open val duration: Float, val cuePickerBehavior: CuePickerBehavior = CuePickerBehavior.default, val subtext: String = "")
     : Disposable {
 
     abstract fun createEntity(remix: Remix, cuePointer: CuePointer?): ModelEntity<*>
@@ -24,8 +25,8 @@ abstract class Datamodel(val game: Game, val id: String, val deprecatedIDs: List
     val isSpecial: Boolean get() = game.isSpecial || this is SpecialDatamodel
     open val hideInPresentationMode: Boolean = false
 
-    constructor(game: Game, id: String, deprecatedIDs: List<String>, name: String, subtext: String)
-            : this(game, id, deprecatedIDs, name, 1.0f, subtext)
+    constructor(game: Game, id: String, deprecatedIDs: List<String>, name: String, cuePickerBehavior: CuePickerBehavior, subtext: String)
+            : this(game, id, deprecatedIDs, name, 1.0f, cuePickerBehavior, subtext)
 
     fun checkBaseBpm(): ClosedRange<Float>? {
         if (this is Cue && this.usesBaseBpm)

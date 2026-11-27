@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl
 
 import io.github.chrislo27.rhrefresh.entity.model.multipart.MultiCueEntity
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.Game
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.ContainerModel
@@ -8,10 +9,10 @@ import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.PreviewableModel
 import io.github.chrislo27.rhrefresh.track.Remix
 
-class MultiCue(game: Game, id: String, deprecatedIDs: List<String>, name: String, subtext: String = "",
+class MultiCue(game: Game, id: String, deprecatedIDs: List<String>, name: String, cuePickerBehavior: CuePickerBehavior = CuePickerBehavior.default, subtext: String = "",
                override val cues: List<CuePointer>, val stretchable: Boolean, override val duration: Float, val height: Float,
                val canSplit: Boolean, val shouldCrop: Boolean, val minLength: Float, val maxLength: Float)
-    : Datamodel(game, id, deprecatedIDs, name, subtext), ContainerModel, PreviewableModel {
+    : Datamodel(game, id, deprecatedIDs, name, cuePickerBehavior, subtext), ContainerModel, PreviewableModel {
 
     override val canBePreviewed: Boolean by lazy { PreviewableModel.determineFromCuePointers(cues) }
 

@@ -3,6 +3,7 @@ package io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl
 import com.badlogic.gdx.files.FileHandle
 import io.github.chrislo27.rhrefresh.entity.model.cue.CueEntity
 import io.github.chrislo27.rhrefresh.sfxdb.BaseBpmRules
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.Game
 import io.github.chrislo27.rhrefresh.sfxdb.SFXDatabase
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
@@ -13,7 +14,7 @@ import io.github.chrislo27.rhrefresh.track.Remix
 import java.io.File
 
 
-open class Cue(game: Game, id: String, deprecatedIDs: List<String>, name: String, subtext: String = "",
+open class Cue(game: Game, id: String, deprecatedIDs: List<String>, name: String, cuePickerBehavior: CuePickerBehavior = CuePickerBehavior.default, subtext: String = "",
                duration: Float, val stretchable: Boolean, val repitchable: Boolean,
                val soundHandle: FileHandle,
                val introSound: String?, val endingSound: String?,
@@ -24,7 +25,7 @@ open class Cue(game: Game, id: String, deprecatedIDs: List<String>, name: String
                val pitchBending: Boolean, val writtenPitch: Int,
                val randomPitchLowCents: Int, val randomPitchHighCents: Int,
                val stopAtEnd: Boolean)
-    : Datamodel(game, id, deprecatedIDs, name, duration, subtext), ResponseModel, PreviewableModel {
+    : Datamodel(game, id, deprecatedIDs, name, duration, cuePickerBehavior, subtext), ResponseModel, PreviewableModel {
 
     val usesBaseBpm: Boolean
         get() = baseBpm > 0f

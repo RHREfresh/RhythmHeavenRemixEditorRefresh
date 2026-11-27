@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.chrislo27.rhrefresh.entity.model.IVolumetric
 import io.github.chrislo27.rhrefresh.sfxdb.BaseBpmRules
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.StretchBehavior
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -31,6 +32,8 @@ sealed class NamedIDObject {
     lateinit var id: String
     lateinit var deprecatedIDs: List<String>
     lateinit var name: String
+    @JsonInclude(JsonInclude.Include.CUSTOM)
+    var cuePickerBehavior: CuePickerBehavior = CuePickerBehavior.default
     @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = SubtextFilter::class)
     var subtext: String = ""
 

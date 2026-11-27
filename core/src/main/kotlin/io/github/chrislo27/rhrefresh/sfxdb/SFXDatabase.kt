@@ -12,6 +12,7 @@ import io.github.chrislo27.rhrefresh.modding.ModdingMetadata
 import io.github.chrislo27.rhrefresh.playalong.PlayalongChars
 import io.github.chrislo27.rhrefresh.playalong.PlayalongInput
 import io.github.chrislo27.rhrefresh.playalong.PlayalongMethod
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.ContainerModel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.PickerName
@@ -267,17 +268,24 @@ object SFXDatabase : Disposable {
             val cues = objectList.filterIsInstance<Cue>()
             val errors = mutableListOf<String>()
             cues.forEach {
+                if(it.cuePickerBehavior == CuePickerBehavior.hide){
+                    it.hidden = true
+                }
                 if (it.introSoundCue != null) {
                     if (it.introSound == it.id) {
                         errors += "Recursive intro sound ID for ${it.id}"
                     }
-                    it.introSoundCue!!.hidden = true
+                    if(it.introSoundCue!!.cuePickerBehavior != CuePickerBehavior.above && it.introSoundCue!!.cuePickerBehavior != CuePickerBehavior.below){
+                        it.introSoundCue!!.hidden = true
+                    }
                 }
                 if (it.endingSoundCue != null) {
                     if (it.endingSound == it.id) {
                         errors += "Recursive ending sound ID for ${it.id}"
                     }
-                    it.endingSoundCue!!.hidden = true
+                    if(it.endingSoundCue!!.cuePickerBehavior != CuePickerBehavior.above && it.endingSoundCue!!.cuePickerBehavior != CuePickerBehavior.below){
+                        it.endingSoundCue!!.hidden = true
+                    }
                 }
 
                 if (it.soundHandle.extension() != "ogg") {
@@ -492,7 +500,7 @@ object SFXDatabase : Disposable {
                 sfxList.forEach { fh ->
                     val loops = fh.nameWithoutExtension().endsWith(".loop")
                     val name = if (!loops) fh.nameWithoutExtension() else (fh.nameWithoutExtension().substringBeforeLast(".loop") + " - loop")
-                    game.objects += Cue(game, "${game.id}/$name", listOf(), name, "", CustomSoundNotice.DURATION,
+                    game.objects += Cue(game, "${game.id}/$name", listOf(), name, CuePickerBehavior.default,"", CustomSoundNotice.DURATION,
                                         true, repitchable = true, soundHandle = fh, introSound = null, endingSound = null,
                                         responseIDs = listOf(), baseBpm = 0f, useTimeStretching = true,
                                         baseBpmRules = BaseBpmRules.ALWAYS, loops = loops,

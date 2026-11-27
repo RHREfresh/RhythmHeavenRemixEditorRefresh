@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhrefresh.sfxdb.datamodel.impl
 
 import io.github.chrislo27.rhrefresh.entity.model.multipart.PitchDependentEntity
+import io.github.chrislo27.rhrefresh.sfxdb.CuePickerBehavior
 import io.github.chrislo27.rhrefresh.sfxdb.Game
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.ContainerModel
 import io.github.chrislo27.rhrefresh.sfxdb.datamodel.Datamodel
@@ -10,10 +11,10 @@ import io.github.chrislo27.rhrefresh.track.Remix
 import java.util.*
 
 
-class PitchDependent(game: Game, id: String, deprecatedIDs: List<String>, name: String, subtext: String = "",
+class PitchDependent(game: Game, id: String, deprecatedIDs: List<String>, name: String, cuePickerBehavior: CuePickerBehavior = CuePickerBehavior.default, subtext: String = "",
                      intervals: Map<PitchRange, String>,
                      override val responseIDs: List<String>)
-    : Datamodel(game, id, deprecatedIDs, name, subtext), ResponseModel, PreviewableModel, ContainerModel {
+    : Datamodel(game, id, deprecatedIDs, name, cuePickerBehavior, subtext), ResponseModel, PreviewableModel, ContainerModel {
     
     override val canBePreviewed: Boolean by lazy { intervals.isNotEmpty() /* Interval values must be IDs to Cues */ }
     val intervals: NavigableMap<PitchRange, CuePointer> = TreeMap(intervals.mapValues { (interval, id) ->
