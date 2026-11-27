@@ -27,8 +27,13 @@ abstract class MultipartEntity<out M>(remix: Remix, datamodel: M)
             field = value
 
             if (RHREfreshApplication.instance.settings.advIgnorePitchRestrictions) {
-                internal.filterIsInstance<IRepitchable>()
-                        .forEach { it.semitone += change }
+                for(cue in internal){
+                    if(cue is IRepitchable && !cue.ignorePitching){
+                        cue.semitone += change
+                    }
+                }
+//                internal.filterIsInstance<IRepitchable>()
+//                        .forEach { it.semitone += change }
             } else {
                 internal.filterIsInstance<IRepitchable>()
                         .filter(IRepitchable::canBeRepitched)

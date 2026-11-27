@@ -67,6 +67,7 @@ class KeepTheBeatEntity(remix: Remix, datamodel: KeepTheBeat)
                     this@apply.bounds.y = this@KeepTheBeatEntity.bounds.y + pointer.track
                     this@apply.bounds.width = pointer.duration
                 }
+                this.ignorePitching = pointer.ignorePitching
             } ?: error("Missing object ${pointer.id} while trying to populate keep the beat ${datamodel.id}")
 
             index++

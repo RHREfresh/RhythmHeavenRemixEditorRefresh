@@ -43,6 +43,7 @@ abstract class Entity(val remix: Remix) {
     open val renderOnTop: Boolean = false
     open val supportsCopying: Boolean = true
     open var playbackCompletion = PlaybackCompletion.WAITING
+    var ignorePitching: Boolean = true
 
     abstract val jsonType: String
 

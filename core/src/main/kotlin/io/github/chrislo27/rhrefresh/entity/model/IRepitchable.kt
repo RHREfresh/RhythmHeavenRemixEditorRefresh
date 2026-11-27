@@ -23,6 +23,7 @@ interface IRepitchable {
 
     var semitone: Int
     val canBeRepitched: Boolean
+    val ignorePitching: Boolean
     val semitoneRange: IntRange
         get() = DEFAULT_RANGE
     val rangeWrapsAround: Boolean

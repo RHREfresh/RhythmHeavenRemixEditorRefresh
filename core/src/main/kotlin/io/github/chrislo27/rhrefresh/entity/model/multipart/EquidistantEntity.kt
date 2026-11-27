@@ -43,6 +43,7 @@ class EquidistantEntity(remix: Remix, datamodel: Equidistant)
                     this@apply.bounds.y = this@EquidistantEntity.bounds.y + pointer.track
                     this@apply.bounds.width = this@EquidistantEntity.bounds.width
                 }
+                this.ignorePitching = pointer.ignorePitching
             } ?: error("Object with id ${pointer.id} not found")
         }
         this.bounds.width = datamodel.duration

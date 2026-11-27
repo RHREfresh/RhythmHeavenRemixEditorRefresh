@@ -27,6 +27,7 @@ class PatternEntity(remix: Remix, datamodel: Pattern)
                     this.bounds.y = this@PatternEntity.bounds.y + pointer.track
                     this.bounds.width = pointer.duration
                 }
+                this.ignorePitching = pointer.ignorePitching
             } ?: error("Object with id ${pointer.id} not found")
         }
 

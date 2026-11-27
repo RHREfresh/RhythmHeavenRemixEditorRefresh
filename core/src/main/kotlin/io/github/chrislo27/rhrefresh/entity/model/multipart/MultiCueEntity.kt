@@ -101,6 +101,7 @@ class MultiCueEntity(remix: Remix, datamodel: MultiCue)
                 entity.bounds.y = bounds.y + pointer.track
                 entity.bounds.width = currentEnd - currentStart
             }
+            entity.ignorePitching = pointer.ignorePitching
             internal.add(entity)
         }
         // Re-set semitone and volume so it takes effect in the internals

@@ -68,7 +68,7 @@ class CuePointerObject {
     var metadata: Map<String, Any?>? = null
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    var ignorePitching: Boolean = false
+    var ignorePitching: Boolean = true
     @JsonInclude(JsonInclude.Include.CUSTOM)
     var stretchBehavior: StretchBehavior = StretchBehavior.stay
 
